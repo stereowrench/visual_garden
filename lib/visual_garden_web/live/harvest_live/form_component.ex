@@ -20,7 +20,7 @@ defmodule VisualGardenWeb.HarvestLive.FormComponent do
         phx-submit="save"
       >
         <.input field={@form[:quantity]} type="number" label="Quantity" step="any" />
-        <.input field={@form[:units]} type="text" label="Units" />
+        <.input field={@form[:units]} type="select" label="Units" options={VisualGarden.Gardens.Harvest.unit_options()}/>
         <:actions>
           <.button phx-disable-with="Saving...">Save Harvest</.button>
         </:actions>

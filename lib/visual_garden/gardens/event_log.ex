@@ -3,7 +3,7 @@ defmodule VisualGarden.Gardens.EventLog do
   import Ecto.Changeset
 
   schema "event_logs" do
-    field :event_type, :string
+    field :event_type, Ecto.Enum, values: [:water, :humidity, :mow, :trim, :till, :transfer, :harvest, :transfer_harvest, :plant]
     field :watered, :boolean, default: false
     field :humidity, :integer
     field :mowed, :boolean, default: false
