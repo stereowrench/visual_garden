@@ -1,3 +1,9 @@
+<%!-- <nav :for={product <- @products_all}>
+  <.link patch={~p"/products/#{product.id}"} phx-click={JS.push_focus()}>
+    <%= product.name %>
+  </.link>
+</nav> --%>
+
 <.header>
   Products <%= @products.id %>
   <:subtitle>This is a products record from your database.</:subtitle>
@@ -11,17 +17,24 @@
 <.list>
   <:item title="Name"><%= @products.name %></:item>
   <:item title="Type"><%= @products.type %></:item>
+  <:item title="Garden"><%= @products.garden_id %></:item>
 </.list>
 
 <.back navigate={~p"/products"}>Back to products</.back>
 
-<.modal :if={@live_action == :edit} id="products-modal" show on_cancel={JS.patch(~p"/products/#{@products}")}>
+<.modal
+  :if={@live_action == :edit}
+  id="products-modal"
+  show
+  on_cancel={JS.patch(~p"/products/#{@products}")}
+>
   <.live_component
     module={VisualGardenWeb.ProductsLive.FormComponent}
     id={@products.id}
     title={@page_title}
     action={@live_action}
     products={@products}
+    gardens={@gardens}
     patch={~p"/products/#{@products}"}
   />
 </.modal>

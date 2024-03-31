@@ -13,7 +13,7 @@ defmodule VisualGarden.Gardens.Products do
   @doc false
   def changeset(products, attrs) do
     products
-    |> cast(attrs, [:name, :type])
+    |> cast(attrs, [:name, :type, :garden_id])
     |> validate_required([:name, :type])
   end
 end
