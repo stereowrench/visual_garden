@@ -18,6 +18,13 @@ defmodule VisualGardenWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :home
+
+    live "/gardens", GardenLive.Index, :index
+    live "/gardens/new", GardenLive.Index, :new
+    live "/gardens/:id/edit", GardenLive.Index, :edit
+
+    live "/gardens/:id", GardenLive.Show, :show
+    live "/gardens/:id/show/edit", GardenLive.Show, :edit
   end
 
   # Other scopes may use custom stacks.

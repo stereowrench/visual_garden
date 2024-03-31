@@ -1,0 +1,41 @@
+<.header>
+  Listing Gardens
+  <:actions>
+    <.link patch={~p"/gardens/new"}>
+      <.button>New Garden</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.table
+  id="gardens"
+  rows={@streams.gardens}
+  row_click={fn {_id, garden} -> JS.navigate(~p"/gardens/#{garden}") end}
+>
+  <:col :let={{_id, garden}} label="name"><%= garden.name %></:col>
+  <:action :let={{_id, garden}}>
+    <div class="sr-only">
+      <.link navigate={~p"/gardens/#{garden}"}>Show</.link>
+    </div>
+    <.link patch={~p"/gardens/#{garden}/edit"}>Edit</.link>
+  </:action>
+  <:action :let={{id, garden}}>
+    <.link
+      phx-click={JS.push("delete", value: %{id: garden.id}) |> hide("##{id}")}
+      data-confirm="Are you sure?"
+    >
+      Delete
+    </.link>
+  </:action>
+</.table>
+
+<.modal :if={@live_action in [:new, :edit]} id="garden-modal" show on_cancel={JS.patch(~p"/gardens")}>
+  <.live_component
+    module={VisualGardenWeb.GardenLive.FormComponent}
+    id={@garden.id || :new}
+    title={@page_title}
+    action={@live_action}
+    garden={@garden}
+    patch={~p"/gardens"}
+  />
+</.modal>

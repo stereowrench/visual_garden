@@ -1,0 +1,26 @@
+<.header>
+  Garden <%= @garden.id %>
+  <:subtitle>This is a garden record from your database.</:subtitle>
+  <:actions>
+    <.link patch={~p"/gardens/#{@garden}/show/edit"} phx-click={JS.push_focus()}>
+      <.button>Edit garden</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.list>
+  <:item title="Name"><%= @garden.name %></:item>
+</.list>
+
+<.back navigate={~p"/gardens"}>Back to gardens</.back>
+
+<.modal :if={@live_action == :edit} id="garden-modal" show on_cancel={JS.patch(~p"/gardens/#{@garden}")}>
+  <.live_component
+    module={VisualGardenWeb.GardenLive.FormComponent}
+    id={@garden.id}
+    title={@page_title}
+    action={@live_action}
+    garden={@garden}
+    patch={~p"/gardens/#{@garden}"}
+  />
+</.modal>
