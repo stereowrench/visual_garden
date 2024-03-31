@@ -1,40 +1,40 @@
-<%!-- <nav :for={product <- @products_all}>
-  <.link patch={~p"/products/#{product.id}"} phx-click={JS.push_focus()}>
+<%!-- <nav :for={product <- @product_all}>
+  <.link patch={~p"/product/#{product.id}"} phx-click={JS.push_focus()}>
     <%= product.name %>
   </.link>
 </nav> --%>
 
 <.header>
-  Products <%= @products.id %>
-  <:subtitle>This is a products record from your database.</:subtitle>
+  product <%= @product.id %>
+  <:subtitle>This is a product record from your database.</:subtitle>
   <:actions>
-    <.link patch={~p"/products/#{@products}/show/edit"} phx-click={JS.push_focus()}>
-      <.button>Edit products</.button>
+    <.link patch={~p"/product/#{@product}/show/edit"} phx-click={JS.push_focus()}>
+      <.button>Edit product</.button>
     </.link>
   </:actions>
 </.header>
 
 <.list>
-  <:item title="Name"><%= @products.name %></:item>
-  <:item title="Type"><%= @products.type %></:item>
-  <:item title="Garden"><%= @products.garden_id %></:item>
+  <:item title="Name"><%= @product.name %></:item>
+  <:item title="Type"><%= @product.type %></:item>
+  <:item title="Garden"><%= @product.garden_id %></:item>
 </.list>
 
-<.back navigate={~p"/products"}>Back to products</.back>
+<.back navigate={~p"/product"}>Back to product</.back>
 
 <.modal
   :if={@live_action == :edit}
-  id="products-modal"
+  id="product-modal"
   show
-  on_cancel={JS.patch(~p"/products/#{@products}")}
+  on_cancel={JS.patch(~p"/product/#{@product}")}
 >
   <.live_component
-    module={VisualGardenWeb.ProductsLive.FormComponent}
-    id={@products.id}
+    module={VisualGardenWeb.ProductLive.FormComponent}
+    id={@product.id}
     title={@page_title}
     action={@live_action}
-    products={@products}
+    product={@product}
     gardens={@gardens}
-    patch={~p"/products/#{@products}"}
+    patch={~p"/product/#{@product}"}
   />
 </.modal>

@@ -1,4 +1,4 @@
-defmodule VisualGardenWeb.ProductsLive.Show do
+defmodule VisualGardenWeb.ProductLive.Show do
   use VisualGardenWeb, :live_view
 
   alias VisualGarden.Gardens
@@ -13,11 +13,11 @@ defmodule VisualGardenWeb.ProductsLive.Show do
     {:noreply,
      socket
      |> assign(:page_title, page_title(socket.assigns.live_action))
-     |> assign(:products, Gardens.get_products!(id))
-     |> assign(:products_all, Gardens.list_products())
+     |> assign(:product, Gardens.get_product!(id))
+     |> assign(:product_all, Gardens.list_products())
      |> assign(:gardens, Gardens.list_gardens())}
   end
 
-  defp page_title(:show), do: "Show Products"
-  defp page_title(:edit), do: "Edit Products"
+  defp page_title(:show), do: "Show product"
+  defp page_title(:edit), do: "Edit product"
 end

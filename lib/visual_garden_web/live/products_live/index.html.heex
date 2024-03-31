@@ -1,28 +1,28 @@
 <.header>
-  Listing Products
+  Listing product
   <:actions>
-    <.link patch={~p"/products/new"}>
-      <.button>New Products</.button>
+    <.link patch={~p"/product/new"}>
+      <.button>New product</.button>
     </.link>
   </:actions>
 </.header>
 
 <.table
-  id="products"
-  rows={@streams.products_collection}
-  row_click={fn {_id, products} -> JS.navigate(~p"/products/#{products}") end}
+  id="product"
+  rows={@streams.product_collection}
+  row_click={fn {_id, product} -> JS.navigate(~p"/product/#{product}") end}
 >
-  <:col :let={{_id, products}} label="Name"><%= products.name %></:col>
-  <:col :let={{_id, products}} label="Type"><%= products.type %></:col>
-  <:action :let={{_id, products}}>
+  <:col :let={{_id, product}} label="Name"><%= product.name %></:col>
+  <:col :let={{_id, product}} label="Type"><%= product.type %></:col>
+  <:action :let={{_id, product}}>
     <div class="sr-only">
-      <.link navigate={~p"/products/#{products}"}>Show</.link>
+      <.link navigate={~p"/product/#{product}"}>Show</.link>
     </div>
-    <.link patch={~p"/products/#{products}/edit"}>Edit</.link>
+    <.link patch={~p"/product/#{product}/edit"}>Edit</.link>
   </:action>
-  <:action :let={{id, products}}>
+  <:action :let={{id, product}}>
     <.link
-      phx-click={JS.push("delete", value: %{id: products.id}) |> hide("##{id}")}
+      phx-click={JS.push("delete", value: %{id: product.id}) |> hide("##{id}")}
       data-confirm="Are you sure?"
     >
       Delete
@@ -30,13 +30,13 @@
   </:action>
 </.table>
 
-<.modal :if={@live_action in [:new, :edit]} id="products-modal" show on_cancel={JS.patch(~p"/products")}>
+<.modal :if={@live_action in [:new, :edit]} id="product-modal" show on_cancel={JS.patch(~p"/product")}>
   <.live_component
-    module={VisualGardenWeb.ProductsLive.FormComponent}
-    id={@products.id || :new}
+    module={VisualGardenWeb.ProductLive.FormComponent}
+    id={@product.id || :new}
     title={@page_title}
     action={@live_action}
-    products={@products}
-    patch={~p"/products"}
+    product={@product}
+    patch={~p"/product"}
   />
 </.modal>

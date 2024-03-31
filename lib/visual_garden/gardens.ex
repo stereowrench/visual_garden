@@ -102,7 +102,7 @@ defmodule VisualGarden.Gardens do
     Garden.changeset(garden, attrs)
   end
 
-  alias VisualGarden.Gardens.Products
+  alias VisualGarden.Gardens.Product
 
   @doc """
   Returns the list of products.
@@ -131,7 +131,7 @@ defmodule VisualGarden.Gardens do
       ** (Ecto.NoResultsError)
 
   """
-  def get_products!(id), do: Repo.get!(Products, id)
+  def get_product!(id), do: Repo.get!(Product, id)
 
   @doc """
   Creates a products.
@@ -145,9 +145,9 @@ defmodule VisualGarden.Gardens do
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_products(attrs \\ %{}) do
-    %Products{}
-    |> Products.changeset(attrs)
+  def create_product(attrs \\ %{}) do
+    %Product{}
+    |> Product.changeset(attrs)
     |> Repo.insert()
   end
 
@@ -163,9 +163,9 @@ defmodule VisualGarden.Gardens do
       {:error, %Ecto.Changeset{}}
 
   """
-  def update_products(%Products{} = products, attrs) do
-    products
-    |> Products.changeset(attrs)
+  def update_product(%Product{} = product, attrs) do
+    product
+    |> Product.changeset(attrs)
     |> Repo.update()
   end
 
@@ -181,8 +181,8 @@ defmodule VisualGarden.Gardens do
       {:error, %Ecto.Changeset{}}
 
   """
-  def delete_products(%Products{} = products) do
-    Repo.delete(products)
+  def delete_product(%Product{} = product) do
+    Repo.delete(product)
   end
 
   @doc """
@@ -194,7 +194,7 @@ defmodule VisualGarden.Gardens do
       %Ecto.Changeset{data: %Products{}}
 
   """
-  def change_products(%Products{} = products, attrs \\ %{}) do
-    Products.changeset(products, attrs)
+  def change_product(%Product{} = product, attrs \\ %{}) do
+    Product.changeset(product, attrs)
   end
 end

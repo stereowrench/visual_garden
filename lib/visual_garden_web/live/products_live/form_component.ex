@@ -33,10 +33,10 @@ defmodule VisualGardenWeb.ProductsLive.FormComponent do
           type="select"
           label="Type"
           prompt="Choose a value"
-          options={Ecto.Enum.values(VisualGarden.Gardens.Products, :type)}
+          options={Ecto.Enum.values(VisualGarden.Gardens.Product, :type)}
         />
         <:actions>
-          <.button phx-disable-with="Saving...">Save Products</.button>
+          <.button phx-disable-with="Saving...">Save Product</.button>
         </:actions>
       </.simple_form>
     </div>
@@ -45,7 +45,7 @@ defmodule VisualGardenWeb.ProductsLive.FormComponent do
 
   @impl true
   def update(%{products: products} = assigns, socket) do
-    changeset = Gardens.change_products(products)
+    changeset = Gardens.change_product(products)
 
     {:ok,
      socket
@@ -57,7 +57,7 @@ defmodule VisualGardenWeb.ProductsLive.FormComponent do
   def handle_event("validate", %{"products" => products_params}, socket) do
     changeset =
       socket.assigns.products
-      |> Gardens.change_products(products_params)
+      |> Gardens.change_product(products_params)
       |> Map.put(:action, :validate)
 
     {:noreply, assign_form(socket, changeset)}
@@ -68,7 +68,7 @@ defmodule VisualGardenWeb.ProductsLive.FormComponent do
   end
 
   defp save_products(socket, :edit, products_params) do
-    case Gardens.update_products(socket.assigns.products, products_params) do
+    case Gardens.update_product(socket.assigns.products, products_params) do
       {:ok, products} ->
         notify_parent({:saved, products})
 
@@ -83,7 +83,7 @@ defmodule VisualGardenWeb.ProductsLive.FormComponent do
   end
 
   defp save_products(socket, :new, products_params) do
-    case Gardens.create_products(products_params) do
+    case Gardens.create_product(products_params) do
       {:ok, products} ->
         notify_parent({:saved, products})
 

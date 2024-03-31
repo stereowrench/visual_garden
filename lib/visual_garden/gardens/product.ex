@@ -1,4 +1,4 @@
-defmodule VisualGarden.Gardens.Products do
+defmodule VisualGarden.Gardens.Product do
   use Ecto.Schema
   import Ecto.Changeset
 
