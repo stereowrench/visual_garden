@@ -25,6 +25,13 @@ defmodule VisualGardenWeb.Router do
 
     live "/gardens/:id", GardenLive.Show, :show
     live "/gardens/:id/show/edit", GardenLive.Show, :edit
+
+    live "/products", ProductsLive.Index, :index
+    live "/products/new", ProductsLive.Index, :new
+    live "/products/:id/edit", ProductsLive.Index, :edit
+
+    live "/products/:id", ProductsLive.Show, :show
+    live "/products/:id/show/edit", ProductsLive.Show, :edit
   end
 
   # Other scopes may use custom stacks.

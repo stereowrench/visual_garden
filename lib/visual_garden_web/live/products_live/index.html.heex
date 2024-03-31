@@ -1,0 +1,42 @@
+<.header>
+  Listing Products
+  <:actions>
+    <.link patch={~p"/products/new"}>
+      <.button>New Products</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.table
+  id="products"
+  rows={@streams.products_collection}
+  row_click={fn {_id, products} -> JS.navigate(~p"/products/#{products}") end}
+>
+  <:col :let={{_id, products}} label="Name"><%= products.name %></:col>
+  <:col :let={{_id, products}} label="Type"><%= products.type %></:col>
+  <:action :let={{_id, products}}>
+    <div class="sr-only">
+      <.link navigate={~p"/products/#{products}"}>Show</.link>
+    </div>
+    <.link patch={~p"/products/#{products}/edit"}>Edit</.link>
+  </:action>
+  <:action :let={{id, products}}>
+    <.link
+      phx-click={JS.push("delete", value: %{id: products.id}) |> hide("##{id}")}
+      data-confirm="Are you sure?"
+    >
+      Delete
+    </.link>
+  </:action>
+</.table>
+
+<.modal :if={@live_action in [:new, :edit]} id="products-modal" show on_cancel={JS.patch(~p"/products")}>
+  <.live_component
+    module={VisualGardenWeb.ProductsLive.FormComponent}
+    id={@products.id || :new}
+    title={@page_title}
+    action={@live_action}
+    products={@products}
+    patch={~p"/products"}
+  />
+</.modal>
