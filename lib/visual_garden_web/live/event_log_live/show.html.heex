@@ -1,0 +1,35 @@
+<.header>
+  Event log <%= @event_log.id %>
+  <:subtitle>This is a event_log record from your database.</:subtitle>
+  <:actions>
+    <.link patch={~p"/event_logs/#{@event_log}/show/edit"} phx-click={JS.push_focus()}>
+      <.button>Edit event_log</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.list>
+  <:item title="Event type"><%= @event_log.event_type %></:item>
+  <:item title="Watered"><%= @event_log.watered %></:item>
+  <:item title="Humidity"><%= @event_log.humidity %></:item>
+  <:item title="Mowed"><%= @event_log.mowed %></:item>
+  <:item title="Mow depth in"><%= @event_log.mow_depth_in %></:item>
+  <:item title="Tilled"><%= @event_log.tilled %></:item>
+  <:item title="Till depth in"><%= @event_log.till_depth_in %></:item>
+  <:item title="Transferred amount"><%= @event_log.transferred_amount %></:item>
+  <:item title="Trimmed"><%= @event_log.trimmed %></:item>
+  <:item title="Transfer units"><%= @event_log.transfer_units %></:item>
+</.list>
+
+<.back navigate={~p"/event_logs"}>Back to event_logs</.back>
+
+<.modal :if={@live_action == :edit} id="event_log-modal" show on_cancel={JS.patch(~p"/event_logs/#{@event_log}")}>
+  <.live_component
+    module={VisualGardenWeb.EventLogLive.FormComponent}
+    id={@event_log.id}
+    title={@page_title}
+    action={@live_action}
+    event_log={@event_log}
+    patch={~p"/event_logs/#{@event_log}"}
+  />
+</.modal>

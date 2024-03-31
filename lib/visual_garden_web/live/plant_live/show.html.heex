@@ -1,0 +1,25 @@
+<.header>
+  Plant <%= @plant.id %>
+  <:subtitle>This is a plant record from your database.</:subtitle>
+  <:actions>
+    <.link patch={~p"/plants/#{@plant}/show/edit"} phx-click={JS.push_focus()}>
+      <.button>Edit plant</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.list>
+</.list>
+
+<.back navigate={~p"/plants"}>Back to plants</.back>
+
+<.modal :if={@live_action == :edit} id="plant-modal" show on_cancel={JS.patch(~p"/plants/#{@plant}")}>
+  <.live_component
+    module={VisualGardenWeb.PlantLive.FormComponent}
+    id={@plant.id}
+    title={@page_title}
+    action={@live_action}
+    plant={@plant}
+    patch={~p"/plants/#{@plant}"}
+  />
+</.modal>

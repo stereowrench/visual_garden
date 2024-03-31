@@ -1,0 +1,42 @@
+<.header>
+  Listing Harvests
+  <:actions>
+    <.link patch={~p"/harvests/new"}>
+      <.button>New Harvest</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.table
+  id="harvests"
+  rows={@streams.harvests}
+  row_click={fn {_id, harvest} -> JS.navigate(~p"/harvests/#{harvest}") end}
+>
+  <:col :let={{_id, harvest}} label="Quantity"><%= harvest.quantity %></:col>
+  <:col :let={{_id, harvest}} label="Units"><%= harvest.units %></:col>
+  <:action :let={{_id, harvest}}>
+    <div class="sr-only">
+      <.link navigate={~p"/harvests/#{harvest}"}>Show</.link>
+    </div>
+    <.link patch={~p"/harvests/#{harvest}/edit"}>Edit</.link>
+  </:action>
+  <:action :let={{id, harvest}}>
+    <.link
+      phx-click={JS.push("delete", value: %{id: harvest.id}) |> hide("##{id}")}
+      data-confirm="Are you sure?"
+    >
+      Delete
+    </.link>
+  </:action>
+</.table>
+
+<.modal :if={@live_action in [:new, :edit]} id="harvest-modal" show on_cancel={JS.patch(~p"/harvests")}>
+  <.live_component
+    module={VisualGardenWeb.HarvestLive.FormComponent}
+    id={@harvest.id || :new}
+    title={@page_title}
+    action={@live_action}
+    harvest={@harvest}
+    patch={~p"/harvests"}
+  />
+</.modal>

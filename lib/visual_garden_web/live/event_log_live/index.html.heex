@@ -1,0 +1,50 @@
+<.header>
+  Listing Event logs
+  <:actions>
+    <.link patch={~p"/event_logs/new"}>
+      <.button>New Event log</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.table
+  id="event_logs"
+  rows={@streams.event_logs}
+  row_click={fn {_id, event_log} -> JS.navigate(~p"/event_logs/#{event_log}") end}
+>
+  <:col :let={{_id, event_log}} label="Event type"><%= event_log.event_type %></:col>
+  <:col :let={{_id, event_log}} label="Watered"><%= event_log.watered %></:col>
+  <:col :let={{_id, event_log}} label="Humidity"><%= event_log.humidity %></:col>
+  <:col :let={{_id, event_log}} label="Mowed"><%= event_log.mowed %></:col>
+  <:col :let={{_id, event_log}} label="Mow depth in"><%= event_log.mow_depth_in %></:col>
+  <:col :let={{_id, event_log}} label="Tilled"><%= event_log.tilled %></:col>
+  <:col :let={{_id, event_log}} label="Till depth in"><%= event_log.till_depth_in %></:col>
+  <:col :let={{_id, event_log}} label="Transferred amount"><%= event_log.transferred_amount %></:col>
+  <:col :let={{_id, event_log}} label="Trimmed"><%= event_log.trimmed %></:col>
+  <:col :let={{_id, event_log}} label="Transfer units"><%= event_log.transfer_units %></:col>
+  <:action :let={{_id, event_log}}>
+    <div class="sr-only">
+      <.link navigate={~p"/event_logs/#{event_log}"}>Show</.link>
+    </div>
+    <.link patch={~p"/event_logs/#{event_log}/edit"}>Edit</.link>
+  </:action>
+  <:action :let={{id, event_log}}>
+    <.link
+      phx-click={JS.push("delete", value: %{id: event_log.id}) |> hide("##{id}")}
+      data-confirm="Are you sure?"
+    >
+      Delete
+    </.link>
+  </:action>
+</.table>
+
+<.modal :if={@live_action in [:new, :edit]} id="event_log-modal" show on_cancel={JS.patch(~p"/event_logs")}>
+  <.live_component
+    module={VisualGardenWeb.EventLogLive.FormComponent}
+    id={@event_log.id || :new}
+    title={@page_title}
+    action={@live_action}
+    event_log={@event_log}
+    patch={~p"/event_logs"}
+  />
+</.modal>

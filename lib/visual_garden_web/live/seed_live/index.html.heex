@@ -1,0 +1,42 @@
+<.header>
+  Listing Seeds
+  <:actions>
+    <.link patch={~p"/seeds/new"}>
+      <.button>New Seed</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.table
+  id="seeds"
+  rows={@streams.seeds}
+  row_click={fn {_id, seed} -> JS.navigate(~p"/seeds/#{seed}") end}
+>
+  <:col :let={{_id, seed}} label="Name"><%= seed.name %></:col>
+  <:col :let={{_id, seed}} label="Description"><%= seed.description %></:col>
+  <:action :let={{_id, seed}}>
+    <div class="sr-only">
+      <.link navigate={~p"/seeds/#{seed}"}>Show</.link>
+    </div>
+    <.link patch={~p"/seeds/#{seed}/edit"}>Edit</.link>
+  </:action>
+  <:action :let={{id, seed}}>
+    <.link
+      phx-click={JS.push("delete", value: %{id: seed.id}) |> hide("##{id}")}
+      data-confirm="Are you sure?"
+    >
+      Delete
+    </.link>
+  </:action>
+</.table>
+
+<.modal :if={@live_action in [:new, :edit]} id="seed-modal" show on_cancel={JS.patch(~p"/seeds")}>
+  <.live_component
+    module={VisualGardenWeb.SeedLive.FormComponent}
+    id={@seed.id || :new}
+    title={@page_title}
+    action={@live_action}
+    seed={@seed}
+    patch={~p"/seeds"}
+  />
+</.modal>
