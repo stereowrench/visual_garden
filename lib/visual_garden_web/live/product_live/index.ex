@@ -21,11 +21,13 @@ defmodule VisualGardenWeb.ProductLive.Index do
   defp apply_action(socket, :edit, %{"id" => id}) do
     socket
     |> assign(:page_title, "Edit product")
+    |> assign(:gardens, Gardens.list_gardens())
     |> assign(:product, Gardens.get_product!(id))
   end
 
   defp apply_action(socket, :new, _params) do
     socket
+    |> assign(:gardens, Gardens.list_gardens())
     |> assign(:page_title, "New product")
     |> assign(:product, %Product{})
   end

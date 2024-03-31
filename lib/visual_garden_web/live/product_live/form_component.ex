@@ -1,4 +1,4 @@
-defmodule VisualGardenWeb.ProductsLive.FormComponent do
+defmodule VisualGardenWeb.ProductLive.FormComponent do
   use VisualGardenWeb, :live_component
 
   alias VisualGarden.Gardens
@@ -44,8 +44,8 @@ defmodule VisualGardenWeb.ProductsLive.FormComponent do
   end
 
   @impl true
-  def update(%{products: products} = assigns, socket) do
-    changeset = Gardens.change_product(products)
+  def update(%{product: product} = assigns, socket) do
+    changeset = Gardens.change_product(product)
 
     {:ok,
      socket
@@ -54,23 +54,23 @@ defmodule VisualGardenWeb.ProductsLive.FormComponent do
   end
 
   @impl true
-  def handle_event("validate", %{"products" => products_params}, socket) do
+  def handle_event("validate", %{"product" => product_params}, socket) do
     changeset =
-      socket.assigns.products
-      |> Gardens.change_product(products_params)
+      socket.assigns.product
+      |> Gardens.change_product(product_params)
       |> Map.put(:action, :validate)
 
     {:noreply, assign_form(socket, changeset)}
   end
 
-  def handle_event("save", %{"products" => products_params}, socket) do
-    save_products(socket, socket.assigns.action, products_params)
+  def handle_event("save", %{"product" => product_params}, socket) do
+    save_product(socket, socket.assigns.action, product_params)
   end
 
-  defp save_products(socket, :edit, products_params) do
-    case Gardens.update_product(socket.assigns.products, products_params) do
-      {:ok, products} ->
-        notify_parent({:saved, products})
+  defp save_product(socket, :edit, product_params) do
+    case Gardens.update_product(socket.assigns.product, product_params) do
+      {:ok, product} ->
+        notify_parent({:saved, product})
 
         {:noreply,
          socket
@@ -82,10 +82,10 @@ defmodule VisualGardenWeb.ProductsLive.FormComponent do
     end
   end
 
-  defp save_products(socket, :new, products_params) do
-    case Gardens.create_product(products_params) do
-      {:ok, products} ->
-        notify_parent({:saved, products})
+  defp save_product(socket, :new, product_params) do
+    case Gardens.create_product(product_params) do
+      {:ok, product} ->
+        notify_parent({:saved, product})
 
         {:noreply,
          socket

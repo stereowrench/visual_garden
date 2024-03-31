@@ -114,7 +114,7 @@ defmodule VisualGarden.Gardens do
 
   """
   def list_products do
-    Repo.all(Products)
+    Repo.all(Product)
   end
 
   @doc """
