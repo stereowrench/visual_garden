@@ -5,6 +5,8 @@ defmodule VisualGarden.Gardens.Garden do
   schema "gardens" do
     field :name, :string
 
+    has_many :products, VisualGarden.Gardens.Product
+
     timestamps(type: :utc_datetime)
   end
 
@@ -12,6 +14,7 @@ defmodule VisualGarden.Gardens.Garden do
   def changeset(garden, attrs) do
     garden
     |> cast(attrs, [:name])
+    |> cast_assoc(:products)
     |> validate_required([:name])
   end
 end

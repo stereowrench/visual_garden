@@ -27,12 +27,12 @@ defmodule VisualGardenWeb.Router do
       live "/gardens/:id", GardenLive.Show, :show
       live "/gardens/:id/show/edit", GardenLive.Show, :edit
 
-      live "/products", ProductLive.Index, :index
-      live "/products/new", ProductLive.Index, :new
-      live "/products/:id/edit", ProductLive.Index, :edit
+      live "/gardens/:garden_id/products", ProductLive.Index, :index
+      live "/gardens/:garden_id/products/new", ProductLive.Index, :new
+      live "/gardens/:garden_id/products/:id/edit", ProductLive.Index, :edit
 
-      live "/products/:id", ProductLive.Show, :show
-      live "/products/:id/show/edit", ProductLive.Show, :edit
+      live "/gardens/:garden_id/products/:id", ProductLive.Show, :show
+      live "/gardens/:garden_id/products/:id/show/edit", ProductLive.Show, :edit
 
       live "/event_logs", EventLogLive.Index, :index
       live "/event_logs/new", EventLogLive.Index, :new

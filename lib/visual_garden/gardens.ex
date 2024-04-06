@@ -113,8 +113,8 @@ defmodule VisualGarden.Gardens do
       [%Products{}, ...]
 
   """
-  def list_products do
-    Repo.all(Product)
+  def list_products(garden_id) do
+    Repo.all(from p in Product, where: p.garden_id == ^garden_id)
   end
 
   @doc """
@@ -145,8 +145,9 @@ defmodule VisualGarden.Gardens do
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_product(attrs \\ %{}) do
-    %Product{}
+  def create_product(attrs \\ %{}, garden) do
+    garden
+    |> Ecto.build_assoc(:products)
     |> Product.changeset(attrs)
     |> Repo.insert()
   end

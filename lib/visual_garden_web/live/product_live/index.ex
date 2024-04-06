@@ -5,35 +5,32 @@ defmodule VisualGardenWeb.ProductLive.Index do
   alias VisualGarden.Gardens.Product
 
   @impl true
-  def mount(_params, _session, socket) do
-    {:ok, stream(socket, :product_collection, Gardens.list_products())}
+  def mount(%{"garden_id" => garden_id}, _session, socket) do
+    {:ok, stream(socket, :product_collection, Gardens.list_products(garden_id))}
   end
 
   @impl true
-  @spec handle_params(any(), any(), %{
-          :assigns => atom() | %{:live_action => :edit | :index | :new, optional(any()) => any()},
-          optional(any()) => any()
-        }) :: {:noreply, map()}
   def handle_params(params, _url, socket) do
     {:noreply, apply_action(socket, socket.assigns.live_action, params)}
   end
 
-  defp apply_action(socket, :edit, %{"id" => id}) do
+  defp apply_action(socket, :edit, %{"garden_id" => garden_id, "id" => id}) do
     socket
+    |> assign(:garden, Gardens.get_garden!(garden_id))
     |> assign(:page_title, "Edit product")
-    |> assign(:gardens, Gardens.list_gardens())
     |> assign(:product, Gardens.get_product!(id))
   end
 
-  defp apply_action(socket, :new, _params) do
+  defp apply_action(socket, :new, %{"garden_id" => garden_id}) do
     socket
-    |> assign(:gardens, Gardens.list_gardens())
+    |> assign(:garden, Gardens.get_garden!(garden_id))
     |> assign(:page_title, "New product")
-    |> assign(:product, %Product{})
+    |> assign(:product, %Product{garden_id: garden_id})
   end
 
-  defp apply_action(socket, :index, _params) do
+  defp apply_action(socket, :index, %{"garden_id" => garden_id}) do
     socket
+    |> assign(:garden, Gardens.get_garden!(garden_id))
     |> assign(:page_title, "Listing product")
     |> assign(:product, nil)
   end

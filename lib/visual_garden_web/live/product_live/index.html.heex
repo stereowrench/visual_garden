@@ -1,7 +1,7 @@
 <.header>
   Listing product
   <:actions>
-    <.link patch={~p"/products/new"}>
+    <.link patch={~p"/gardens/#{@garden.id}/products/new"}>
       <.button>New product</.button>
     </.link>
   </:actions>
@@ -10,15 +10,15 @@
 <.table
   id="product"
   rows={@streams.product_collection}
-  row_click={fn {_id, product} -> JS.navigate(~p"/products/#{product}") end}
+  row_click={fn {_id, product} -> JS.navigate(~p"/gardens/#{@garden.id}/products/#{product}") end}
 >
   <:col :let={{_id, product}} label="Name"><%= product.name %></:col>
   <:col :let={{_id, product}} label="Type"><%= product.type %></:col>
   <:action :let={{_id, product}}>
     <div class="sr-only">
-      <.link navigate={~p"/products/#{product}"}>Show</.link>
+      <.link navigate={~p"/gardens/#{@garden.id}/products/#{product}"}>Show</.link>
     </div>
-    <.link patch={~p"/products/#{product}/edit"}>Edit</.link>
+    <.link patch={~p"/gardens/#{@garden.id}/products/#{product}/edit"}>Edit</.link>
   </:action>
   <:action :let={{id, product}}>
     <.link
@@ -37,7 +37,7 @@
     title={@page_title}
     action={@live_action}
     product={@product}
-    patch={~p"/products"}
-    gardens={@gardens}
+    patch={~p"/gardens/#{@garden.id}/products"}
+    garden={@garden}
   />
 </.modal>

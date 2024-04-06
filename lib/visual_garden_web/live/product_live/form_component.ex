@@ -19,14 +19,15 @@ defmodule VisualGardenWeb.ProductLive.FormComponent do
         phx-change="validate"
         phx-submit="save"
       >
-        <.input field={@form[:garden_id]}
+        <%!-- <.input field={@form[:garden_id]}
           type="text"
           list="gardens-list"
           label="Garden"
         />
         <datalist :for={garden <- @gardens} id="gardens-list">
           <option value={garden.id}><%= garden.name %></option>
-        </datalist>
+        </datalist> --%>
+
         <.input field={@form[:name]} type="text" label="Name" />
         <.input
           field={@form[:type]}
@@ -83,7 +84,7 @@ defmodule VisualGardenWeb.ProductLive.FormComponent do
   end
 
   defp save_product(socket, :new, product_params) do
-    case Gardens.create_product(product_params) do
+    case Gardens.create_product(product_params, socket.assigns.garden) do
       {:ok, product} ->
         notify_parent({:saved, product})
 
