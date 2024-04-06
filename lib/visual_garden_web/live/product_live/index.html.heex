@@ -97,7 +97,7 @@
   :if={@live_action in [:new, :edit]}
   id="product-modal"
   show
-  on_cancel={JS.patch(~p"/products")}
+  on_cancel={JS.patch(~p"/gardens/#{@garden.id}/products")}
 >
   <.live_component
     module={VisualGardenWeb.ProductLive.FormComponent}

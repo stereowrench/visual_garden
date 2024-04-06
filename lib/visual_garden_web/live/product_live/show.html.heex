@@ -8,7 +8,7 @@
   product <%= @product.id %>
   <:subtitle>This is a product record from your database.</:subtitle>
   <:actions>
-    <.link patch={~p"/products/#{@product}/show/edit"} phx-click={JS.push_focus()}>
+    <.link patch={~p"/gardens/#{@garden.id}/products/#{@product}/show/edit"} phx-click={JS.push_focus()}>
       <.button>Edit product</.button>
     </.link>
   </:actions>
@@ -20,13 +20,13 @@
   <:item title="Garden"><%= @product.garden_id %></:item>
 </.list>
 
-<.back navigate={~p"/products"}>Back to product</.back>
+<.back navigate={~p"/gardens/#{@garden.id}/products"}>Back to product</.back>
 
 <.modal
   :if={@live_action == :edit}
   id="product-modal"
   show
-  on_cancel={JS.patch(~p"/products/#{@product}")}
+  on_cancel={JS.patch(~p"/gardens/#{@garden.id}/products/#{@product}")}
 >
   <.live_component
     module={VisualGardenWeb.ProductLive.FormComponent}
@@ -35,6 +35,6 @@
     action={@live_action}
     product={@product}
     gardens={@gardens}
-    patch={~p"/products/#{@product}"}
+    patch={~p"/gardens/#{@garden.id}/products/#{@product}"}
   />
 </.modal>

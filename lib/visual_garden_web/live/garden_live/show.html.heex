@@ -52,11 +52,27 @@
 
 <.list>
   <:item title="Name"><%= @garden.name %></:item>
+  <:item title="Products">
+    <ul>
+      <%= for product <- @products do %>
+        <li title="name">
+          <.link patch={~p"/gardens/#{@garden.id}/products/#{product.id}"}>
+          <%= product.name %>
+          </.link>
+        </li>
+      <% end %>
+    </ul>
+  </:item>
 </.list>
 
 <.back navigate={~p"/gardens"}>Back to gardens</.back>
 
-<.modal :if={@live_action == :edit} id="garden-modal" show on_cancel={JS.patch(~p"/gardens/#{@garden}")}>
+<.modal
+  :if={@live_action == :edit}
+  id="garden-modal"
+  show
+  on_cancel={JS.patch(~p"/gardens/#{@garden}")}
+>
   <.live_component
     module={VisualGardenWeb.GardenLive.FormComponent}
     id={@garden.id}
