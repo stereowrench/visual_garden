@@ -498,8 +498,8 @@ defmodule VisualGarden.Gardens do
       [%EventLog{}, ...]
 
   """
-  def list_event_logs do
-    Repo.all(EventLog)
+  def list_event_logs(product_id) do
+    Repo.all(from e in EventLog, where: e.product_id == ^product_id)
   end
 
   @doc """
@@ -530,11 +530,20 @@ defmodule VisualGarden.Gardens do
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_event_log(attrs \\ %{}) do
+  def create_event_log("water" = type, attrs \\ %{}) do
+    attrs = Map.merge(%{"event_type" => type}, attrs)
+
     %EventLog{}
-    |> EventLog.changeset(attrs)
+    |> EventLog.changeset_water(attrs)
     |> Repo.insert()
   end
+
+  # def create_event_log(type, attrs \\ %{}) do
+  #   attrs = Map.merge(%{event_type: type}, attrs)
+  #   %EventLog{}
+  #   |> EventLog.changeset(attrs)
+  #   |> Repo.insert()
+  # end
 
   @doc """
   Updates a event_log.
@@ -579,7 +588,13 @@ defmodule VisualGarden.Gardens do
       %Ecto.Changeset{data: %EventLog{}}
 
   """
-  def change_event_log(%EventLog{} = event_log, attrs \\ %{}) do
-    EventLog.changeset(event_log, attrs)
+  def change_event_log(event_log, attrs \\ %{}) do
+    if attrs["event_type"] == "water" or attrs[:event_type] == "water" do
+      EventLog.changeset_water(event_log, attrs)
+    end
   end
+
+  # def change_event_log(%EventLog{event_type: "water"} = event_log, attrs \\ %{}) do
+  #   EventLog.changeset(event_log, attrs)
+  # end
 end

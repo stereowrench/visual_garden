@@ -6,7 +6,8 @@ defmodule VisualGardenWeb.EventLogLive.Index do
 
   @impl true
   def mount(_params, _session, socket) do
-    {:ok, stream(socket, :event_logs, Gardens.list_event_logs())}
+    # {:ok, stream(socket, :event_logs, Gardens.list_event_logs())}
+    {:ok, socket}
   end
 
   @impl true

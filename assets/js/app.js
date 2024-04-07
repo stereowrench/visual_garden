@@ -25,15 +25,49 @@ import topbar from "../vendor/topbar";
 let csrfToken = document
   .querySelector("meta[name='csrf-token']")
   .getAttribute("content");
-let liveSocket = new LiveSocket("/live", Socket, {
-  longPollFallbackMs: 2500,
-  params: { _csrf_token: csrfToken },
-});
 
 // Show progress bar on live navigation and form submits
 topbar.config({ barColors: { 0: "#29d" }, shadowColor: "rgba(0, 0, 0, .3)" });
 window.addEventListener("phx:page-loading-start", (_info) => topbar.show(300));
 window.addEventListener("phx:page-loading-stop", (_info) => topbar.hide());
+
+let Hooks = {};
+
+let actionsOpened = false;
+
+Hooks.ActionMenu = {
+  mounted() {
+    document.getElementById("menu-button").addEventListener("click", () => {
+      let menu = document.getElementById("actions-menu");
+
+      if (actionsOpened) {
+        actionsOpened = false;
+        menu.classList.remove(
+          "ease-out",
+          "duration-100",
+          "opacity-100",
+          "scale-100"
+        );
+        menu.classList.add("duration-75", "opacity-0", "scale-95");
+      } else {
+        actionsOpened = true;
+        menu.classList.remove(
+          "ease-in",
+          "duration-75",
+          "opacity-0",
+          "scale-95"
+        );
+        menu.classList.add("duration-100", "opacity-100", "scale-100");
+      }
+    });
+  },
+};
+
+let liveSocket = new LiveSocket("/live", Socket, {
+  longPollFallbackMs: 2500,
+  params: { _csrf_token: csrfToken },
+  hooks: Hooks
+});
 
 // connect if there are any LiveViews on the page
 liveSocket.connect();

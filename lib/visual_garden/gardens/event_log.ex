@@ -3,7 +3,19 @@ defmodule VisualGarden.Gardens.EventLog do
   import Ecto.Changeset
 
   schema "event_logs" do
-    field :event_type, Ecto.Enum, values: [:water, :humidity, :mow, :trim, :till, :transfer, :harvest, :transfer_harvest, :plant]
+    field :event_type, Ecto.Enum,
+      values: [
+        :water,
+        :humidity,
+        :mow,
+        :trim,
+        :till,
+        :transfer,
+        :harvest,
+        :transfer_harvest,
+        :plant
+      ]
+
     field :watered, :boolean, default: false
     field :humidity, :integer
     field :mowed, :boolean, default: false
@@ -28,9 +40,42 @@ defmodule VisualGarden.Gardens.EventLog do
   end
 
   @doc false
+  def changeset_water(event_log, attrs) do
+    event_log
+    |> cast(attrs, [
+      :event_type,
+      :watered,
+      :product_id
+    ])
+    |> validate_inclusion(:event_type, [:water])
+  end
+
+  @doc false
   def changeset(event_log, attrs) do
     event_log
-    |> cast(attrs, [:event_type, :watered, :humidity, :mowed, :mow_depth_in, :tilled, :till_depth_in, :transferred_amount, :trimmed, :transfer_units])
-    |> validate_required([:event_type, :watered, :humidity, :mowed, :mow_depth_in, :tilled, :till_depth_in, :transferred_amount, :trimmed, :transfer_units])
+    |> cast(attrs, [
+      :event_type,
+      :watered,
+      :humidity,
+      :mowed,
+      :mow_depth_in,
+      :tilled,
+      :till_depth_in,
+      :transferred_amount,
+      :trimmed,
+      :transfer_units
+    ])
+    |> validate_required([
+      :event_type,
+      :watered,
+      :humidity,
+      :mowed,
+      :mow_depth_in,
+      :tilled,
+      :till_depth_in,
+      :transferred_amount,
+      :trimmed,
+      :transfer_units
+    ])
   end
 end
