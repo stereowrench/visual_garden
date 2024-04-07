@@ -530,11 +530,41 @@ defmodule VisualGarden.Gardens do
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_event_log("water" = type, attrs \\ %{}) do
+  def create_event_log(params, attrs \\ %{})
+
+  def create_event_log(type = "transfer", attrs) do
+    attrs = Map.merge(%{"event_type" => type}, attrs)
+
+    alt_attrs = Map.merge(%{"product_id" => attrs["transferred_from"]}, attrs)
+
+    {:ok, rec} =
+      Repo.transaction(fn ->
+        {:ok, _} =
+        %EventLog{}
+        |> EventLog.changeset_transfer(alt_attrs)
+        |> Repo.insert()
+
+        %EventLog{}
+        |> EventLog.changeset_transfer(attrs)
+        |> Repo.insert()
+      end)
+
+    rec
+  end
+
+  def create_event_log(type = "water", attrs) do
     attrs = Map.merge(%{"event_type" => type}, attrs)
 
     %EventLog{}
     |> EventLog.changeset_water(attrs)
+    |> Repo.insert()
+  end
+
+  def create_event_log(type = "till", attrs) do
+    attrs = Map.merge(%{"event_type" => type}, attrs)
+
+    %EventLog{}
+    |> EventLog.changeset_tilled(attrs)
     |> Repo.insert()
   end
 
@@ -589,8 +619,15 @@ defmodule VisualGarden.Gardens do
 
   """
   def change_event_log(event_log, attrs \\ %{}) do
-    if attrs["event_type"] == "water" or attrs[:event_type] == "water" do
-      EventLog.changeset_water(event_log, attrs)
+    cond do
+      attrs["event_type"] == "water" or attrs[:event_type] == "water" ->
+        EventLog.changeset_water(event_log, attrs)
+
+      attrs["event_type"] == "till" or attrs[:event_type] == "till" ->
+        EventLog.changeset_tilled(event_log, attrs)
+
+      attrs["event_type"] == "transfer" or attrs[:event_type] == "transfer" ->
+        EventLog.changeset_transfer(event_log, attrs)
     end
   end
 

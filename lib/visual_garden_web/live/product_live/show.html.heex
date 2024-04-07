@@ -114,16 +114,6 @@
           </svg>
         </button>
       </div>
-      <!--
-    Dropdown menu, show/hide based on menu state.
-
-    Entering: "transition ease-out duration-100"
-      From: "transform opacity-0 scale-95"
-      To: "transform opacity-100 scale-100"
-    Leaving: "transition ease-in duration-75"
-      From: "transform opacity-100 scale-100"
-      To: "transform opacity-0 scale-95"
-  -->
       <div
         phx-hook="ActionMenu"
         class="transition ease-out duration-100 opacity-0 scale-95 absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
@@ -143,6 +133,24 @@
             id="menu-item-0"
           >
             Water
+          </.link>
+          <.link
+            patch={~p"/gardens/#{@garden.id}/products/#{@product}/show/till"}
+            class="text-gray-700 block px-4 py-2 text-sm"
+            role="menuitem"
+            tabindex="-1"
+            id="menu-item-1"
+          >
+            Till
+          </.link>
+          <.link
+            patch={~p"/gardens/#{@garden.id}/products/#{@product}/show/transfer"}
+            class="text-gray-700 block px-4 py-2 text-sm"
+            role="menuitem"
+            tabindex="-1"
+            id="menu-item-1"
+          >
+            Transfer
           </.link>
         </div>
       </div>
@@ -187,7 +195,7 @@
 </.modal>
 
 <.modal
-  :if={@live_action in [:new_water]}
+  :if={@live_action in [:new_water, :till, :transfer]}
   id="event-log-modal"
   show
   on_cancel={JS.patch(~p"/gardens/#{@garden.id}/products/#{@product}")}
@@ -198,7 +206,8 @@
     action={@live_action}
     id={"event-modal"}
     product={@product}
+    products={@products}
     garden={@garden}
-    title={"Record watering"}
+    title={@page_title}
   />
 </.modal>

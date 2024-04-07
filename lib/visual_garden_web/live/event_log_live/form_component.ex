@@ -29,17 +29,42 @@ defmodule VisualGardenWeb.EventLogLive.FormComponent do
           <.input field={@form[:humidity]} type="number" label="Humidity" />
         <% end %>
         <%!-- <.input field={@form[:mowed]} type="checkbox" label="Mowed" />
-        <.input field={@form[:mow_depth_in]} type="number" label="Mow depth in" step="any" />
-        <.input field={@form[:tilled]} type="checkbox" label="Tilled" />
-        <.input field={@form[:till_depth_in]} type="number" label="Till depth in" step="any" />
-        <.input
-          field={@form[:transferred_amount]}
-          type="number"
-          label="Transferred amount"
-          step="any"
-        />
-        <.input field={@form[:trimmed]} type="checkbox" label="Trimmed" />
-        <.input field={@form[:transfer_units]} type="text" label="Transfer units" /> --%>
+        <.input field={@form[:mow_depth_in]} type="number" label="Mow depth in" step="any" /> --%>
+        <%= if @action == :till do %>
+          <.input field={@form[:tilled]} type="checkbox" label="Tilled" />
+          <.input field={@form[:till_depth_in]} type="number" label="Till depth in" step="any" />
+        <% end %>
+        <%= if @action == :transfer do %>
+          <.input
+            field={@form[:transferred_from]}
+            type="text"
+            label="Transferred From"
+            list="product-list"
+          />
+
+          <datalist id="product-list">
+            <%= for product <- @products do %>
+              <option value={product.id}><%= product.name %></option>
+            <% end %>
+          </datalist>
+
+          <.input
+            field={@form[:transferred_amount]}
+            type="number"
+            label="Transferred amount"
+            step="any"
+          />
+
+          <.input
+            field={@form[:transfer_units]}
+            type="select"
+            label="Units"
+            prompt="Choose a value"
+            options={Ecto.Enum.values(VisualGarden.Gardens.EventLog, :transfer_units)}
+          />
+        <% end %>
+
+        <%!-- <.input field={@form[:trimmed]} type="checkbox" label="Trimmed" /> --%>
         <:actions>
           <.button phx-disable-with="Saving...">Save Event log</.button>
         </:actions>
@@ -49,6 +74,8 @@ defmodule VisualGardenWeb.EventLogLive.FormComponent do
   end
 
   defp event_type_for_action(:new_water), do: "water"
+  defp event_type_for_action(:till), do: "till"
+  defp event_type_for_action(:transfer), do: "transfer"
 
   @impl true
   def update(assigns, socket) do
@@ -65,7 +92,14 @@ defmodule VisualGardenWeb.EventLogLive.FormComponent do
   end
 
   defp merge_attrs(params, action, product) do
-    Map.merge(%{"event_type" => event_type_for_action(action), "product_id" => product.id}, params)
+    Map.merge(
+      %{
+        "event_type" => event_type_for_action(action),
+        "product_id" => product.id,
+        "transferred_to" => product.id
+      },
+      params
+    )
   end
 
   @impl true
@@ -99,20 +133,33 @@ defmodule VisualGardenWeb.EventLogLive.FormComponent do
   #   end
   # end
 
+  defp save_event_log(socket, :transfer, event_log_params) do
+    do_save_event_log(socket, "transfer", event_log_params)
+  end
+
   defp save_event_log(socket, :new_water, event_log_params) do
+    do_save_event_log(socket, "water", event_log_params)
+  end
+
+  defp save_event_log(socket, :till, event_log_params) do
+    do_save_event_log(socket, "till", event_log_params)
+  end
+
+  defp do_save_event_log(socket, type, event_log_params) do
     case Gardens.create_event_log(
-           "water",
+           type,
            merge_attrs(event_log_params, socket.assigns.action, socket.assigns.product)
          ) do
       {:ok, event_log} ->
         notify_parent({:saved, event_log})
+
         {:noreply,
          socket
          |> put_flash(:info, "Event log created successfully")
          |> push_patch(to: socket.assigns.patch)}
 
       {:error, %Ecto.Changeset{} = changeset} ->
-        IO.inspect changeset
+        IO.inspect(changeset)
         {:noreply, assign_form(socket, changeset)}
     end
   end

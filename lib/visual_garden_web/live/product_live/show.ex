@@ -11,11 +11,12 @@ defmodule VisualGardenWeb.ProductLive.Show do
   end
 
   @impl true
-  def handle_params(%{"garden_id" => garden_id, "id" => id}, action, socket) do
+  def handle_params(%{"garden_id" => garden_id, "id" => id}, _, socket) do
     {:noreply,
      socket
      |> assign(:page_title, page_title(socket.assigns.live_action))
      |> assign(:product, Gardens.get_product!(id))
+     |> assign(:products, Gardens.list_products(garden_id))
      |> assign(:garden, Gardens.get_garden!(garden_id))}
   end
 
@@ -26,5 +27,7 @@ defmodule VisualGardenWeb.ProductLive.Show do
 
   defp page_title(:show), do: "Show product"
   defp page_title(:edit), do: "Edit product"
-  defp page_title(:new_water), do: "New Event"
+  defp page_title(:new_water), do: "Watering"
+  defp page_title(:till), do: "Tilling"
+  defp page_title(:transfer), do: "Transferring"
 end

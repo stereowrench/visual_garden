@@ -24,7 +24,14 @@ defmodule VisualGarden.Gardens.EventLog do
     field :till_depth_in, :decimal
     field :transferred_amount, :decimal
     field :trimmed, :boolean, default: false
-    field :transfer_units, :string
+
+    field :transfer_units, Ecto.Enum,
+      values: [
+        :cuft,
+        :scoops,
+        :quarts
+      ]
+
     field :transferred_to, :id
     field :transferred_from, :id
     field :transplanted_to, :id
@@ -49,6 +56,38 @@ defmodule VisualGarden.Gardens.EventLog do
     ])
     |> validate_inclusion(:event_type, [:water])
   end
+
+  @doc false
+  def changeset_tilled(event_log, attrs) do
+    event_log
+    |> cast(attrs, [
+      :event_type,
+      :product_id,
+      :till_depth_in,
+      :tilled
+    ])
+    |> validate_inclusion(:event_type, [:till])
+  end
+
+  @doc false
+  def changeset_transfer(event_log, attrs) do
+    event_log
+    |> cast(attrs, [
+      :event_type,
+      :product_id,
+      :transferred_to,
+      :transferred_from,
+      :transferred_amount,
+      :transfer_units
+    ])
+    |> validate_required([
+      :product_id,
+      :transferred_to,
+      :transferred_from
+    ])
+    |> validate_inclusion(:event_type, [:transfer])
+  end
+
 
   @doc false
   def changeset(event_log, attrs) do
