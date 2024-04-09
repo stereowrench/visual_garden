@@ -170,11 +170,8 @@
   <:item title="Garden"><%= @product.garden_id %></:item>
 </.list>
 
-<ul id="event-log-list" phx-update="stream">
-  <%= for {_name, event} <- @streams.events do %>
-    <li title="Event type" id={"event_log_#{event.id}"}><%= event.event_type %></li>
-  <% end %>
-</ul>
+
+<VisualGardenWeb.EventLogLive.Show.render_events events={@streams.events} />
 
 <.back navigate={~p"/gardens/#{@garden.id}/products"}>Back to product</.back>
 
