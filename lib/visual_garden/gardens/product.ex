@@ -4,7 +4,7 @@ defmodule VisualGarden.Gardens.Product do
 
   schema "products" do
     field :name, :string
-    field :type, Ecto.Enum, values: [:growing_media, :fertilizer, :compost]
+    field :type, Ecto.Enum, values: [:growing_media, :fertilizer, :compost, :bed]
     field :garden_id, :id
 
     timestamps(type: :utc_datetime)

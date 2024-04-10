@@ -29,13 +29,17 @@ defmodule VisualGardenWeb.ProductLive.FormComponent do
         </datalist> --%>
 
         <.input field={@form[:name]} type="text" label="Name" />
-        <.input
-          field={@form[:type]}
-          type="select"
-          label="Type"
-          prompt="Choose a value"
-          options={Ecto.Enum.values(VisualGarden.Gardens.Product, :type)}
-        />
+        <%= if @action == :new_bed do %>
+          <.input type="hidden" field={@form[:type]} value="bed" options={[:bed]} />
+        <% else %>
+          <.input
+            field={@form[:type]}
+            type="select"
+            label="Type"
+            prompt="Choose a value"
+            options={Ecto.Enum.values(VisualGarden.Gardens.Product, :type) -- [:bed]}
+          />
+        <% end %>
         <:actions>
           <.button phx-disable-with="Saving...">Save Product</.button>
         </:actions>
@@ -83,7 +87,7 @@ defmodule VisualGardenWeb.ProductLive.FormComponent do
     end
   end
 
-  defp save_product(socket, :new, product_params) do
+  defp save_product(socket, action, product_params) when action in [:new, :new_bed] do
     case Gardens.create_product(product_params, socket.assigns.garden) do
       {:ok, product} ->
         notify_parent({:saved, product})

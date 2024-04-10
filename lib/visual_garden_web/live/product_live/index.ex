@@ -28,6 +28,13 @@ defmodule VisualGardenWeb.ProductLive.Index do
     |> assign(:product, %Product{garden_id: garden_id})
   end
 
+  defp apply_action(socket, :new_bed, %{"garden_id" => garden_id}) do
+    socket
+    |> assign(:garden, Gardens.get_garden!(garden_id))
+    |> assign(:page_title, "New bed")
+    |> assign(:product, %Product{garden_id: garden_id})
+  end
+
   defp apply_action(socket, :index, %{"garden_id" => garden_id}) do
     socket
     |> assign(:garden, Gardens.get_garden!(garden_id))
