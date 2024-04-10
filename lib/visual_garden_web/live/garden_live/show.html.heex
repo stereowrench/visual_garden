@@ -64,7 +64,27 @@
   <:item title="Name"><%= @garden.name %></:item>
   <:item title="Products">
     <ul>
-      <%= for product <- @products do %>
+      <%= for {name, group} <- Enum.group_by(Enum.reject(@products, & &1.type == :bed), fn a -> a.type end) do %>
+        <li title="name">
+          <b>
+            <%= name %>
+          </b>
+          <ul>
+            <%= for product <- group do %>
+              <li>
+                <.link patch={~p"/gardens/#{@garden.id}/products/#{product.id}"}>
+                  <%= product.name %>
+                </.link>
+              </li>
+            <% end %>
+          </ul>
+        </li>
+      <% end %>
+    </ul>
+  </:item>
+  <:item title="Beds">
+    <ul>
+      <%= for product <- Enum.filter(@products, & &1.type == :bed)do %>
         <li title="name">
           <.link patch={~p"/gardens/#{@garden.id}/products/#{product.id}"}>
             <%= product.name %>
