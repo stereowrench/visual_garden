@@ -36,7 +36,7 @@ defmodule VisualGardenWeb.EventLogLive.FormComponent do
         <% end %>
         <%= if @action == :transfer do %>
           <.input
-            field={@form[:transferred_from]}
+            field={@form[:transferred_from_id]}
             type="text"
             label="Transferred From"
             list="product-list"
@@ -96,7 +96,7 @@ defmodule VisualGardenWeb.EventLogLive.FormComponent do
       %{
         "event_type" => event_type_for_action(action),
         "product_id" => product.id,
-        "transferred_to" => product.id
+        "transferred_to_id" => product.id
       },
       params
     )

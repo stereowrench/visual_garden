@@ -499,7 +499,11 @@ defmodule VisualGarden.Gardens do
 
   """
   def list_event_logs(product_id) do
-    Repo.all(from e in EventLog, where: e.product_id == ^product_id)
+    Repo.all(
+      from e in EventLog,
+        where: e.product_id == ^product_id,
+        preload: [:transferred_from, :transferred_to]
+    )
   end
 
   @doc """
@@ -540,9 +544,9 @@ defmodule VisualGarden.Gardens do
     {:ok, rec} =
       Repo.transaction(fn ->
         {:ok, _} =
-        %EventLog{}
-        |> EventLog.changeset_transfer(alt_attrs)
-        |> Repo.insert()
+          %EventLog{}
+          |> EventLog.changeset_transfer(alt_attrs)
+          |> Repo.insert()
 
         %EventLog{}
         |> EventLog.changeset_transfer(attrs)

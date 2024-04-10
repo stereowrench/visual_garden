@@ -32,8 +32,8 @@ defmodule VisualGarden.Gardens.EventLog do
         :quarts
       ]
 
-    field :transferred_to, :id
-    field :transferred_from, :id
+    belongs_to :transferred_to, VisualGarden.Gardens.Product
+    belongs_to :transferred_from, VisualGarden.Gardens.Product
     field :transplanted_to, :id
     field :transplanted_from, :id
     field :planted_in_id, :id
@@ -75,15 +75,15 @@ defmodule VisualGarden.Gardens.EventLog do
     |> cast(attrs, [
       :event_type,
       :product_id,
-      :transferred_to,
-      :transferred_from,
+      :transferred_to_id,
+      :transferred_from_id,
       :transferred_amount,
       :transfer_units
     ])
     |> validate_required([
       :product_id,
-      :transferred_to,
-      :transferred_from
+      :transferred_to_id,
+      :transferred_from_id
     ])
     |> validate_inclusion(:event_type, [:transfer])
   end
