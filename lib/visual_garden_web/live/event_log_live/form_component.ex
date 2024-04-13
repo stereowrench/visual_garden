@@ -20,10 +20,7 @@ defmodule VisualGardenWeb.EventLogLive.FormComponent do
         phx-change="validate"
         phx-submit="save"
       >
-        <%!-- <.input field={@form[:event_type]} type="text" label="Event type" /> --%>
-        <%= if @action == :new_water do %>
-          <.input field={@form[:watered]} type="checkbox" label="Watered" />
-        <% end %>
+        <.input field={@form[:event_time]} type="datetime-local" label="Event time" value={DateTime.utc_now()} />
 
         <%= if @action == :new_humidity do %>
           <.input field={@form[:humidity]} type="number" label="Humidity" />
@@ -31,7 +28,6 @@ defmodule VisualGardenWeb.EventLogLive.FormComponent do
         <%!-- <.input field={@form[:mowed]} type="checkbox" label="Mowed" />
         <.input field={@form[:mow_depth_in]} type="number" label="Mow depth in" step="any" /> --%>
         <%= if @action == :till do %>
-          <.input field={@form[:tilled]} type="checkbox" label="Tilled" />
           <.input field={@form[:till_depth_in]} type="number" label="Till depth in" step="any" />
         <% end %>
         <%= if @action == :transfer do %>
@@ -151,7 +147,7 @@ defmodule VisualGardenWeb.EventLogLive.FormComponent do
            merge_attrs(event_log_params, socket.assigns.action, socket.assigns.product)
          ) do
       {:ok, event_log} ->
-        notify_parent({:saved, event_log})
+        notify_parent({:saved, VisualGarden.Repo.preload(event_log, :transferred_from)})
 
         {:noreply,
          socket
@@ -159,7 +155,6 @@ defmodule VisualGardenWeb.EventLogLive.FormComponent do
          |> push_patch(to: socket.assigns.patch)}
 
       {:error, %Ecto.Changeset{} = changeset} ->
-        IO.inspect(changeset)
         {:noreply, assign_form(socket, changeset)}
     end
   end

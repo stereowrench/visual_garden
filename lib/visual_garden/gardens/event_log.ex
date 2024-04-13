@@ -3,6 +3,7 @@ defmodule VisualGarden.Gardens.EventLog do
   import Ecto.Changeset
 
   schema "event_logs" do
+    field :event_time, :utc_datetime
     field :event_type, Ecto.Enum,
       values: [
         :water,
@@ -16,11 +17,9 @@ defmodule VisualGarden.Gardens.EventLog do
         :plant
       ]
 
-    field :watered, :boolean, default: false
     field :humidity, :integer
     field :mowed, :boolean, default: false
     field :mow_depth_in, :decimal
-    field :tilled, :boolean, default: false
     field :till_depth_in, :decimal
     field :transferred_amount, :decimal
     field :trimmed, :boolean, default: false
@@ -51,9 +50,10 @@ defmodule VisualGarden.Gardens.EventLog do
     event_log
     |> cast(attrs, [
       :event_type,
-      :watered,
+      :event_time,
       :product_id
     ])
+    |> validate_required([:event_time])
     |> validate_inclusion(:event_type, [:water])
   end
 
@@ -63,9 +63,10 @@ defmodule VisualGarden.Gardens.EventLog do
     |> cast(attrs, [
       :event_type,
       :product_id,
+      :event_time,
       :till_depth_in,
-      :tilled
     ])
+    |> validate_required([:event_time])
     |> validate_inclusion(:event_type, [:till])
   end
 
@@ -75,6 +76,7 @@ defmodule VisualGarden.Gardens.EventLog do
     |> cast(attrs, [
       :event_type,
       :product_id,
+      :event_time,
       :transferred_to_id,
       :transferred_from_id,
       :transferred_amount,
@@ -82,6 +84,7 @@ defmodule VisualGarden.Gardens.EventLog do
     ])
     |> validate_required([
       :product_id,
+      :event_time,
       :transferred_to_id,
       :transferred_from_id
     ])
@@ -94,11 +97,8 @@ defmodule VisualGarden.Gardens.EventLog do
     event_log
     |> cast(attrs, [
       :event_type,
-      :watered,
-      :humidity,
       :mowed,
       :mow_depth_in,
-      :tilled,
       :till_depth_in,
       :transferred_amount,
       :trimmed,
@@ -106,11 +106,8 @@ defmodule VisualGarden.Gardens.EventLog do
     ])
     |> validate_required([
       :event_type,
-      :watered,
-      :humidity,
       :mowed,
       :mow_depth_in,
-      :tilled,
       :till_depth_in,
       :transferred_amount,
       :trimmed,
