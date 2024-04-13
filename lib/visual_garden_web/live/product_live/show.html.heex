@@ -90,18 +90,39 @@
   product <%= @product.id %>
   <:subtitle>This is a product record from your database.</:subtitle>
   <:actions>
-    <div class="relative inline-block text-left">
+    <div class="relative inline-block text-left" phx-hook="SplitMenu" id="water-menu">
       <div class="flex -space-x-px">
         <.link class="">
           <button class="border-r-none split-button">
             Water
           </button>
         </.link>
-        <.link class="">
+        <.link class="split-button-dropdown">
           <button class="border-l-none split-button">
             <.icon name="hero-chevron-down" class="size-4 text-gray-400 -mr-1 h-5 w-5" />
           </button>
         </.link>
+      </div>
+
+      <div
+        class="split-button-items transition ease-out duration-100 opacity-0 scale-95 absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+        role="menu"
+        aria-orientation="vertical"
+        aria-labelledby="menu-button"
+        tabindex="-1"
+        id="water-menu-list"
+      >
+        <div class="py-1" role="none">
+          <!-- Active: "bg-gray-100 text-gray-900", Not Active: "text-gray-700" -->
+          <.link
+            patch={~p"/gardens/#{@garden.id}/products/#{@product}/show/new_water"}
+            class="text-gray-700 block px-4 py-2 text-sm"
+            role="menuitem"
+            tabindex="-1"
+          >
+            Water at time
+          </.link>
+        </div>
       </div>
     </div>
     <div class="relative inline-block text-left">

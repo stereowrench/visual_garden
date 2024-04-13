@@ -33,40 +33,53 @@ window.addEventListener("phx:page-loading-stop", (_info) => topbar.hide());
 
 let Hooks = {};
 
-let actionsOpened = false;
+let actionsOpened = {};
+
+const mountMenu = (name, button, menu) => {
+  button.addEventListener("click", () => {
+    if (actionsOpened[name] === undefined) actionsOpened[name] = false;
+
+    if (actionsOpened[name]) {
+      actionsOpened[name] = false;
+      menu.classList.remove(
+        "ease-out",
+        "duration-100",
+        "opacity-100",
+        "scale-100"
+      );
+      menu.classList.add("duration-75", "opacity-0", "scale-95");
+    } else {
+      actionsOpened[name] = true;
+      menu.classList.remove("ease-in", "duration-75", "opacity-0", "scale-95");
+      menu.classList.add("duration-100", "opacity-100", "scale-100");
+    }
+  });
+};
 
 Hooks.ActionMenu = {
   mounted() {
-    document.getElementById("menu-button").addEventListener("click", () => {
-      let menu = document.getElementById("actions-menu");
+    mountMenu(
+      "actions",
+      document.getElementById("menu-button"),
+      document.getElementById("actions-menu")
+    );
+  },
+};
 
-      if (actionsOpened) {
-        actionsOpened = false;
-        menu.classList.remove(
-          "ease-out",
-          "duration-100",
-          "opacity-100",
-          "scale-100"
-        );
-        menu.classList.add("duration-75", "opacity-0", "scale-95");
-      } else {
-        actionsOpened = true;
-        menu.classList.remove(
-          "ease-in",
-          "duration-75",
-          "opacity-0",
-          "scale-95"
-        );
-        menu.classList.add("duration-100", "opacity-100", "scale-100");
-      }
-    });
+Hooks.SplitMenu = {
+  mounted() {
+    mountMenu(
+      this.el.id,
+      this.el.querySelector(".split-button-dropdown"),
+      this.el.querySelector(".split-button-items")
+    );
   },
 };
 
 let liveSocket = new LiveSocket("/live", Socket, {
   longPollFallbackMs: 2500,
   params: { _csrf_token: csrfToken },
-  hooks: Hooks
+  hooks: Hooks,
 });
 
 // connect if there are any LiveViews on the page
@@ -84,47 +97,48 @@ let menuOpen = false;
 //   menuOpen = true;
 // });
 
-let listeners = (a) => a.addEventListener("click", () => {
-  if (!menuOpen) {
-    menuOpen = true;
-    document.getElementById("off-canvas-menu").classList.add("translate-x-0");
+let listeners = (a) =>
+  a.addEventListener("click", () => {
+    if (!menuOpen) {
+      menuOpen = true;
+      document.getElementById("off-canvas-menu").classList.add("translate-x-0");
 
-    document
-      .getElementById("off-canvas-menu")
-      .classList.remove("-translate-x-full");
+      document
+        .getElementById("off-canvas-menu")
+        .classList.remove("-translate-x-full");
 
-    document.getElementById("close-sidebar").classList.add("opacity-100");
+      document.getElementById("close-sidebar").classList.add("opacity-100");
 
-    document.getElementById("close-sidebar").classList.remove("opacity-0");
+      document.getElementById("close-sidebar").classList.remove("opacity-0");
 
-    document.getElementById("menu-backdrop").classList.add("opacity-100");
+      document.getElementById("menu-backdrop").classList.add("opacity-100");
 
-    document.getElementById("menu-backdrop").classList.remove("opacity-0");
+      document.getElementById("menu-backdrop").classList.remove("opacity-0");
 
-    document.getElementById("off-canvas").classList.add("z-50");
+      document.getElementById("off-canvas").classList.add("z-50");
 
-    document.getElementById("off-canvas").style.display = 'initial';
-  } else {
-    menuOpen = false;
-    document
-      .getElementById("off-canvas-menu")
-      .classList.add("-translate-x-full");
+      document.getElementById("off-canvas").style.display = "initial";
+    } else {
+      menuOpen = false;
+      document
+        .getElementById("off-canvas-menu")
+        .classList.add("-translate-x-full");
 
-    document
-      .getElementById("off-canvas-menu")
-      .classList.remove("translate-x-0");
+      document
+        .getElementById("off-canvas-menu")
+        .classList.remove("translate-x-0");
 
-    document.getElementById("close-sidebar").classList.add("opacity-0");
+      document.getElementById("close-sidebar").classList.add("opacity-0");
 
-    document.getElementById("close-sidebar").classList.remove("opacity-100");
+      document.getElementById("close-sidebar").classList.remove("opacity-100");
 
-    document.getElementById("menu-backdrop").classList.add("opacity-0");
+      document.getElementById("menu-backdrop").classList.add("opacity-0");
 
-    document.getElementById("menu-backdrop").classList.remove("opacity-100");
-    document.getElementById("off-canvas").classList.remove("z-50");
-    document.getElementById("off-canvas").style.display = 'none';
-  }
-});
+      document.getElementById("menu-backdrop").classList.remove("opacity-100");
+      document.getElementById("off-canvas").classList.remove("z-50");
+      document.getElementById("off-canvas").style.display = "none";
+    }
+  });
 
-listeners(document.getElementById("open-sidebar"))
-listeners(document.getElementById("close-sidebar"))
+listeners(document.getElementById("open-sidebar"));
+listeners(document.getElementById("close-sidebar"));
