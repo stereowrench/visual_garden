@@ -91,6 +91,20 @@
   <:subtitle>This is a product record from your database.</:subtitle>
   <:actions>
     <div class="relative inline-block text-left">
+      <div class="flex -space-x-px">
+        <.link class="">
+          <button class="border-r-none split-button">
+            Water
+          </button>
+        </.link>
+        <.link class="">
+          <button class="border-l-none split-button">
+            <.icon name="hero-chevron-down" class="size-4 text-gray-400 -mr-1 h-5 w-5" />
+          </button>
+        </.link>
+      </div>
+    </div>
+    <div class="relative inline-block text-left">
       <div>
         <button
           type="button"
@@ -148,7 +162,7 @@
             class="text-gray-700 block px-4 py-2 text-sm"
             role="menuitem"
             tabindex="-1"
-            id="menu-item-1"
+            id="menu-item-2"
           >
             Transfer
           </.link>
@@ -169,7 +183,6 @@
   <:item title="Type"><%= @product.type %></:item>
   <:item title="Garden"><%= @product.garden_id %></:item>
 </.list>
-
 
 <VisualGardenWeb.EventLogLive.Show.render_events events={@streams.events} />
 
@@ -201,7 +214,7 @@
     module={VisualGardenWeb.EventLogLive.FormComponent}
     patch={~p"/gardens/#{@garden.id}/products/#{@product}"}
     action={@live_action}
-    id={"event-modal"}
+    id="event-modal"
     product={@product}
     products={@products}
     garden={@garden}

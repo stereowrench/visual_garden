@@ -3,3 +3,51 @@
 @import "tailwindcss/utilities";
 
 /* This file is for your main application CSS */
+
+@layer base {
+ .border {
+    /* border-width: 1px; */
+    border: none;
+  }
+
+  .border-input {
+    /* border-color: hsl(var(--input)); */
+    /* border-color: hsl(214.3 31.8% 91.4%); */
+    /* border-color: rgb(229, 231, 235); */
+  }
+
+  .bg-background {
+    background-color: hsl(var(--background));
+  }
+
+  .bg-accent {
+    background-color: hsl(var(--accent));
+  }
+
+  .text-accent-foreground {
+    color: hsl(var(--accent-foreground));
+  }
+}
+
+@layer components {
+  .split-button {
+    @apply border border-input bg-background;
+    @apply h-10 px-4 py-2;
+    @apply hover:bg-accent hover:text-accent-foreground;
+    @apply ring-inset ring-gray-300 ring-1;
+    @apply font-semibold shadow-sm text-sm;
+    --radius: 0.5rem;
+    /* border-radius: calc(var(--radius) - 2px); */
+    border-radius: 0.375rem;
+  }
+
+  .border-r-none {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+
+  .border-l-none {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+  }
+}
