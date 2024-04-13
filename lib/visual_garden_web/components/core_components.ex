@@ -672,4 +672,47 @@ defmodule VisualGardenWeb.CoreComponents do
   def translate_errors(errors, field) when is_list(errors) do
     for {^field, {msg, opts}} <- errors, do: translate_error({msg, opts})
   end
+
+  attr :id, :string, required: true
+  attr :button_text, :string, required: true
+  attr :button_action, :string, required: true
+
+  slot :item, required: true do
+    attr :patch, :string, required: true
+  end
+
+  def split_menu(assigns) do
+    ~H"""
+    <div class="relative inline-block text-left" phx-hook="SplitMenu" id={@id}>
+      <div class="flex -space-x-px">
+        <.link class="">
+          <button class="border-r-none split-button" phx-click={@button_action}>
+            <%= @button_text %>
+          </button>
+        </.link>
+        <.link class="split-button-dropdown">
+          <button class="border-l-none split-button">
+            <.icon name="hero-chevron-down" class="size-4 text-gray-400 -mr-1 h-5 w-5" />
+          </button>
+        </.link>
+      </div>
+
+      <div
+        class="split-button-items transition ease-out duration-100 opacity-0 scale-95 absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+        role="menu"
+        aria-orientation="vertical"
+        aria-labelledby="menu-button"
+        tabindex="-1"
+        id={@id <> "-list"}
+      >
+        <div :for={item <- @item} class="py-1" role="none">
+          <!-- Active: "bg-gray-100 text-gray-900", Not Active: "text-gray-700" -->
+          <.link patch={item.patch} class="text-gray-700 block px-4 py-2 text-sm" role="menuitem" tabindex="-1">
+            <%= render_slot(item) %>
+          </.link>
+        </div>
+      </div>
+    </div>
+    """
+  end
 end

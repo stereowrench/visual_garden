@@ -90,112 +90,33 @@
   product <%= @product.id %>
   <:subtitle>This is a product record from your database.</:subtitle>
   <:actions>
-    <div class="relative inline-block text-left" phx-hook="SplitMenu" id="water-menu">
-      <div class="flex -space-x-px">
-        <.link class="">
-          <button class="border-r-none split-button">
-            Water
-          </button>
-        </.link>
-        <.link class="split-button-dropdown">
-          <button class="border-l-none split-button">
-            <.icon name="hero-chevron-down" class="size-4 text-gray-400 -mr-1 h-5 w-5" />
-          </button>
-        </.link>
-      </div>
+    <.split_menu id="water-menu" button_text="Water" button_action="water">
+      <:item patch={~p"/gardens/#{@garden.id}/products/#{@product}/show/new_water"}>
+        Water at time
+      </:item>
+    </.split_menu>
+    <.split_menu id="till-menu" button_text="Till" button_action="till">
+      <:item patch={~p"/gardens/#{@garden.id}/products/#{@product}/show/till"}>
+        Till at time
+      </:item>
+    </.split_menu>
 
-      <div
-        class="split-button-items transition ease-out duration-100 opacity-0 scale-95 absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
-        role="menu"
-        aria-orientation="vertical"
-        aria-labelledby="menu-button"
-        tabindex="-1"
-        id="water-menu-list"
+    <div class="relative inline-block text-left">
+      <.link
+        patch={~p"/gardens/#{@garden.id}/products/#{@product}/show/transfer"}
+        class="text-gray-700 block px-4 py-2 text-sm"
       >
-        <div class="py-1" role="none">
-          <!-- Active: "bg-gray-100 text-gray-900", Not Active: "text-gray-700" -->
-          <.link
-            patch={~p"/gardens/#{@garden.id}/products/#{@product}/show/new_water"}
-            class="text-gray-700 block px-4 py-2 text-sm"
-            role="menuitem"
-            tabindex="-1"
-          >
-            Water at time
-          </.link>
-        </div>
-      </div>
+        <.button>Transfer</.button>
+      </.link>
     </div>
     <div class="relative inline-block text-left">
-      <div>
-        <button
-          type="button"
-          class="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
-          id="menu-button"
-          aria-expanded="true"
-          aria-haspopup="true"
-        >
-          Actions
-          <svg
-            class="-mr-1 h-5 w-5 text-gray-400"
-            viewBox="0 0 20 20"
-            fill="currentColor"
-            aria-hidden="true"
-          >
-            <path
-              fill-rule="evenodd"
-              d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
-              clip-rule="evenodd"
-            />
-          </svg>
-        </button>
-      </div>
-      <div
-        phx-hook="ActionMenu"
-        class="transition ease-out duration-100 opacity-0 scale-95 absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
-        role="menu"
-        aria-orientation="vertical"
-        aria-labelledby="menu-button"
-        tabindex="-1"
-        id="actions-menu"
+      <.link
+        patch={~p"/gardens/#{@garden.id}/products/#{@product}/show/edit"}
+        phx-click={JS.push_focus()}
       >
-        <div class="py-1" role="none">
-          <!-- Active: "bg-gray-100 text-gray-900", Not Active: "text-gray-700" -->
-          <.link
-            patch={~p"/gardens/#{@garden.id}/products/#{@product}/show/new_water"}
-            class="text-gray-700 block px-4 py-2 text-sm"
-            role="menuitem"
-            tabindex="-1"
-            id="menu-item-0"
-          >
-            Water
-          </.link>
-          <.link
-            patch={~p"/gardens/#{@garden.id}/products/#{@product}/show/till"}
-            class="text-gray-700 block px-4 py-2 text-sm"
-            role="menuitem"
-            tabindex="-1"
-            id="menu-item-1"
-          >
-            Till
-          </.link>
-          <.link
-            patch={~p"/gardens/#{@garden.id}/products/#{@product}/show/transfer"}
-            class="text-gray-700 block px-4 py-2 text-sm"
-            role="menuitem"
-            tabindex="-1"
-            id="menu-item-2"
-          >
-            Transfer
-          </.link>
-        </div>
-      </div>
+        <.button>Edit product</.button>
+      </.link>
     </div>
-    <.link
-      patch={~p"/gardens/#{@garden.id}/products/#{@product}/show/edit"}
-      phx-click={JS.push_focus()}
-    >
-      <.button>Edit product</.button>
-    </.link>
   </:actions>
 </.header>
 
