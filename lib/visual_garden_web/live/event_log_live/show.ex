@@ -84,8 +84,6 @@ defmodule VisualGardenWeb.EventLogLive.Show do
   end
 
   defp do_render_event(nil, assigns) do
-    IO.inspect(assigns)
-
     ~H"""
     Error unknown event
     """

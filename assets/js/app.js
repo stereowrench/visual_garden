@@ -76,6 +76,18 @@ Hooks.SplitMenu = {
   },
 };
 
+Hooks.EventTime = {
+  mounted() {
+    const stored = document.getElementById("event-time");
+    const d = new Date(stored.value)
+    const dateTimeLocalValue = (new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString()).slice(0, -1);
+    this.el.value = dateTimeLocalValue;
+    this.el.onchange = () => {
+      stored.value = (new Date(this.el.value)).toISOString();
+    }
+  }
+}
+
 let liveSocket = new LiveSocket("/live", Socket, {
   longPollFallbackMs: 2500,
   params: { _csrf_token: csrfToken },

@@ -20,7 +20,19 @@ defmodule VisualGardenWeb.EventLogLive.FormComponent do
         phx-change="validate"
         phx-submit="save"
       >
-        <.input field={@form[:event_time]} type="datetime-local" label="Event time" value={DateTime.utc_now()} />
+        <.input
+          phx-hook="EventTime"
+          field={@form[:event_time_hidden]}
+          type="datetime-local"
+          label="Event time"
+        />
+        <.input
+          id="event-time"
+          field={@form[:event_time]}
+          type="hidden"
+          label="Event time"
+          value={DateTime.utc_now()}
+        />
 
         <%= if @action == :new_humidity do %>
           <.input field={@form[:humidity]} type="number" label="Humidity" />

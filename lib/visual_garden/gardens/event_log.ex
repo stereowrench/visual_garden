@@ -4,6 +4,7 @@ defmodule VisualGarden.Gardens.EventLog do
 
   schema "event_logs" do
     field :event_time, :utc_datetime
+    field :event_time_hidden, :utc_datetime, virtual: true
     field :event_type, Ecto.Enum,
       values: [
         :water,
