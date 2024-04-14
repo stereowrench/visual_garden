@@ -163,7 +163,7 @@ defmodule VisualGardenWeb.EventLogLive.FormComponent do
 
         {:noreply,
          socket
-         |> put_flash(:info, "Event log created successfully")
+         |> put_notification(Normal.new(:info, "Event log created successfully"))
          |> push_patch(to: socket.assigns.patch)}
 
       {:error, %Ecto.Changeset{} = changeset} ->

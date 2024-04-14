@@ -59,7 +59,7 @@ defmodule VisualGardenWeb.PlantLive.FormComponent do
 
         {:noreply,
          socket
-         |> put_flash(:info, "Plant updated successfully")
+         |> put_notification(Normal.new(:info, "Plant updated successfully"))
          |> push_patch(to: socket.assigns.patch)}
 
       {:error, %Ecto.Changeset{} = changeset} ->
@@ -74,7 +74,7 @@ defmodule VisualGardenWeb.PlantLive.FormComponent do
 
         {:noreply,
          socket
-         |> put_flash(:info, "Plant created successfully")
+         |> put_notification(Normal.new(:info, "Plant created successfully"))
          |> push_patch(to: socket.assigns.patch)}
 
       {:error, %Ecto.Changeset{} = changeset} ->

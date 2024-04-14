@@ -25,6 +25,10 @@ defmodule VisualGardenWeb.ProductLive.Show do
     {:noreply, stream_insert(socket, :events, event_log)}
   end
 
+  def handle_info({VisualGardenWeb.ProductLive.FormComponent, {:saved, product}}, socket) do
+    {:noreply, assign(socket, :product, product)}
+  end
+
   defp page_title(:show), do: "Show product"
   defp page_title(:edit), do: "Edit product"
   defp page_title(:new_water), do: "Watering"

@@ -1,6 +1,12 @@
 <div>
   <!-- Off-canvas menu for mobile, show/hide based on off-canvas menu state. -->
-  <div id="off-canvas" style="display:none" class="relative lg:hidden" role="dialog" aria-modal="true">
+  <div
+    id="off-canvas"
+    style="display:none"
+    class="relative lg:hidden"
+    role="dialog"
+    aria-modal="true"
+  >
     <div
       id="menu-backdrop"
       class="transition-opacity ease-linear duration-300 fixed inset-0 bg-gray-900/80 opacity-0"
@@ -38,12 +44,12 @@
                 <ul role="list" class="-mx-2 space-y-1">
                   <li>
                     <!-- Current: "bg-gray-50 text-indigo-600", Default: "text-gray-700 hover:text-indigo-600 hover:bg-gray-50" -->
-                      <.nav_link
+                    <.nav_link
                       active={@active_tab}
                       name={:gardens}
                       path={~p"/gardens"}
                       text="Gardens"
-                      />
+                    />
                   </li>
                 </ul>
               </li>
@@ -65,7 +71,6 @@
         />
       </div>
       <nav class="flex flex-1 flex-col">
-
         <ul role="list" class="flex flex-1 flex-col gap-y-7">
           <li>
             <ul role="list" class="-mx-2 space-y-1">
@@ -79,10 +84,10 @@
               </li> --%>
               <li>
                 <.nav_link
-                active={@active_tab}
-                name={:gardens}
-                path={~p"/gardens"}
-                text="Gardens"
+                  active={@active_tab}
+                  name={:gardens}
+                  path={~p"/gardens"}
+                  text="Gardens"
                 />
               </li>
             </ul>
@@ -130,11 +135,10 @@
     </a> --%>
   </div>
 
-
   <main class="lg:pl-72">
     <div class="xl:pr-96">
       <div class="px-4 py-10 sm:px-6 lg:px-8 lg:py-6">
-        <.flash_group flash={@flash} />
+        <Flashy.Container.render flash={@flash} />
         <%= @inner_content %>
       </div>
     </div>

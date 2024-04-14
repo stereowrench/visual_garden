@@ -60,7 +60,7 @@ defmodule VisualGardenWeb.HarvestLive.FormComponent do
 
         {:noreply,
          socket
-         |> put_flash(:info, "Harvest updated successfully")
+         |> put_notification(Normal.new(:info, "Harvest updated successfully"))
          |> push_patch(to: socket.assigns.patch)}
 
       {:error, %Ecto.Changeset{} = changeset} ->
@@ -75,7 +75,7 @@ defmodule VisualGardenWeb.HarvestLive.FormComponent do
 
         {:noreply,
          socket
-         |> put_flash(:info, "Harvest created successfully")
+         |> put_notification(Normal.new(:info, "Harvest created successfully"))
          |> push_patch(to: socket.assigns.patch)}
 
       {:error, %Ecto.Changeset{} = changeset} ->
