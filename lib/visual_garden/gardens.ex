@@ -339,7 +339,6 @@ defmodule VisualGarden.Gardens do
 
   """
   def create_plant(attrs \\ %{}) do
-    IO.inspect attrs
     %Plant{}
     |> Plant.changeset(attrs)
     |> Repo.insert()

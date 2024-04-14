@@ -13,7 +13,28 @@ defmodule VisualGarden.Gardens.Plant do
   def changeset(plant, attrs) do
     cl =
       plant
-      |> cast(attrs, [:product_id, :seed_id])
+
+    valid_attrs = []
+
+    valid_attrs =
+      if attrs["seed_id"] == "-1" or attrs[:seed_id] == "-1" do
+        valid_attrs
+      else
+        valid_attrs ++ [:seed_id]
+      end
+
+    valid_attrs =
+      if attrs["product_id"] == "-1" or attrs[:product_id] == "-1" do
+        valid_attrs
+      else
+        valid_attrs ++ [:product_id]
+      end
+
+    cl =
+      cl |> cast(attrs, valid_attrs)
+
+    cl =
+      cl
       |> cast_assoc(:seed, with: &VisualGarden.Gardens.Seed.changeset/2)
       |> cast_assoc(:product, with: &VisualGarden.Gardens.Product.changeset/2)
 
