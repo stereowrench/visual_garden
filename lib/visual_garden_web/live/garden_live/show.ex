@@ -19,4 +19,10 @@ defmodule VisualGardenWeb.GardenLive.Show do
 
   defp page_title(:show), do: "Show Garden"
   defp page_title(:edit), do: "Edit Garden"
+
+
+  @impl true
+  def handle_info({VisualGardenWeb.GardenLive.FormComponent, {:saved, garden}}, socket) do
+    {:noreply, assign(socket, :garden, garden)}
+  end
 end
