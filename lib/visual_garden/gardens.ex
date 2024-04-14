@@ -210,8 +210,8 @@ defmodule VisualGarden.Gardens do
       [%Seed{}, ...]
 
   """
-  def list_seeds do
-    Repo.all(Seed)
+  def list_seeds(garden_id) do
+    Repo.all(from s in Seed, where: s.garden_id == ^garden_id)
   end
 
   @doc """
@@ -339,6 +339,7 @@ defmodule VisualGarden.Gardens do
 
   """
   def create_plant(attrs \\ %{}) do
+    IO.inspect attrs
     %Plant{}
     |> Plant.changeset(attrs)
     |> Repo.insert()

@@ -5,6 +5,7 @@ defmodule VisualGarden.Gardens.Seed do
   schema "seeds" do
     field :name, :string
     field :description, :string
+    belongs_to :garden, VisualGarden.Gardens.Garden
 
     timestamps(type: :utc_datetime)
   end
@@ -12,7 +13,7 @@ defmodule VisualGarden.Gardens.Seed do
   @doc false
   def changeset(seed, attrs) do
     seed
-    |> cast(attrs, [:name, :description])
-    |> validate_required([:name, :description])
+    |> cast(attrs, [:name, :description, :garden_id])
+    |> validate_required([:name, :description, :garden_id])
   end
 end
