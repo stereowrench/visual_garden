@@ -19,7 +19,8 @@ defmodule VisualGardenWeb.PlantLive.Show do
      |> assign(:page_title, page_title(socket.assigns.live_action))
      |> assign(:garden, Gardens.get_garden!(garden_id))
      |> assign(:product, Gardens.get_product!(product_id))
-     |> assign(:plant, Gardens.get_plant!(id))}
+     |> assign(:plant, Gardens.get_plant!(id))
+     |> stream(:events, Gardens.list_event_logs(product_id, id))}
   end
 
   defp page_title(:show), do: "Show Plant"

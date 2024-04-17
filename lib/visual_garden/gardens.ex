@@ -510,11 +510,19 @@ defmodule VisualGarden.Gardens do
       [%EventLog{}, ...]
 
   """
+  @event_preloads [:transferred_from, :transferred_to, :product, plant: [:seed]]
   def list_event_logs(product_id) do
     Repo.all(
       from e in EventLog,
         where: e.product_id == ^product_id,
-        preload: [:transferred_from, :transferred_to, :product, plant: [:seed]]
+        preload: ^@event_preloads
+    )
+  end
+  def list_event_logs(product_id, plant_id) do
+    Repo.all(
+      from e in EventLog,
+        where: e.plant_id == ^plant_id,
+        preload: ^@event_preloads
     )
   end
 
