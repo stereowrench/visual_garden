@@ -5,8 +5,8 @@ defmodule VisualGardenWeb.SeedLive.Index do
   alias VisualGarden.Gardens.Seed
 
   @impl true
-  def mount(_params, _session, socket) do
-    {:ok, stream(socket, :seeds, Gardens.list_seeds())}
+  def mount(%{"garden_id" => garden_id}, _session, socket) do
+    {:ok, stream(socket, :seeds, Gardens.list_seeds(garden_id))}
   end
 
   @impl true

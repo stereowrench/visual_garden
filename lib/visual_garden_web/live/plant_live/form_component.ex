@@ -20,6 +20,8 @@ defmodule VisualGardenWeb.PlantLive.FormComponent do
         phx-change="validate"
         phx-submit="save"
       >
+        <.input field={@form[:name]} type="text" label="Name"/>
+
         <.input
           field={@form[:seed_id]}
           type="select"
@@ -38,12 +40,19 @@ defmodule VisualGardenWeb.PlantLive.FormComponent do
           field={@form[:product_id]}
           type="select"
           label="Placed In"
-          prompt="Choose a seed"
+          prompt="Choose a product to place it in"
           options={["New Product": -1] ++ Enum.map(@products, &{&1.name, &1.id})}
         />
         <%= if get_field(@form, :product_id) == "-1" do %>
           <.inputs_for :let={product} field={@form[:product]}>
             <.input label="Product Name" type="text" field={product[:name]} />
+            <.input
+              field={product[:type]}
+              type="select"
+              label="Type"
+              prompt="Choose a value"
+              options={Ecto.Enum.values(VisualGarden.Gardens.Product, :type) -- [:bed]}
+            />
           </.inputs_for>
         <% end %>
 
@@ -138,11 +147,10 @@ defmodule VisualGardenWeb.PlantLive.FormComponent do
     case Gardens.create_plant(plant_params) do
       {:ok, plant} ->
         notify_parent({:saved, plant})
-
         {:noreply,
          socket
          |> put_notification(Normal.new(:info, "Plant created successfully"))
-         |> push_patch(to: socket.assigns.patch)}
+         |> push_patch(to: ~p"/gardens/#{socket.assigns.garden.id}/")}
 
       {:error, %Ecto.Changeset{} = changeset} ->
         {:noreply, assign_form(socket, changeset)}

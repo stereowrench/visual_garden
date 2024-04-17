@@ -39,6 +39,14 @@ defmodule VisualGardenWeb.Router do
       live "/gardens/:garden_id/products/:id/show/till", ProductLive.Show, :till
       live "/gardens/:garden_id/products/:id/show/transfer", ProductLive.Show, :transfer
 
+      live "/gardens/:garden_id/products/:product_id/plants", PlantLive.Index, :index
+      live "/gardens/:garden_id/products/:product_id/plants/new", PlantLive.Index, :new
+      live "/gardens/:garden_id/products/:product_id/plants/:id/edit", PlantLive.Index, :edit
+
+      live "/gardens/:garden_id/products/:product_id/plants/:id", PlantLive.Show, :show
+      live "/gardens/:garden_id/products/:product_id/plants/:id/show/edit", PlantLive.Show, :edit
+
+
       live "/event_logs", EventLogLive.Index, :index
       live "/event_logs/new", EventLogLive.Index, :new
       live "/event_logs/:id/edit", EventLogLive.Index, :edit
@@ -53,19 +61,12 @@ defmodule VisualGardenWeb.Router do
       live "/harvests/:id", HarvestLive.Show, :show
       live "/harvests/:id/show/edit", HarvestLive.Show, :edit
 
-      live "/plants", PlantLive.Index, :index
-      live "/plants/new", PlantLive.Index, :new
-      live "/plants/:id/edit", PlantLive.Index, :edit
+      live "/gardens/:garden_id/seeds", SeedLive.Index, :index
+      live "/gardens/:garden_id/seeds/new", SeedLive.Index, :new
+      live "/gardens/:garden_id/seeds/:id/edit", SeedLive.Index, :edit
 
-      live "/plants/:id", PlantLive.Show, :show
-      live "/plants/:id/show/edit", PlantLive.Show, :edit
-
-      live "/seeds", SeedLive.Index, :index
-      live "/seeds/new", SeedLive.Index, :new
-      live "/seeds/:id/edit", SeedLive.Index, :edit
-
-      live "/seeds/:id", SeedLive.Show, :show
-      live "/seeds/:id/show/edit", SeedLive.Show, :edit
+      live "/gardens/:garden_id/seeds/:id", SeedLive.Show, :show
+      live "/gardens/:garden_id/seeds/:id/show/edit", SeedLive.Show, :edit
     end
   end
 

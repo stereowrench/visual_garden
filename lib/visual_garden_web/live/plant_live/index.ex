@@ -5,8 +5,8 @@ defmodule VisualGardenWeb.PlantLive.Index do
   alias VisualGarden.Gardens.Plant
 
   @impl true
-  def mount(_params, _session, socket) do
-    {:ok, stream(socket, :plants, Gardens.list_plants())}
+  def mount(%{"garden_id" => garden_id, "product_id" => product_id}, _session, socket) do
+    {:ok, stream(socket, :plants, Gardens.list_plants(garden_id, product_id))}
   end
 
   @impl true

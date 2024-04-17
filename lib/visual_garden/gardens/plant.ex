@@ -5,6 +5,7 @@ defmodule VisualGarden.Gardens.Plant do
   schema "plants" do
     belongs_to :seed, VisualGarden.Gardens.Seed
     belongs_to :product, VisualGarden.Gardens.Product
+    field :name, :string
 
     timestamps(type: :utc_datetime)
   end
@@ -14,7 +15,7 @@ defmodule VisualGarden.Gardens.Plant do
     cl =
       plant
 
-    valid_attrs = []
+    valid_attrs = [:name]
 
     valid_attrs =
       if attrs["seed_id"] == "-1" or attrs[:seed_id] == "-1" do
@@ -35,6 +36,7 @@ defmodule VisualGarden.Gardens.Plant do
 
     cl =
       cl
+      |> validate_required([:name])
       |> cast_assoc(:seed, with: &VisualGarden.Gardens.Seed.changeset/2)
       |> cast_assoc(:product, with: &VisualGarden.Gardens.Product.changeset/2)
 

@@ -96,6 +96,28 @@
       <% end %>
     </ul>
   </:item>
+  <:item title="Seeds">
+    <ul>
+      <%= for seed <- @seeds do %>
+        <li title="name">
+          <.link patch={~p"/gardens/#{@garden.id}/seeds/#{seed.id}"}>
+            <%= seed.name %>
+          </.link>
+        </li>
+      <% end %>
+    </ul>
+  </:item>
+  <:item title="Plants">
+    <ul>
+      <%= for plant <- @plants do %>
+        <li title="name">
+          <.link patch={~p"/gardens/#{@garden.id}/products/#{plant.product_id}/plants/#{plant.id}"}>
+            <%= plant.name %>
+          </.link>
+        </li>
+      <% end %>
+    </ul>
+  </:item>
 </.list>
 
 <.back navigate={~p"/gardens"}>Back to gardens</.back>

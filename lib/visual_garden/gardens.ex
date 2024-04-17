@@ -306,8 +306,20 @@ defmodule VisualGarden.Gardens do
       [%Plant{}, ...]
 
   """
-  def list_plants do
-    Repo.all(Plant)
+  def list_plants(garden_id) do
+    Repo.all(
+      from p in Plant,
+        join: product in Product,
+        on: product.id == p.product_id,
+        where: product.garden_id == ^garden_id
+    )
+  end
+
+  def list_plants(_garden_id, product_id) do
+    Repo.all(
+      from p in Plant,
+        where: p.product_id == ^product_id
+    )
   end
 
   @doc """
