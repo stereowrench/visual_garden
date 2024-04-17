@@ -32,12 +32,15 @@ topbar.config({ barColors: { 0: "#29d" }, shadowColor: "rgba(0, 0, 0, .3)" });
 window.addEventListener("phx:page-loading-start", (_info) => topbar.show(300));
 window.addEventListener("phx:page-loading-stop", (_info) => topbar.hide());
 
-let Hooks = {...FlashyHooks};
+let Hooks = { ...FlashyHooks };
 
 let actionsOpened = {};
 
 const mountMenu = (name, button, menu) => {
+  menu.style.visibility = "hidden";
+  // menu.style.opacity = 0;
   button.addEventListener("click", () => {
+    menu.style.visibility = "visible";
     if (actionsOpened[name] === undefined) actionsOpened[name] = false;
 
     if (actionsOpened[name]) {
@@ -80,14 +83,18 @@ Hooks.SplitMenu = {
 Hooks.EventTime = {
   mounted() {
     const stored = document.getElementById("event-time");
-    const d = new Date(stored.value)
-    const dateTimeLocalValue = (new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString()).slice(0, -1);
+    const d = new Date(stored.value);
+    const dateTimeLocalValue = new Date(
+      d.getTime() - d.getTimezoneOffset() * 60000
+    )
+      .toISOString()
+      .slice(0, -1);
     this.el.value = dateTimeLocalValue;
     this.el.onchange = () => {
-      stored.value = (new Date(this.el.value)).toISOString();
-    }
-  }
-}
+      stored.value = new Date(this.el.value).toISOString();
+    };
+  },
+};
 
 let liveSocket = new LiveSocket("/live", Socket, {
   longPollFallbackMs: 2500,

@@ -30,6 +30,25 @@ defmodule VisualGardenWeb.ProductLive.Show do
     {:noreply, assign(socket, :product, product)}
   end
 
+  @names %{
+    "water" => "watered",
+    "till" => "tilled"
+  }
+
+  def handle_event(evt, %{}, socket) when evt in ["water", "till"] do
+    {:ok, _event} =
+      Gardens.create_event_log(evt, %{
+        "event_type" => evt,
+        "event_time" => DateTime.utc_now(),
+        "product_id" => socket.assigns.product.id
+      })
+
+    {:noreply,
+     socket
+     |> stream(:events, Gardens.list_event_logs(socket.assigns.product.id))
+     |> put_notification(Normal.new(:info, "#{socket.assigns.product.name} was #{@names[evt]}"))}
+  end
+
   defp page_title(:show), do: "Show product"
   defp page_title(:edit), do: "Edit product"
   defp page_title(:new_water), do: "Watering"
