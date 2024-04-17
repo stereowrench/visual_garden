@@ -9,10 +9,16 @@ defmodule VisualGardenWeb.PlantLive.Show do
   end
 
   @impl true
-  def handle_params(%{"id" => id}, _, socket) do
+  def handle_params(
+        %{"garden_id" => garden_id, "product_id" => product_id, "id" => id},
+        _,
+        socket
+      ) do
     {:noreply,
      socket
      |> assign(:page_title, page_title(socket.assigns.live_action))
+     |> assign(:garden, Gardens.get_garden!(garden_id))
+     |> assign(:product, Gardens.get_product!(product_id))
      |> assign(:plant, Gardens.get_plant!(id))}
   end
 

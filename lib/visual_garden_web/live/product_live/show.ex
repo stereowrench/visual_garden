@@ -17,6 +17,7 @@ defmodule VisualGardenWeb.ProductLive.Show do
      |> assign(:page_title, page_title(socket.assigns.live_action))
      |> assign(:product, Gardens.get_product!(id))
      |> assign(:products, Gardens.list_products(garden_id))
+     |> assign(:plants, Gardens.list_plants(garden_id, id))
      |> assign(:garden, Gardens.get_garden!(garden_id))}
   end
 
