@@ -5,6 +5,7 @@ defmodule VisualGarden.Gardens.EventLog do
   schema "event_logs" do
     field :event_time, :utc_datetime
     field :event_time_hidden, :utc_datetime, virtual: true
+
     field :event_type, Ecto.Enum,
       values: [
         :water,
@@ -37,8 +38,8 @@ defmodule VisualGarden.Gardens.EventLog do
     field :transplanted_to, :id
     field :transplanted_from, :id
     field :planted_in_id, :id
-    field :product_id, :id
-    field :plant_id, :id
+    belongs_to :product, VisualGarden.Gardens.Product
+    belongs_to :plant, VisualGarden.Gardens.Plant
     field :harvest_id, :id
     field :harvest_transfer_from, :id
     field :harvest_transfer_to, :id
@@ -65,7 +66,7 @@ defmodule VisualGarden.Gardens.EventLog do
       :event_type,
       :product_id,
       :event_time,
-      :till_depth_in,
+      :till_depth_in
     ])
     |> validate_required([:event_time])
     |> validate_inclusion(:event_type, [:till])
@@ -86,12 +87,30 @@ defmodule VisualGarden.Gardens.EventLog do
     |> validate_required([
       :product_id,
       :event_time,
+      :event_type,
       :transferred_to_id,
       :transferred_from_id
     ])
     |> validate_inclusion(:event_type, [:transfer])
   end
 
+  @doc false
+  def changeset_plant(event_log, attrs) do
+    event_log
+    |> cast(attrs, [
+      :event_type,
+      :product_id,
+      :plant_id,
+      :event_time,
+    ])
+    |> validate_required([
+      :product_id,
+      :plant_id,
+      :event_type,
+      :event_time,
+    ])
+    |> validate_inclusion(:event_type, [:plant])
+  end
 
   @doc false
   def changeset(event_log, attrs) do

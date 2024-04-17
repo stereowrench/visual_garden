@@ -20,7 +20,8 @@ defmodule VisualGardenWeb.PlantLive.FormComponent do
         phx-change="validate"
         phx-submit="save"
       >
-        <.input field={@form[:name]} type="text" label="Name"/>
+        <.input field={@form[:name]} type="text" label="Name" />
+        <.input field={@form[:qty]} type="number" label="Quantity" />
 
         <.input
           field={@form[:seed_id]}
@@ -146,7 +147,15 @@ defmodule VisualGardenWeb.PlantLive.FormComponent do
 
     case Gardens.create_plant(plant_params) do
       {:ok, plant} ->
+        {:ok, _} =
+          Gardens.create_event_log("plant", %{
+            "event_time" => DateTime.utc_now(),
+            "plant_id" => plant.id,
+            "product_id" => plant.product_id
+          })
+
         notify_parent({:saved, plant})
+
         {:noreply,
          socket
          |> put_notification(Normal.new(:info, "Plant created successfully"))

@@ -75,10 +75,29 @@ defmodule VisualGardenWeb.EventLogLive.Show do
   defp do_render_event(:transfer, assigns) do
     ~H"""
     <%= @event.transferred_amount %> <%= to_string(@event.transfer_units) %> transferred from
-    <.link class="underline" patch={
-      ~p"/gardens/#{@event.transferred_from.garden_id}/products/#{@event.transferred_from_id}"
-    }>
+    <.link
+      class="underline"
+      patch={~p"/gardens/#{@event.transferred_from.garden_id}/products/#{@event.transferred_from_id}"}
+    >
      <%= @event.transferred_from.name %>
+    </.link>
+    """
+  end
+
+  defp do_render_event(:plant, assigns) do
+    ~H"""
+    Planted <%= @event.plant.qty %>
+    <.link class="underline" patch={~p"/gardens/#{@event.product.garden_id}/seeds/#{@event.plant.seed.id}"}>
+      <%= @event.plant.seed.name %>
+    </.link>
+    as
+    <.link
+      class="underline"
+      patch={
+        ~p"/gardens/#{@event.product.garden_id}/products/#{@event.product.id}/plants/#{@event.plant.id}"
+      }
+    >
+    <%= @event.plant.name %>.
     </.link>
     """
   end

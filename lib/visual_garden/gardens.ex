@@ -514,7 +514,7 @@ defmodule VisualGarden.Gardens do
     Repo.all(
       from e in EventLog,
         where: e.product_id == ^product_id,
-        preload: [:transferred_from, :transferred_to]
+        preload: [:transferred_from, :transferred_to, :product, plant: [:seed]]
     )
   end
 
@@ -581,6 +581,14 @@ defmodule VisualGarden.Gardens do
 
     %EventLog{}
     |> EventLog.changeset_tilled(attrs)
+    |> Repo.insert()
+  end
+
+  def create_event_log(type = "plant", attrs) do
+    attrs = Map.merge(%{"event_type" => type}, attrs)
+
+    %EventLog{}
+    |> EventLog.changeset_plant(attrs)
     |> Repo.insert()
   end
 

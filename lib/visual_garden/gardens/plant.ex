@@ -6,6 +6,7 @@ defmodule VisualGarden.Gardens.Plant do
     belongs_to :seed, VisualGarden.Gardens.Seed
     belongs_to :product, VisualGarden.Gardens.Product
     field :name, :string
+    field :qty, :integer
 
     timestamps(type: :utc_datetime)
   end
@@ -32,7 +33,9 @@ defmodule VisualGarden.Gardens.Plant do
       end
 
     cl =
-      cl |> cast(attrs, valid_attrs)
+      cl
+      |> cast(attrs, valid_attrs)
+      |> validate_number(:qty, greater_than_to_equal_to: 1)
 
     cl =
       cl
