@@ -4,12 +4,12 @@ defmodule VisualGardenWeb.GardenLiveTest do
   import Phoenix.LiveViewTest
   import VisualGarden.GardensFixtures
 
-  @create_attrs %{}
-  @update_attrs %{}
-  @invalid_attrs %{}
+  @create_attrs %{name: "My Garden 2"}
+  @update_attrs %{name: "My Garden 3"}
+  @invalid_attrs %{name: nil}
 
   defp create_garden(_) do
-    garden = garden_fixture()
+    garden = garden_fixture(name: "My Garden")
     %{garden: garden}
   end
 
