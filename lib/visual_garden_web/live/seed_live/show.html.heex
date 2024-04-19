@@ -2,7 +2,7 @@
   Seed <%= @seed.id %>
   <:subtitle>This is a seed record from your database.</:subtitle>
   <:actions>
-    <.link patch={~p"/seeds/#{@seed}/show/edit"} phx-click={JS.push_focus()}>
+    <.link patch={~p"/gardens/#{@garden.id}/seeds/#{@seed}/show/edit"} phx-click={JS.push_focus()}>
       <.button>Edit seed</.button>
     </.link>
   </:actions>
@@ -13,15 +13,16 @@
   <:item title="Description"><%= @seed.description %></:item>
 </.list>
 
-<.back navigate={~p"/seeds"}>Back to seeds</.back>
+<.back navigate={~p"/gardens/#{@garden.id}/seeds"}>Back to seeds</.back>
 
-<.modal :if={@live_action == :edit} id="seed-modal" show on_cancel={JS.patch(~p"/seeds/#{@seed}")}>
+<.modal :if={@live_action == :edit} id="seed-modal" show on_cancel={JS.patch(~p"/gardens/#{@garden.id}/seeds/#{@seed}")}>
   <.live_component
     module={VisualGardenWeb.SeedLive.FormComponent}
     id={@seed.id}
     title={@page_title}
     action={@live_action}
     seed={@seed}
-    patch={~p"/seeds/#{@seed}"}
+    garden={@garden}
+    patch={~p"/gardens/#{@garden.id}/seeds/#{@seed}"}
   />
 </.modal>

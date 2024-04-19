@@ -41,9 +41,10 @@ defmodule VisualGardenWeb.SeedLive.FormComponent do
 
   @impl true
   def handle_event("validate", %{"seed" => seed_params}, socket) do
+    prms = Map.merge(%{"garden_id" => socket.assigns.garden.id}, seed_params)
     changeset =
       socket.assigns.seed
-      |> Gardens.change_seed(seed_params)
+      |> Gardens.change_seed(prms)
       |> Map.put(:action, :validate)
 
     {:noreply, assign_form(socket, changeset)}
@@ -54,7 +55,7 @@ defmodule VisualGardenWeb.SeedLive.FormComponent do
   end
 
   defp save_seed(socket, :edit, seed_params) do
-    case Gardens.update_seed(socket.assigns.seed, seed_params) do
+    case Gardens.update_seed(socket.assigns.seed, Map.merge(%{"garden_id" => socket.assigns.garden.id}, seed_params)) do
       {:ok, seed} ->
         notify_parent({:saved, seed})
 
@@ -69,7 +70,7 @@ defmodule VisualGardenWeb.SeedLive.FormComponent do
   end
 
   defp save_seed(socket, :new, seed_params) do
-    case Gardens.create_seed(seed_params) do
+    case Gardens.create_seed(Map.merge(%{"garden_id" => socket.assigns.garden.id}, seed_params)) do
       {:ok, seed} ->
         notify_parent({:saved, seed})
 

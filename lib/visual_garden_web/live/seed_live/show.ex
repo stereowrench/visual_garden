@@ -4,8 +4,8 @@ defmodule VisualGardenWeb.SeedLive.Show do
   alias VisualGarden.Gardens
 
   @impl true
-  def mount(_params, _session, socket) do
-    {:ok, socket}
+  def mount(%{"garden_id" => garden_id}, _session, socket) do
+    {:ok, assign(socket, :garden, Gardens.get_garden!(garden_id))}
   end
 
   @impl true
