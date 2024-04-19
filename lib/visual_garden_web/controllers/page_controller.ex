@@ -6,8 +6,4 @@ defmodule VisualGardenWeb.PageController do
     # so skip the default app layout.
     render(conn, :home, layout: false)
   end
-
-  def media(conn, _params) do
-    render(conn, :media)
-  end
 end

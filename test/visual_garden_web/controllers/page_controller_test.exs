@@ -3,7 +3,6 @@ defmodule VisualGardenWeb.PageControllerTest do
 
   test "GET /", %{conn: conn} do
     conn = get(conn, ~p"/")
-    assert html_response(conn, 200) =~ "TODO"
-    # TODO here
+    assert html_response(conn, 200) =~ "Visual Garden"
   end
 end
