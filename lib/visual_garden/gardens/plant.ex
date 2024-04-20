@@ -16,7 +16,7 @@ defmodule VisualGarden.Gardens.Plant do
     cl =
       plant
 
-    valid_attrs = [:name]
+    valid_attrs = [:name, :qty]
 
     valid_attrs =
       if attrs["seed_id"] == "-1" or attrs[:seed_id] == "-1" do
@@ -35,7 +35,7 @@ defmodule VisualGarden.Gardens.Plant do
     cl =
       cl
       |> cast(attrs, valid_attrs)
-      |> validate_number(:qty, greater_than_to_equal_to: 1)
+      |> validate_number(:qty, greater_than_or_equal_to: 1)
 
     cl =
       cl

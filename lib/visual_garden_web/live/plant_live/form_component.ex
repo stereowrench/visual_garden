@@ -22,41 +22,41 @@ defmodule VisualGardenWeb.PlantLive.FormComponent do
       >
         <.input field={@form[:name]} type="text" label="Name" />
         <.input field={@form[:qty]} type="number" label="Quantity" />
+        <%= if @action != :edit do %>
+          <.input
+            field={@form[:seed_id]}
+            type="select"
+            label="Seed"
+            prompt="Choose a seed"
+            options={["New Seed": -1] ++ Enum.map(@seeds, &{&1.name, &1.id})}
+          />
+          <%= if get_field(@form, :seed_id) == "-1" do %>
+            <.inputs_for :let={seed} field={@form[:seed]}>
+              <.input label="Seed Name" type="text" field={seed[:name]} />
+              <.input label="Seed Description" type="textarea" field={seed[:description]} />
+            </.inputs_for>
+          <% end %>
 
-        <.input
-          field={@form[:seed_id]}
-          type="select"
-          label="Seed"
-          prompt="Choose a seed"
-          options={["New Seed": -1] ++ Enum.map(@seeds, &{&1.name, &1.id})}
-        />
-        <%= if get_field(@form, :seed_id) == "-1" do %>
-          <.inputs_for :let={seed} field={@form[:seed]}>
-            <.input label="Seed Name" type="text" field={seed[:name]} />
-            <.input label="Seed Description" type="textarea" field={seed[:description]} />
-          </.inputs_for>
+          <.input
+            field={@form[:product_id]}
+            type="select"
+            label="Placed In"
+            prompt="Choose a product to place it in"
+            options={["New Product": -1] ++ Enum.map(@products, &{&1.name, &1.id})}
+          />
+          <%= if get_field(@form, :product_id) == "-1" do %>
+            <.inputs_for :let={product} field={@form[:product]}>
+              <.input label="Product Name" type="text" field={product[:name]} />
+              <.input
+                field={product[:type]}
+                type="select"
+                label="Type"
+                prompt="Choose a value"
+                options={Ecto.Enum.values(VisualGarden.Gardens.Product, :type) -- [:bed]}
+              />
+            </.inputs_for>
+          <% end %>
         <% end %>
-
-        <.input
-          field={@form[:product_id]}
-          type="select"
-          label="Placed In"
-          prompt="Choose a product to place it in"
-          options={["New Product": -1] ++ Enum.map(@products, &{&1.name, &1.id})}
-        />
-        <%= if get_field(@form, :product_id) == "-1" do %>
-          <.inputs_for :let={product} field={@form[:product]}>
-            <.input label="Product Name" type="text" field={product[:name]} />
-            <.input
-              field={product[:type]}
-              type="select"
-              label="Type"
-              prompt="Choose a value"
-              options={Ecto.Enum.values(VisualGarden.Gardens.Product, :type) -- [:bed]}
-            />
-          </.inputs_for>
-        <% end %>
-
         <:actions>
           <.button phx-disable-with="Saving...">Save Plant</.button>
         </:actions>
@@ -71,7 +71,13 @@ defmodule VisualGardenWeb.PlantLive.FormComponent do
 
   @impl true
   def update(assigns, socket) do
-    plant = %Plant{}
+    plant =
+      case assigns[:plant] do
+        nil -> %Plant{}
+        p -> p
+      end
+
+
     changeset = Gardens.change_plant(plant, %{garden_id: assigns.garden.id})
 
     {:ok,
@@ -114,20 +120,20 @@ defmodule VisualGardenWeb.PlantLive.FormComponent do
     save_plant(socket, socket.assigns.action, plant_params)
   end
 
-  # defp save_plant(socket, :edit, plant_params) do
-  #   case Gardens.update_plant(socket.assigns.plant, plant_params) do
-  #     {:ok, plant} ->
-  #       notify_parent({:saved, plant})
+  defp save_plant(socket, :edit, plant_params) do
+    case Gardens.update_plant(socket.assigns.plant, plant_params) do
+      {:ok, plant} ->
+        notify_parent({:saved, plant})
 
-  #       {:noreply,
-  #        socket
-  #        |> put_notification(Normal.new(:info, "Plant updated successfully"))
-  #        |> push_patch(to: socket.assigns.patch)}
+        {:noreply,
+         socket
+         |> put_notification(Normal.new(:info, "Plant updated successfully"))
+         |> push_patch(to: socket.assigns.patch)}
 
-  #     {:error, %Ecto.Changeset{} = changeset} ->
-  #       {:noreply, assign_form(socket, changeset)}
-  #   end
-  # end
+      {:error, %Ecto.Changeset{} = changeset} ->
+        {:noreply, assign_form(socket, changeset)}
+    end
+  end
 
   defp maybe_add_parents(params, garden) do
     params =

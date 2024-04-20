@@ -80,15 +80,9 @@
   </ol>
 </nav>
 
-<%!-- <nav :for={product <- @product_all}>
-  <.link patch={~p"/product/#{product.id}"} phx-click={JS.push_focus()}>
-    <%= product.name %>
-  </.link>
-</nav> --%>
-
 <.header>
   <%= @product.name %>
-  <:subtitle>This is a product record from your database.</:subtitle>
+  <:subtitle><%= VisualGarden.Gardens.Product.friendly_type(@product.type) %></:subtitle>
   <:actions>
     <.split_menu id="water-menu" button_text="Water" button_action="water">
       <:item patch={~p"/gardens/#{@garden.id}/products/#{@product}/show/new_water"}>
@@ -120,24 +114,20 @@
   </:actions>
 </.header>
 
-<.list>
-  <:item title="Name"><%= @product.name %></:item>
-  <:item title="Type"><%= @product.type %></:item>
-  <:item title="Garden"><%= @product.garden_id %></:item>
-</.list>
+<div class="prose">
+  <br />
+  <h2>Plants</h2>
 
-<br />
-<h2>Plants</h2>
+  <.table id="plant-table" rows={@plants}>
+    <:col :let={plant} label="Name">
+      <.link patch={~p"/gardens/#{@garden.id}/products/#{@product.id}/plants/#{plant.id}"}>
+        <%= plant.name %>
+      </.link>
+    </:col>
+  </.table>
 
-<.table id="plant-table" rows={@plants}>
-  <:col :let={plant} label="Name">
-    <.link patch={~p"/gardens/#{@garden.id}/products/#{@product.id}/plants/#{plant.id}"}>
-      <%= plant.name %>
-    </.link>
-  </:col>
-</.table>
-
-<VisualGardenWeb.EventLogLive.Show.render_events events={@streams.events} />
+  <VisualGardenWeb.EventLogLive.Show.render_events events={@streams.events} />
+</div>
 
 <.back navigate={~p"/gardens/#{@garden.id}/products"}>Back to product</.back>
 
