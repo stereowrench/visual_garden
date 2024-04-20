@@ -105,4 +105,39 @@ defmodule VisualGardenWeb.GardenLiveTest do
       assert html =~ "Garden updated successfully"
     end
   end
+
+  describe "Plant" do
+    setup [:create_garden]
+
+    test "creating a new plant", %{conn: conn, garden: garden} do
+      {:ok, show_live, _html} = live(conn, ~p"/gardens/#{garden}")
+
+      assert show_live |> element("a", "Plant") |> render_click() =~ "Add Plant"
+
+      assert_patch(show_live, ~p"/gardens/#{garden}/plant")
+
+      assert show_live
+             |> form("#plant-form",
+               plant: %{name: "My Plant", qty: 3, seed_id: "-1", product_id: "-1"}
+             )
+             |> render_change() =~ "Seed Name"
+
+      show_live
+      |> form("#plant-form", plant: %{"name" => "My plant", "seed_id" => "-1", "product_id" => "-1"})
+      |> render_change()
+
+      show_live
+      |> form("#plant-form",
+        plant: %{
+          name: "My New Plant",
+          seed: %{"name" => "My Seed", description: "My New Seed"},
+          product: %{name: "My Product", type: "growing_media"}
+        }
+      )
+      |> render_submit()
+
+      {:ok, show_live, html} = live(conn, ~p"/gardens/#{garden}")
+      html =~ "1 plants"
+    end
+  end
 end

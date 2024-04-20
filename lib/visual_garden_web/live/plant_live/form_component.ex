@@ -83,14 +83,16 @@ defmodule VisualGardenWeb.PlantLive.FormComponent do
 
   defp apply_stubs(params, garden) do
     params =
-      if params["product_id"] == "New Product" and params["product"] == nil do
-        put_in(params["product"], %{"garden_id" => garden.id})
+      if params["product_id"] == "-1" do
+        params = put_in(params["product"], %{})
+        put_in(params["product"]["garden_id"], garden.id)
       else
         params
       end
 
-    if params["seed_id"] == "New Seed" and params["seed"] == nil do
-      put_in(params["seed"], %{"garden_id" => garden.id})
+    if params["seed_id"] == "-1" do
+      params = put_in(params["seed"], %{})
+      put_in(params["seed"]["garden_id"], garden.id)
     else
       params
     end
@@ -143,7 +145,8 @@ defmodule VisualGardenWeb.PlantLive.FormComponent do
   end
 
   defp save_plant(socket, :plant, plant_params) do
-    plant_params = maybe_add_parents(plant_params, socket.assigns.garden)
+    plant_params =
+      maybe_add_parents(plant_params, socket.assigns.garden)
 
     case Gardens.create_plant(plant_params) do
       {:ok, plant} ->

@@ -67,7 +67,11 @@ This garden, <%= @garden.name %> has
 <.link class="link" patch={~p"/gardens/#{@garden.id}/products#product-header-beds"}>
   <%= length(Enum.filter(@products, &(&1.type == :bed))) %> beds,</.link>
 <.link class="link" patch={~p"/gardens/#{@garden.id}/products"}>
-  <%= length(Enum.reject(@products, &(&1.type == :bed))) %> products
+  <%= length(Enum.reject(@products, &(&1.type == :bed))) %> products,
+</.link>
+and
+<.link class="link" patch={~p"/gardens/#{@garden.id}/plants"}>
+  <%= length(@plants) %> plants.
 </.link>
 
 <.list>
@@ -156,7 +160,7 @@ This garden, <%= @garden.name %> has
   <.live_component
     module={VisualGardenWeb.PlantLive.FormComponent}
     id={@garden.id}
-    title={@page_title}
+    title="Add Plant"
     action={@live_action}
     garden={@garden}
     products={@products}

@@ -14,7 +14,7 @@ defmodule VisualGarden.Gardens.Product do
   def changeset(products, attrs) do
     products
     |> cast(attrs, [:name, :type, :garden_id])
-    |> validate_required([:name, :type])
+    |> validate_required([:name, :type, :garden_id])
   end
 
   def friendly_type(:growing_media), do: "Growing Media"
