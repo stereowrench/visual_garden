@@ -136,7 +136,7 @@ defmodule VisualGardenWeb.GardenLiveTest do
       )
       |> render_submit()
 
-      {:ok, show_live, html} = live(conn, ~p"/gardens/#{garden}")
+      {:ok, _show_live, html} = live(conn, ~p"/gardens/#{garden}")
       html =~ "1 plants"
     end
   end
