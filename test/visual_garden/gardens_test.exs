@@ -8,7 +8,7 @@ defmodule VisualGarden.GardensTest do
 
     import VisualGarden.GardensFixtures
 
-    @invalid_attrs %{}
+    @invalid_attrs %{name: nil}
 
     test "list_gardens/0 returns all gardens" do
       garden = garden_fixture()
@@ -21,7 +21,7 @@ defmodule VisualGarden.GardensTest do
     end
 
     test "create_garden/1 with valid data creates a garden" do
-      valid_attrs = %{}
+      valid_attrs = %{name: "My Other Garden"}
 
       assert {:ok, %Garden{} = garden} = Gardens.create_garden(valid_attrs)
     end
@@ -55,59 +55,60 @@ defmodule VisualGarden.GardensTest do
     end
   end
 
-  describe "products" do
+  describe "product" do
     alias VisualGarden.Gardens.Product
 
     import VisualGarden.GardensFixtures
 
     @invalid_attrs %{name: nil, type: nil}
 
-    test "list_products/0 returns all products" do
-      products = products_fixture()
-      assert Gardens.list_products() == [products]
+    test "list_products/0 returns all product" do
+      product = product_fixture()
+      assert Gardens.list_products(product.garden_id) == [product]
     end
 
-    test "get_products!/1 returns the products with given id" do
-      products = products_fixture()
-      assert Gardens.get_products!(products.id) == products
+    test "get_product!/1 returns the product with given id" do
+      product = product_fixture()
+      assert Gardens.get_product!(product.id) == product
     end
 
-    test "create_products/1 with valid data creates a products" do
+    test "create_product/1 with valid data creates a product" do
       valid_attrs = %{name: "some name", type: :growing_media}
-
-      assert {:ok, %Product{} = products} = Gardens.create_products(valid_attrs)
-      assert products.name == "some name"
-      assert products.type == :growing_media
+      garden = garden_fixture(%{name: "my garden"})
+      assert {:ok, %Product{} = product} = Gardens.create_product(valid_attrs, garden)
+      assert product.name == "some name"
+      assert product.type == :growing_media
     end
 
-    test "create_products/1 with invalid data returns error changeset" do
-      assert {:error, %Ecto.Changeset{}} = Gardens.create_products(@invalid_attrs)
+    test "create_product/1 with invalid data returns error changeset" do
+      garden = garden_fixture(%{name: "my garden"})
+      assert {:error, %Ecto.Changeset{}} = Gardens.create_product(@invalid_attrs, garden)
     end
 
-    test "update_products/2 with valid data updates the products" do
-      products = products_fixture()
+    test "update_product/2 with valid data updates the product" do
+      product = product_fixture()
       update_attrs = %{name: "some updated name", type: :fertilizer}
 
-      assert {:ok, %Product{} = products} = Gardens.update_products(products, update_attrs)
-      assert products.name == "some updated name"
-      assert products.type == :fertilizer
+      assert {:ok, %Product{} = product} = Gardens.update_product(product, update_attrs)
+      assert product.name == "some updated name"
+      assert product.type == :fertilizer
     end
 
-    test "update_products/2 with invalid data returns error changeset" do
-      products = products_fixture()
-      assert {:error, %Ecto.Changeset{}} = Gardens.update_products(products, @invalid_attrs)
-      assert products == Gardens.get_products!(products.id)
+    test "update_product/2 with invalid data returns error changeset" do
+      product = product_fixture()
+      assert {:error, %Ecto.Changeset{}} = Gardens.update_product(product, @invalid_attrs)
+      assert product == Gardens.get_product!(product.id)
     end
 
-    test "delete_products/1 deletes the products" do
-      products = products_fixture()
-      assert {:ok, %Product{}} = Gardens.delete_products(products)
-      assert_raise Ecto.NoResultsError, fn -> Gardens.get_products!(products.id) end
+    test "delete_product/1 deletes the product" do
+      product = product_fixture()
+      assert {:ok, %Product{}} = Gardens.delete_product(product)
+      assert_raise Ecto.NoResultsError, fn -> Gardens.get_product!(product.id) end
     end
 
-    test "change_products/1 returns a products changeset" do
-      products = products_fixture()
-      assert %Ecto.Changeset{} = Gardens.change_products(products)
+    test "change_product/1 returns a product changeset" do
+      product = product_fixture()
+      assert %Ecto.Changeset{} = Gardens.change_product(product)
     end
   end
 
@@ -172,11 +173,22 @@ defmodule VisualGarden.GardensTest do
 
     import VisualGarden.GardensFixtures
 
-    @invalid_attrs %{}
+    @invalid_attrs %{qty: 0}
 
-    test "list_plants/0 returns all plants" do
+    test "list_plants/1 returns all plants" do
       plant = plant_fixture()
-      assert Gardens.list_plants() == [plant]
+      product = Gardens.get_product!(plant.product_id)
+      garden = Gardens.get_garden!(product.garden_id)
+      product2 = product_fixture(%{}, garden)
+      plant2 = plant_fixture(%{product_id: product2.id})
+      assert Gardens.list_plants(product.garden_id) == [plant, plant2]
+    end
+
+    test "list_plants/2 returns all plants in product" do
+      plant = plant_fixture()
+      product = Gardens.get_product!(plant.product_id)
+      plant2 = plant_fixture(%{garden_id: product.garden_id})
+      assert Gardens.list_plants(product.garden_id, product.id) == [plant]
     end
 
     test "get_plant!/1 returns the plant with given id" do
@@ -185,7 +197,8 @@ defmodule VisualGarden.GardensTest do
     end
 
     test "create_plant/1 with valid data creates a plant" do
-      valid_attrs = %{}
+      product = product_fixture()
+      valid_attrs = %{product_id: product.id, name: "my plant"}
 
       assert {:ok, %Plant{} = plant} = Gardens.create_plant(valid_attrs)
     end

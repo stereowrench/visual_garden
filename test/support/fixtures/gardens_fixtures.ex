@@ -11,7 +11,7 @@ defmodule VisualGarden.GardensFixtures do
     {:ok, garden} =
       attrs
       |> Enum.into(%{
-
+        name: "My Garden"
       })
       |> VisualGarden.Gardens.create_garden()
 
@@ -21,7 +21,10 @@ defmodule VisualGarden.GardensFixtures do
   @doc """
   Generate a products.
   """
-  def product_fixture(attrs \\ %{}, garden) do
+  def product_fixture() do
+    product_fixture(%{}, garden_fixture())
+  end
+  def product_fixture(attrs, garden) do
     {:ok, products} =
       attrs
       |> Enum.into(%{
@@ -51,11 +54,22 @@ defmodule VisualGarden.GardensFixtures do
   @doc """
   Generate a plant.
   """
-  def plant_fixture(attrs \\ %{}) do
+  def plant_fixture(attrs \\ %{}, garden \\ nil) do
+    garden =
+      if garden == nil do
+        garden_fixture()
+      else
+        garden
+      end
+
+    product = product_fixture(%{}, garden)
+
     {:ok, plant} =
       attrs
       |> Enum.into(%{
-
+        product_id: product.id,
+        qty: 1,
+        name: "My plant"
       })
       |> VisualGarden.Gardens.create_plant()
 
@@ -70,7 +84,7 @@ defmodule VisualGarden.GardensFixtures do
       attrs
       |> Enum.into(%{
         quantity: "120.5",
-        units: "some units"
+        units: "cuft"
       })
       |> VisualGarden.Gardens.create_harvest()
 

@@ -39,16 +39,9 @@ defmodule VisualGarden.Gardens.Plant do
 
     cl =
       cl
-      |> validate_required([:name])
+      |> validate_required([:name, :qty])
       |> cast_assoc(:seed, with: &VisualGarden.Gardens.Seed.changeset/2)
       |> cast_assoc(:product, with: &VisualGarden.Gardens.Product.changeset/2)
-
-    cl =
-      unless attrs["seed"] || attrs[:seed] do
-        validate_required(cl, [:seed_id])
-      else
-        cl
-      end
 
     unless attrs["product"] || attrs[:product] do
       validate_required(cl, [:product_id])
