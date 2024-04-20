@@ -16,4 +16,9 @@ defmodule VisualGarden.Gardens.Product do
     |> cast(attrs, [:name, :type, :garden_id])
     |> validate_required([:name, :type])
   end
+
+  def friendly_type(:growing_media), do: "Growing Media"
+  def friendly_type(:bed), do: "Bed"
+  def friendly_type(:compost), do: "Compost"
+  def friendly_type(:fertilizer), do: "Fertilizer"
 end

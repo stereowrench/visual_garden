@@ -56,7 +56,7 @@ defmodule VisualGarden.GardensTest do
   end
 
   describe "products" do
-    alias VisualGarden.Gardens.Products
+    alias VisualGarden.Gardens.Product
 
     import VisualGarden.GardensFixtures
 
@@ -75,7 +75,7 @@ defmodule VisualGarden.GardensTest do
     test "create_products/1 with valid data creates a products" do
       valid_attrs = %{name: "some name", type: :growing_media}
 
-      assert {:ok, %Products{} = products} = Gardens.create_products(valid_attrs)
+      assert {:ok, %Product{} = products} = Gardens.create_products(valid_attrs)
       assert products.name == "some name"
       assert products.type == :growing_media
     end
@@ -88,7 +88,7 @@ defmodule VisualGarden.GardensTest do
       products = products_fixture()
       update_attrs = %{name: "some updated name", type: :fertilizer}
 
-      assert {:ok, %Products{} = products} = Gardens.update_products(products, update_attrs)
+      assert {:ok, %Product{} = products} = Gardens.update_products(products, update_attrs)
       assert products.name == "some updated name"
       assert products.type == :fertilizer
     end
@@ -101,7 +101,7 @@ defmodule VisualGarden.GardensTest do
 
     test "delete_products/1 deletes the products" do
       products = products_fixture()
-      assert {:ok, %Products{}} = Gardens.delete_products(products)
+      assert {:ok, %Product{}} = Gardens.delete_products(products)
       assert_raise Ecto.NoResultsError, fn -> Gardens.get_products!(products.id) end
     end
 

@@ -73,28 +73,36 @@
   </:actions>
 </.header>
 
-<.table
-  id="product"
-  rows={@streams.product_collection}
-  row_click={fn {_id, product} -> JS.navigate(~p"/gardens/#{@garden.id}/products/#{product}") end}
->
-  <:col :let={{_id, product}} label="Name"><%= product.name %></:col>
-  <:col :let={{_id, product}} label="Type"><%= product.type %></:col>
-  <:action :let={{_id, product}}>
-    <div class="sr-only">
-      <.link navigate={~p"/gardens/#{@garden.id}/products/#{product}"}>Show</.link>
-    </div>
-    <.link patch={~p"/gardens/#{@garden.id}/products/#{product}/edit"}>Edit</.link>
-  </:action>
-  <:action :let={{id, product}}>
-    <.link
-      phx-click={JS.push("delete", value: %{id: product.id}) |> hide("##{id}")}
-      data-confirm="Are you sure?"
+<div class="prose">
+  <%= for {name, products} <- Enum.group_by(@products, & &1.type) do %>
+    <h3><%= friendly_type(name) %></h3>
+    <.table
+      id={"products-" <> to_string(name)}
+      rows={products}
+      row_id={fn product -> "product-row-#{product.id}" end}
+      row_click={fn product -> JS.navigate(~p"/gardens/#{@garden.id}/products/#{product}") end}
     >
-      Delete
-    </.link>
-  </:action>
-</.table>
+      <:col :let={product} label="Name"><%= product.name %></:col>
+      <:col :let={product} label="Type"><%= product.type %></:col>
+      <:action :let={product}>
+        <div class="sr-only">
+          <.link navigate={~p"/gardens/#{@garden.id}/products/#{product}"}>Show</.link>
+        </div>
+        <.link patch={~p"/gardens/#{@garden.id}/products/#{product}/edit"}>Edit</.link>
+      </:action>
+      <:action :let={product}>
+        <.link
+          data-confirm="Are you sure?"
+          phx-click={
+            JS.push("delete", value: %{id: product.id}) |> hide("#product-row-#{product.id}")
+          }
+        >
+          Delete
+        </.link>
+      </:action>
+    </.table>
+  <% end %>
+</div>
 
 <.modal
   :if={@live_action in [:new, :edit, :new_bed]}

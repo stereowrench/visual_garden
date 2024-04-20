@@ -6,7 +6,7 @@
 /* This file is for your main application CSS */
 
 @layer base {
- .border {
+  .border {
     /* border-width: 1px; */
     border: none;
   }
@@ -51,4 +51,9 @@
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
   }
+}
+
+
+.link {
+  @apply text-blue-600 visited:text-purple-600 hover:underline;
 }

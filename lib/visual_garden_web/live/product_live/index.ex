@@ -6,7 +6,10 @@ defmodule VisualGardenWeb.ProductLive.Index do
 
   @impl true
   def mount(%{"garden_id" => garden_id}, _session, socket) do
-    {:ok, stream(socket, :product_collection, Gardens.list_products(garden_id))}
+    {:ok,
+     socket
+     |> assign(:products, Gardens.list_products(garden_id))
+     |> assign(:garden_id, garden_id)}
   end
 
   @impl true
@@ -44,7 +47,7 @@ defmodule VisualGardenWeb.ProductLive.Index do
 
   @impl true
   def handle_info({VisualGardenWeb.ProductLive.FormComponent, {:saved, product}}, socket) do
-    {:noreply, stream_insert(socket, :product_collection, product)}
+    {:noreply, assign(socket, :products, Gardens.list_products(socket.assigns.garden_id))}
   end
 
   @impl true
@@ -52,6 +55,10 @@ defmodule VisualGardenWeb.ProductLive.Index do
     product = Gardens.get_product!(id)
     {:ok, _} = Gardens.delete_product(product)
 
-    {:noreply, stream_delete(socket, :product_collection, product)}
+    {:noreply, assign(socket, :products, Gardens.list_products(socket.assigns.garden_id))}
+  end
+
+  def friendly_type(name) do
+    Product.friendly_type(name)
   end
 end

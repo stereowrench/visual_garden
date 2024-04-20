@@ -40,9 +40,10 @@
     </li>
   </ol>
 </nav>
+<hr/>
 <.header>
-  Garden <%= @garden.id %>
-  <:subtitle>This is a garden record from your database.</:subtitle>
+  <%= @garden.name %>
+  <:subtitle>Grow, grow, grow!</:subtitle>
   <:actions>
     <.link patch={~p"/gardens/#{@garden.id}/products/new"}>
       <.button>
@@ -62,6 +63,12 @@
     </.link>
   </:actions>
 </.header>
+This garden, <%= @garden.name %> has
+<.link class="link" patch={~p"/gardens/#{@garden.id}/products#beds"}>
+  <%= length(Enum.filter(@products, &(&1.type == :bed))) %> beds,</.link>
+<.link class="link" patch={~p"/gardens/#{@garden.id}/products"}>
+  <%= length(Enum.reject(@products, &(&1.type == :bed))) %> products
+</.link>
 
 <.list>
   <:item title="Name"><%= @garden.name %></:item>
@@ -111,7 +118,9 @@
     <ul>
       <%= for plant <- @plants do %>
         <li title="name">
-          <.link patch={~p"/gardens/#{@garden.id}/products/#{plant.product_id}/plants/#{plant.id}"}>
+          <.link patch={
+            ~p"/gardens/#{@garden.id}/products/#{plant.product_id}/plants/#{plant.id}"
+          }>
             <%= plant.name %>
           </.link>
         </li>
@@ -137,7 +146,6 @@
     patch={~p"/gardens/#{@garden}"}
   />
 </.modal>
-
 
 <.modal
   :if={@live_action == :plant}
