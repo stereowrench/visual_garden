@@ -66,11 +66,12 @@
     <li>
       <.link patch={~p"/gardens/#{@garden.id}/products/new"}>
         Add product (media, fertilizer, or compost)
+        <sup title="Should not transition away when clicked">Fix me</sup>
       </.link>
     </li>
     <li>
       <.link patch={~p"/gardens/#{@garden.id}/products/new_bed"}>
-        Add bed for plants
+        Add bed for plants <sup title="Should not transition away when clicked">Fix me</sup>
       </.link>
     </li>
     <li>
@@ -81,6 +82,11 @@
     <li>
       <.link patch={~p"/gardens/#{@garden}/show/edit"} phx-click={JS.push_focus()}>
         Edit garden
+      </.link>
+    </li>
+    <li>
+      <.link patch={~p"/gardens/#{@garden}/seeds/new"} phx-click={JS.push_focus()}>
+        Add seeds to inventory <sup title="Should not transition away when clicked">Fix me</sup>
       </.link>
     </li>
   </ul>
