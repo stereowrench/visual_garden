@@ -44,97 +44,47 @@
 <.header>
   <%= @garden.name %>
   <:subtitle>Grow, grow, grow!</:subtitle>
-  <:actions>
-    <.link patch={~p"/gardens/#{@garden.id}/products/new"}>
-      <.button>
-        Add product
-      </.button>
-    </.link>
-    <.link patch={~p"/gardens/#{@garden.id}/products/new_bed"}>
-      <.button>
-        Add bed
-      </.button>
-    </.link>
-    <.link patch={~p"/gardens/#{@garden}/plant"} phx-click={JS.push_focus()}>
-      <.button>Plant</.button>
-    </.link>
-    <.link patch={~p"/gardens/#{@garden}/show/edit"} phx-click={JS.push_focus()}>
-      <.button>Edit garden</.button>
-    </.link>
-  </:actions>
 </.header>
-This garden, <%= @garden.name %> has
-<.link class="link" patch={~p"/gardens/#{@garden.id}/beds"}>
-  <%= length(Enum.filter(@products, &(&1.type == :bed))) %> beds,</.link>
-<.link class="link" patch={~p"/gardens/#{@garden.id}/products"}>
-  <%= length(Enum.reject(@products, &(&1.type == :bed))) %> products,
-</.link>
-<.link class="link" patch={~p"/gardens/#{@garden.id}/seeds"}>
-  <%= length(Enum.reject(@products, &(&1.type == :bed))) %> seeds,
-</.link>
-and
-<.link class="link" patch={~p"/gardens/#{@garden.id}/plants"}>
-  <%= length(@plants) %> plants.
-</.link>
 
-<.list>
-  <:item title="Name"><%= @garden.name %></:item>
-  <:item title="Products">
-    <ul>
-      <%= for {name, group} <- Enum.group_by(Enum.reject(@products, & &1.type == :bed), fn a -> a.type end) do %>
-        <li title="name">
-          <b>
-            <%= name %>
-          </b>
-          <ul>
-            <%= for product <- group do %>
-              <li>
-                <.link patch={~p"/gardens/#{@garden.id}/products/#{product.id}"}>
-                  <%= product.name %>
-                </.link>
-              </li>
-            <% end %>
-          </ul>
-        </li>
-      <% end %>
-    </ul>
-  </:item>
-  <:item title="Beds">
-    <ul>
-      <%= for product <- Enum.filter(@products, & &1.type == :bed)do %>
-        <li title="name">
-          <.link patch={~p"/gardens/#{@garden.id}/products/#{product.id}"}>
-            <%= product.name %>
-          </.link>
-        </li>
-      <% end %>
-    </ul>
-  </:item>
-  <:item title="Seeds">
-    <ul>
-      <%= for seed <- @seeds do %>
-        <li title="name">
-          <.link patch={~p"/gardens/#{@garden.id}/seeds/#{seed.id}"}>
-            <%= seed.name %>
-          </.link>
-        </li>
-      <% end %>
-    </ul>
-  </:item>
-  <:item title="Plants">
-    <ul>
-      <%= for plant <- @plants do %>
-        <li title="name">
-          <.link patch={
-            ~p"/gardens/#{@garden.id}/products/#{plant.product_id}/plants/#{plant.id}"
-          }>
-            <%= plant.name %>
-          </.link>
-        </li>
-      <% end %>
-    </ul>
-  </:item>
-</.list>
+<div class="prose">
+  This garden, <%= @garden.name %> has
+  <.link class="link" patch={~p"/gardens/#{@garden.id}/beds"}>
+    <%= length(Enum.filter(@products, &(&1.type == :bed))) %> beds,
+  </.link>
+  <.link class="link" patch={~p"/gardens/#{@garden.id}/products"}>
+    <%= length(Enum.reject(@products, &(&1.type == :bed))) %> products,
+  </.link>
+  <.link class="link" patch={~p"/gardens/#{@garden.id}/seeds"}>
+    <%= length(Enum.reject(@products, &(&1.type == :bed))) %> seeds,
+  </.link>
+  and
+  <.link class="link" patch={~p"/gardens/#{@garden.id}/plants"}>
+    <%= length(@plants) %> plants.
+  </.link>
+  You can:
+  <ul>
+    <li>
+      <.link patch={~p"/gardens/#{@garden.id}/products/new"}>
+        Add product (media, fertilizer, or compost)
+      </.link>
+    </li>
+    <li>
+      <.link patch={~p"/gardens/#{@garden.id}/products/new_bed"}>
+        Add bed for plants
+      </.link>
+    </li>
+    <li>
+      <.link patch={~p"/gardens/#{@garden}/plant"} phx-click={JS.push_focus()}>
+        Plant a plant
+      </.link>
+    </li>
+    <li>
+      <.link patch={~p"/gardens/#{@garden}/show/edit"} phx-click={JS.push_focus()}>
+        Edit garden
+      </.link>
+    </li>
+  </ul>
+</div>
 
 <.back navigate={~p"/gardens"}>Back to gardens</.back>
 
