@@ -8,11 +8,31 @@ defmodule VisualGardenWeb.ProductLive.Index do
   def mount(%{"garden_id" => garden_id}, _session, socket) do
     {:ok,
      socket
-     |> assign(:products, Gardens.list_products(garden_id))
-     |> assign(:garden_id, garden_id)}
+     |> assign(:garden_id, garden_id)
+     |> assign_products()}
+  end
+
+  defp assign_products(socket) do
+    products =
+      Gardens.list_products(socket.assigns.garden_id)
+
+    products =
+      if socket.assigns.live_action in [:beds, :new_bed] do
+        Enum.filter(products, &(&1.type == :bed))
+      else
+        Enum.reject(products, &(&1.type == :bed))
+      end
+
+    socket
+    |> assign(:products, products)
   end
 
   @impl true
+  @spec handle_params(map(), any(), %{
+          :assigns =>
+            atom() | %{:live_action => :edit | :index | :new | :new_bed, optional(any()) => any()},
+          optional(any()) => any()
+        }) :: {:noreply, map()}
   def handle_params(params, _url, socket) do
     {:noreply, apply_action(socket, socket.assigns.live_action, params)}
   end
@@ -47,7 +67,7 @@ defmodule VisualGardenWeb.ProductLive.Index do
 
   @impl true
   def handle_info({VisualGardenWeb.ProductLive.FormComponent, {:saved, product}}, socket) do
-    {:noreply, assign(socket, :products, Gardens.list_products(socket.assigns.garden_id))}
+    {:noreply, assign_products(socket)}
   end
 
   @impl true
@@ -55,7 +75,7 @@ defmodule VisualGardenWeb.ProductLive.Index do
     product = Gardens.get_product!(id)
     {:ok, _} = Gardens.delete_product(product)
 
-    {:noreply, assign(socket, :products, Gardens.list_products(socket.assigns.garden_id))}
+    {:noreply, assign_products(socket)}
   end
 
   def friendly_type(name) do

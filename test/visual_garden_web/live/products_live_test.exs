@@ -9,27 +9,28 @@ defmodule VisualGardenWeb.ProductsLiveTest do
   @invalid_attrs %{name: nil, type: nil}
 
   defp create_products(_) do
-    products = products_fixture()
-    %{products: products}
+    garden = garden_fixture(%{name: "My Garden"})
+    products = product_fixture(%{}, garden)
+    %{products: products, garden: garden}
   end
 
   describe "Index" do
     setup [:create_products]
 
-    test "lists all products", %{conn: conn, products: products} do
-      {:ok, _index_live, html} = live(conn, ~p"/products")
+    test "lists all products", %{conn: conn, products: products, garden: garden} do
+      {:ok, _index_live, html} = live(conn, ~p"/gardens/#{garden.id}/products")
 
-      assert html =~ "Listing Products"
+      assert html =~ "Listing products"
       assert html =~ products.name
     end
 
-    test "saves new products", %{conn: conn} do
-      {:ok, index_live, _html} = live(conn, ~p"/products")
+    test "saves new products", %{conn: conn, garden: garden} do
+      {:ok, index_live, _html} = live(conn, ~p"/gardens/#{garden.id}/products")
 
       assert index_live |> element("a", "New Products") |> render_click() =~
                "New Products"
 
-      assert_patch(index_live, ~p"/products/new")
+      assert_patch(index_live, ~p"/gardens/#{garden.id}/products/new")
 
       assert index_live
              |> form("#products-form", products: @invalid_attrs)
@@ -39,20 +40,20 @@ defmodule VisualGardenWeb.ProductsLiveTest do
              |> form("#products-form", products: @create_attrs)
              |> render_submit()
 
-      assert_patch(index_live, ~p"/products")
+      assert_patch(index_live, ~p"/gardens/#{garden.id}/products")
 
       html = render(index_live)
       assert html =~ "Products created successfully"
       assert html =~ "some name"
     end
 
-    test "updates products in listing", %{conn: conn, products: products} do
-      {:ok, index_live, _html} = live(conn, ~p"/products")
+    test "updates products in listing", %{conn: conn, products: products, garden: garden} do
+      {:ok, index_live, _html} = live(conn, ~p"/gardens/#{garden.id}/products")
 
       assert index_live |> element("#products-#{products.id} a", "Edit") |> render_click() =~
                "Edit Products"
 
-      assert_patch(index_live, ~p"/products/#{products}/edit")
+      assert_patch(index_live, ~p"/gardens/#{garden.id}/products/#{products}/edit")
 
       assert index_live
              |> form("#products-form", products: @invalid_attrs)
@@ -62,15 +63,15 @@ defmodule VisualGardenWeb.ProductsLiveTest do
              |> form("#products-form", products: @update_attrs)
              |> render_submit()
 
-      assert_patch(index_live, ~p"/products")
+      assert_patch(index_live, ~p"/gardens/#{garden.id}/products")
 
       html = render(index_live)
       assert html =~ "Products updated successfully"
       assert html =~ "some updated name"
     end
 
-    test "deletes products in listing", %{conn: conn, products: products} do
-      {:ok, index_live, _html} = live(conn, ~p"/products")
+    test "deletes products in listing", %{conn: conn, products: products, garden: garden} do
+      {:ok, index_live, _html} = live(conn, ~p"/gardens/#{garden.id}/products")
 
       assert index_live |> element("#products-#{products.id} a", "Delete") |> render_click()
       refute has_element?(index_live, "#products-#{products.id}")
@@ -80,20 +81,20 @@ defmodule VisualGardenWeb.ProductsLiveTest do
   describe "Show" do
     setup [:create_products]
 
-    test "displays products", %{conn: conn, products: products} do
-      {:ok, _show_live, html} = live(conn, ~p"/products/#{products}")
+    test "displays products", %{conn: conn, products: products, garden: garden} do
+      {:ok, _show_live, html} = live(conn, ~p"/gardens/#{garden.id}/products/#{products}")
 
       assert html =~ "Show Products"
       assert html =~ products.name
     end
 
-    test "updates products within modal", %{conn: conn, products: products} do
-      {:ok, show_live, _html} = live(conn, ~p"/products/#{products}")
+    test "updates products within modal", %{conn: conn, products: products, garden: garden} do
+      {:ok, show_live, _html} = live(conn, ~p"/gardens/#{garden.id}/products/#{products}")
 
       assert show_live |> element("a", "Edit") |> render_click() =~
                "Edit Products"
 
-      assert_patch(show_live, ~p"/products/#{products}/show/edit")
+      assert_patch(show_live, ~p"/gardens/#{garden.id}/products/#{products}/show/edit")
 
       assert show_live
              |> form("#products-form", products: @invalid_attrs)
@@ -103,7 +104,7 @@ defmodule VisualGardenWeb.ProductsLiveTest do
              |> form("#products-form", products: @update_attrs)
              |> render_submit()
 
-      assert_patch(show_live, ~p"/products/#{products}")
+      assert_patch(show_live, ~p"/gardens/#{garden.id}/products/#{products}")
 
       html = render(show_live)
       assert html =~ "Products updated successfully"

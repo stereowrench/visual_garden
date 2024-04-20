@@ -21,14 +21,14 @@ defmodule VisualGarden.GardensFixtures do
   @doc """
   Generate a products.
   """
-  def products_fixture(attrs \\ %{}) do
+  def product_fixture(attrs \\ %{}, garden) do
     {:ok, products} =
       attrs
       |> Enum.into(%{
         name: "some name",
         type: :growing_media
       })
-      |> VisualGarden.Gardens.create_products()
+      |> VisualGarden.Gardens.create_product(garden)
 
     products
   end
