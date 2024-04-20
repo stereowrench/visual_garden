@@ -7,16 +7,18 @@ defmodule VisualGardenWeb.PlantLive.Index do
   @impl true
   def mount(%{"garden_id" => garden_id, "product_id" => product_id}, _session, socket) do
     {:ok,
-     socket
-     |> assign(:garden, Gardens.get_garden!(garden_id))
-     |> stream(:plants, Gardens.list_plants(garden_id, product_id))}
+    socket
+    |> assign(:product, Gardens.get_product!(product_id))
+    |> assign(:garden, Gardens.get_garden!(garden_id))
+    |> stream(:plants, Gardens.list_plants(garden_id, product_id))}
   end
 
   def mount(%{"garden_id" => garden_id}, _session, socket) do
     {:ok,
-     socket
-     |> assign(:garden, Gardens.get_garden!(garden_id))
-     |> stream(:plants, Gardens.list_plants(garden_id))}
+    socket
+    |> assign(:product, nil)
+    |> assign(:garden, Gardens.get_garden!(garden_id))
+    |> stream(:plants, Gardens.list_plants(garden_id))}
   end
 
   @impl true
@@ -44,6 +46,7 @@ defmodule VisualGardenWeb.PlantLive.Index do
 
   @impl true
   def handle_info({VisualGardenWeb.PlantLive.FormComponent, {:saved, plant}}, socket) do
+    plant = VisualGarden.Repo.preload(plant, [:seed, :product])
     {:noreply, stream_insert(socket, :plants, plant)}
   end
 

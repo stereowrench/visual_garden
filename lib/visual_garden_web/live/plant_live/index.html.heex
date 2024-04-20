@@ -84,9 +84,13 @@
   <:col :let={{_id, plant}} label="Bed"><%= plant.product.name %></:col>
   <:action :let={{_id, plant}}>
     <div class="sr-only">
-      <.link navigate={~p"/plants/#{plant}"}>Show</.link>
+      <.link navigate={~p"/gardens/#{@garden.id}/products/#{plant.product_id}/plants/#{plant}"}>
+        Show
+      </.link>
     </div>
-    <.link patch={~p"/plants/#{plant}/edit"}>Edit</.link>
+    <.link patch={~p"/gardens/#{@garden.id}/products/#{plant.product_id}/plants/#{plant}/edit"}>
+      Edit
+    </.link>
   </:action>
   <:action :let={{id, plant}}>
     <.link
@@ -102,7 +106,15 @@
   :if={@live_action in [:new, :edit]}
   id="plant-modal"
   show
-  on_cancel={JS.patch(~p"/plants")}
+  on_cancel={
+    JS.patch(
+      unless @product do
+        ~p"/gardens/#{@garden.id}/plants"
+      else
+        ~p"/gardens/#{@garden.id}/products/#{@product.id}/plants"
+      end
+    )
+  }
 >
   <.live_component
     module={VisualGardenWeb.PlantLive.FormComponent}
@@ -110,6 +122,13 @@
     title={@page_title}
     action={@live_action}
     plant={@plant}
-    patch={~p"/plants"}
+    garden={@garden}
+    patch={
+      unless @product do
+        ~p"/gardens/#{@garden.id}/plants"
+      else
+        ~p"/gardens/#{@garden.id}/products/#{@product.id}/plants"
+      end
+    }
   />
 </.modal>
