@@ -75,7 +75,7 @@
 
 <div class="prose">
   <%= for {name, products} <- Enum.group_by(@products, & &1.type) do %>
-    <h3><%= friendly_type(name) %></h3>
+    <h3 id={"product-header-" <> to_string(name)}><%= friendly_type(name) %></h3>
     <.table
       id={"products-" <> to_string(name)}
       rows={products}
@@ -83,7 +83,6 @@
       row_click={fn product -> JS.navigate(~p"/gardens/#{@garden.id}/products/#{product}") end}
     >
       <:col :let={product} label="Name"><%= product.name %></:col>
-      <:col :let={product} label="Type"><%= product.type %></:col>
       <:action :let={product}>
         <div class="sr-only">
           <.link navigate={~p"/gardens/#{@garden.id}/products/#{product}"}>Show</.link>
