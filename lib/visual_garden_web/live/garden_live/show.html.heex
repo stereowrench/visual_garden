@@ -69,6 +69,9 @@ This garden, <%= @garden.name %> has
 <.link class="link" patch={~p"/gardens/#{@garden.id}/products"}>
   <%= length(Enum.reject(@products, &(&1.type == :bed))) %> products,
 </.link>
+<.link class="link" patch={~p"/gardens/#{@garden.id}/seeds"}>
+  <%= length(Enum.reject(@products, &(&1.type == :bed))) %> seeds,
+</.link>
 and
 <.link class="link" patch={~p"/gardens/#{@garden.id}/plants"}>
   <%= length(@plants) %> plants.

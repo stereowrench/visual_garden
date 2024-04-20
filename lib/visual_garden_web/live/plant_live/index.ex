@@ -6,7 +6,17 @@ defmodule VisualGardenWeb.PlantLive.Index do
 
   @impl true
   def mount(%{"garden_id" => garden_id, "product_id" => product_id}, _session, socket) do
-    {:ok, stream(socket, :plants, Gardens.list_plants(garden_id, product_id))}
+    {:ok,
+     socket
+     |> assign(:garden, Gardens.get_garden!(garden_id))
+     |> stream(:plants, Gardens.list_plants(garden_id, product_id))}
+  end
+
+  def mount(%{"garden_id" => garden_id}, _session, socket) do
+    {:ok,
+     socket
+     |> assign(:garden, Gardens.get_garden!(garden_id))
+     |> stream(:plants, Gardens.list_plants(garden_id))}
   end
 
   @impl true

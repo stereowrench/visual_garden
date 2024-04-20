@@ -311,14 +311,16 @@ defmodule VisualGarden.Gardens do
       from p in Plant,
         join: product in Product,
         on: product.id == p.product_id,
-        where: product.garden_id == ^garden_id
+        where: product.garden_id == ^garden_id,
+        preload: [:seed, :product]
     )
   end
 
   def list_plants(_garden_id, product_id) do
     Repo.all(
       from p in Plant,
-        where: p.product_id == ^product_id
+        where: p.product_id == ^product_id,
+        preload: [:seed, :product]
     )
   end
 
