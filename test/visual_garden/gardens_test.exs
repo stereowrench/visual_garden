@@ -121,7 +121,8 @@ defmodule VisualGarden.GardensTest do
 
     test "list_seeds/0 returns all seeds" do
       seed = seed_fixture()
-      assert Gardens.list_seeds() == [seed]
+      garden = Gardens.get_garden!(seed.garden_id)
+      assert Gardens.list_seeds(garden.id) == [seed]
     end
 
     test "get_seed!/1 returns the seed with given id" do
@@ -130,7 +131,8 @@ defmodule VisualGarden.GardensTest do
     end
 
     test "create_seed/1 with valid data creates a seed" do
-      valid_attrs = %{name: "some name", description: "some description"}
+      garden = garden_fixture()
+      valid_attrs = %{name: "some name", description: "some description", garden_id: garden.id}
 
       assert {:ok, %Seed{} = seed} = Gardens.create_seed(valid_attrs)
       assert seed.name == "some name"

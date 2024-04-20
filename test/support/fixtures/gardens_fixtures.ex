@@ -24,6 +24,7 @@ defmodule VisualGarden.GardensFixtures do
   def product_fixture() do
     product_fixture(%{}, garden_fixture())
   end
+
   def product_fixture(attrs, garden) do
     {:ok, products} =
       attrs
@@ -39,11 +40,19 @@ defmodule VisualGarden.GardensFixtures do
   @doc """
   Generate a seed.
   """
-  def seed_fixture(attrs \\ %{}) do
+  def seed_fixture(attrs \\ %{}, garden \\ nil) do
+    garden =
+      if garden == nil do
+        garden_fixture()
+      else
+        garden
+      end
+
     {:ok, seed} =
       attrs
       |> Enum.into(%{
         description: "some description",
+        garden_id: garden.id,
         name: "some name"
       })
       |> VisualGarden.Gardens.create_seed()
