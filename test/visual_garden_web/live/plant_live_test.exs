@@ -96,8 +96,8 @@ defmodule VisualGardenWeb.PlantLiveTest do
       assert html =~ "Plant updated successfully"
     end
 
-    test "deletes plant in listing", %{conn: conn, plant: plant} do
-      {:ok, index_live, _html} = live(conn, ~p"/plants")
+    test "deletes plant in listing", %{conn: conn, plant: plant, garden: garden} do
+      {:ok, index_live, _html} = live(conn, ~p"/gardens/#{garden.id}/plants")
 
       assert index_live |> element("#plants-#{plant.id} a", "Delete") |> render_click()
       refute has_element?(index_live, "#plants-#{plant.id}")
@@ -107,19 +107,19 @@ defmodule VisualGardenWeb.PlantLiveTest do
   describe "Show" do
     setup [:create_plant]
 
-    test "displays plant", %{conn: conn, plant: plant} do
-      {:ok, _show_live, html} = live(conn, ~p"/plants/#{plant}")
+    test "displays plant", %{conn: conn, plant: plant, garden: garden, product: product} do
+      {:ok, _show_live, html} = live(conn, ~p"/gardens/#{garden.id}/products/#{product.id}/plants/#{plant}")
 
       assert html =~ "Show Plant"
     end
 
-    test "updates plant within modal", %{conn: conn, plant: plant} do
-      {:ok, show_live, _html} = live(conn, ~p"/plants/#{plant}")
+    test "updates plant within modal", %{conn: conn, plant: plant, garden: garden, product: product} do
+      {:ok, show_live, _html} = live(conn, ~p"/gardens/#{garden.id}/products/#{product.id}/plants/#{plant}")
 
       assert show_live |> element("a", "Edit") |> render_click() =~
                "Edit Plant"
 
-      assert_patch(show_live, ~p"/plants/#{plant}/show/edit")
+      assert_patch(show_live, ~p"/gardens/#{garden.id}/products/#{product.id}/plants/#{plant}/show/edit")
 
       assert show_live
              |> form("#plant-form", plant: @invalid_attrs)
@@ -129,7 +129,7 @@ defmodule VisualGardenWeb.PlantLiveTest do
              |> form("#plant-form", plant: @update_attrs)
              |> render_submit()
 
-      assert_patch(show_live, ~p"/plants/#{plant}")
+      assert_patch(show_live, ~p"/gardens/#{garden.id}/products/#{product.id}/plants/#{plant}")
 
       html = render(show_live)
       assert html =~ "Plant updated successfully"
