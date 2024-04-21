@@ -103,22 +103,24 @@ defmodule VisualGarden.GardensFixtures do
   @doc """
   Generate a event_log.
   """
-  def event_log_fixture(attrs \\ %{}) do
-    {:ok, event_log} =
+  def event_log_fixture(type, attrs \\ %{}) do
+    product = product_fixture()
+    attrs =
       attrs
       |> Enum.into(%{
-        event_type: "some event_type",
-        humidity: 42,
-        mow_depth_in: "120.5",
-        mowed: true,
-        till_depth_in: "120.5",
-        tilled: true,
-        transfer_units: "some transfer_units",
-        transferred_amount: "120.5",
-        trimmed: true,
-        watered: true
+        "product_id" => product.id,
+        "event_time" => DateTime.utc_now(),
+        "event_type" => type,
+        "humidity" =>  42,
+        "mow_depth_in" => "120.5",
+        "mowed" => true,
+        "till_depth_in" => "120.5",
+        "tilled" => true,
+        "transfer_units" => "cuft",
+        "transferred_amount" => "120.5"
       })
-      |> VisualGarden.Gardens.create_event_log()
+
+    {:ok, event_log} = VisualGarden.Gardens.create_event_log(type, attrs)
 
     event_log
   end

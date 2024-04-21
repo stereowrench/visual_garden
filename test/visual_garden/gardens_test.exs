@@ -295,70 +295,139 @@ defmodule VisualGarden.GardensTest do
 
     import VisualGarden.GardensFixtures
 
-    @invalid_attrs %{event_type: nil, watered: nil, humidity: nil, mowed: nil, mow_depth_in: nil, tilled: nil, till_depth_in: nil, transferred_amount: nil, trimmed: nil, transfer_units: nil}
+    @invalid_attrs %{
+      event_type: nil,
+      humidity: nil,
+      mowed: nil,
+      mow_depth_in: nil,
+      tilled: nil,
+      till_depth_in: nil,
+      transferred_amount: nil,
+      trimmed: nil,
+      transfer_units: nil
+    }
 
     test "list_event_logs/0 returns all event_logs" do
-      event_log = event_log_fixture()
-      assert Gardens.list_event_logs() == [event_log]
+      product = product_fixture()
+      event_log = event_log_fixture("water", %{"product_id" => product.id})
+
+      assert Gardens.list_event_logs(product.id) == [
+               Repo.preload(event_log, [
+                 :transferred_from,
+                 :transferred_to,
+                 :product,
+                 plant: [:seed]
+               ])
+             ]
     end
 
     test "get_event_log!/1 returns the event_log with given id" do
-      event_log = event_log_fixture()
+      event_log = event_log_fixture("water")
       assert Gardens.get_event_log!(event_log.id) == event_log
     end
 
-    test "create_event_log/1 with valid data creates a event_log" do
-      valid_attrs = %{event_type: "some event_type", watered: true, humidity: 42, mowed: true, mow_depth_in: "120.5", tilled: true, till_depth_in: "120.5", transferred_amount: "120.5", trimmed: true, transfer_units: "some transfer_units"}
+    test "create_event_log/1 till with valid data creates a event_log" do
+      garden = garden_fixture()
+      product = product_fixture(%{}, garden)
+      valid_attrs = %{
+        "product_id" => product.id,
+        "event_type" => "till",
+        "event_time" => DateTime.utc_now(),
+        "till_depth_in" => "120.5",
+      }
 
-      assert {:ok, %EventLog{} = event_log} = Gardens.create_event_log(valid_attrs)
-      assert event_log.event_type == "some event_type"
-      assert event_log.watered == true
-      assert event_log.humidity == 42
-      assert event_log.mowed == true
-      assert event_log.mow_depth_in == Decimal.new("120.5")
-      assert event_log.tilled == true
-      assert event_log.till_depth_in == Decimal.new("120.5")
-      assert event_log.transferred_amount == Decimal.new("120.5")
-      assert event_log.trimmed == true
-      assert event_log.transfer_units == "some transfer_units"
+      assert {:ok, %EventLog{} = event_log} = Gardens.create_event_log("till", valid_attrs)
+      assert event_log.event_type == :till
+    end
+
+    test "create_event_log/1 water with valid data creates a event_log" do
+      garden = garden_fixture()
+      product = product_fixture(%{}, garden)
+      valid_attrs = %{
+        "product_id" => product.id,
+        "event_type" => "water",
+        "event_time" => DateTime.utc_now(),
+      }
+
+      assert {:ok, %EventLog{} = event_log} = Gardens.create_event_log("water", valid_attrs)
+      assert event_log.event_type == :water
+    end
+
+    test "create_event_log/1 plant with valid data creates a event_log" do
+      garden = garden_fixture()
+      product = product_fixture(%{}, garden)
+      plant = plant_fixture(%{}, garden)
+
+      valid_attrs = %{
+        "plant_id" => plant.id,
+        "product_id" => product.id,
+        "event_type" => "plant",
+        "event_time" => DateTime.utc_now(),
+      }
+
+      assert {:ok, %EventLog{} = event_log} = Gardens.create_event_log("plant", valid_attrs)
+      assert event_log.event_type == :plant
+    end
+
+    test "create_event_log/1 transfer with valid data creates a event_log" do
+      garden = garden_fixture()
+      product = product_fixture(%{}, garden)
+      product2 = product_fixture(%{}, garden)
+
+      valid_attrs = %{
+        "product_id" => product.id,
+        "event_type" => "transfer",
+        "event_time" => DateTime.utc_now(),
+        "transferred_to_id" => product.id,
+        "transferred_from_id" => product2.id,
+      }
+
+      assert {:ok, %EventLog{} = event_log} = Gardens.create_event_log("transfer", valid_attrs)
+      assert event_log.event_type == :transfer
     end
 
     test "create_event_log/1 with invalid data returns error changeset" do
-      assert {:error, %Ecto.Changeset{}} = Gardens.create_event_log(@invalid_attrs)
+      attrs =
+        @invalid_attrs
+        |> Enum.map(fn {a,b} -> {to_string(a), b} end)
+        |> Enum.into(%{})
+
+      assert {:error, %Ecto.Changeset{}} = Gardens.create_event_log("water", attrs)
     end
 
     test "update_event_log/2 with valid data updates the event_log" do
-      event_log = event_log_fixture()
-      update_attrs = %{event_type: "some updated event_type", watered: false, humidity: 43, mowed: false, mow_depth_in: "456.7", tilled: false, till_depth_in: "456.7", transferred_amount: "456.7", trimmed: false, transfer_units: "some updated transfer_units"}
+      event_log = event_log_fixture("water")
+
+      update_attrs = %{
+        event_type: "water",
+        humidity: 7,
+        mowed: false,
+        mow_depth_in: "456.7",
+        till_depth_in: "456.7",
+        transferred_amount: "456.7",
+        trimmed: false,
+        transfer_units: "Quarts"
+      }
 
       assert {:ok, %EventLog{} = event_log} = Gardens.update_event_log(event_log, update_attrs)
-      assert event_log.event_type == "some updated event_type"
-      assert event_log.watered == false
-      assert event_log.humidity == 43
-      assert event_log.mowed == false
-      assert event_log.mow_depth_in == Decimal.new("456.7")
-      assert event_log.tilled == false
-      assert event_log.till_depth_in == Decimal.new("456.7")
-      assert event_log.transferred_amount == Decimal.new("456.7")
-      assert event_log.trimmed == false
-      assert event_log.transfer_units == "some updated transfer_units"
+      assert event_log.event_type == :water
     end
 
     test "update_event_log/2 with invalid data returns error changeset" do
-      event_log = event_log_fixture()
+      event_log = event_log_fixture("water")
       assert {:error, %Ecto.Changeset{}} = Gardens.update_event_log(event_log, @invalid_attrs)
       assert event_log == Gardens.get_event_log!(event_log.id)
     end
 
     test "delete_event_log/1 deletes the event_log" do
-      event_log = event_log_fixture()
+      event_log = event_log_fixture("water")
       assert {:ok, %EventLog{}} = Gardens.delete_event_log(event_log)
       assert_raise Ecto.NoResultsError, fn -> Gardens.get_event_log!(event_log.id) end
     end
 
     test "change_event_log/1 returns a event_log changeset" do
-      event_log = event_log_fixture()
-      assert %Ecto.Changeset{} = Gardens.change_event_log(event_log)
+      event_log = event_log_fixture("water")
+      assert %Ecto.Changeset{} = Gardens.change_event_log(event_log, %{"event_type" => "till"})
     end
   end
 end

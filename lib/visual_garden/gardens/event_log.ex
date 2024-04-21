@@ -30,7 +30,7 @@ defmodule VisualGarden.Gardens.EventLog do
       values: [
         :cuft,
         :scoops,
-        :quarts
+        :Quarts
       ]
 
     belongs_to :transferred_to, VisualGarden.Gardens.Product
@@ -55,7 +55,7 @@ defmodule VisualGarden.Gardens.EventLog do
       :event_time,
       :product_id
     ])
-    |> validate_required([:event_time])
+    |> validate_required([:event_time, :product_id])
     |> validate_inclusion(:event_type, [:water])
   end
 
@@ -68,7 +68,7 @@ defmodule VisualGarden.Gardens.EventLog do
       :event_time,
       :till_depth_in
     ])
-    |> validate_required([:event_time])
+    |> validate_required([:event_time, :product_id])
     |> validate_inclusion(:event_type, [:till])
   end
 
