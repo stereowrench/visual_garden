@@ -4,9 +4,9 @@ defmodule VisualGardenWeb.HarvestLiveTest do
   import Phoenix.LiveViewTest
   import VisualGarden.GardensFixtures
 
-  @create_attrs %{quantity: "120.5", units: "some units"}
-  @update_attrs %{quantity: "456.7", units: "some updated units"}
-  @invalid_attrs %{quantity: nil, units: nil}
+  @create_attrs %{quantity: "120.5", units: "Quarts"}
+  @update_attrs %{quantity: "456.7", units: "cuft"}
+  @invalid_attrs %{quantity: nil, units: "cuft"}
 
   defp create_harvest(_) do
     harvest = harvest_fixture()
@@ -20,7 +20,7 @@ defmodule VisualGardenWeb.HarvestLiveTest do
       {:ok, _index_live, html} = live(conn, ~p"/harvests")
 
       assert html =~ "Listing Harvests"
-      assert html =~ harvest.units
+      assert html =~ to_string(harvest.units)
     end
 
     test "saves new harvest", %{conn: conn} do
@@ -43,7 +43,7 @@ defmodule VisualGardenWeb.HarvestLiveTest do
 
       html = render(index_live)
       assert html =~ "Harvest created successfully"
-      assert html =~ "some units"
+      assert html =~ "Quarts"
     end
 
     test "updates harvest in listing", %{conn: conn, harvest: harvest} do
@@ -66,7 +66,7 @@ defmodule VisualGardenWeb.HarvestLiveTest do
 
       html = render(index_live)
       assert html =~ "Harvest updated successfully"
-      assert html =~ "some updated units"
+      assert html =~ "cuft"
     end
 
     test "deletes harvest in listing", %{conn: conn, harvest: harvest} do
@@ -84,7 +84,7 @@ defmodule VisualGardenWeb.HarvestLiveTest do
       {:ok, _show_live, html} = live(conn, ~p"/harvests/#{harvest}")
 
       assert html =~ "Show Harvest"
-      assert html =~ harvest.units
+      assert html =~ to_string(harvest.units)
     end
 
     test "updates harvest within modal", %{conn: conn, harvest: harvest} do
@@ -107,7 +107,7 @@ defmodule VisualGardenWeb.HarvestLiveTest do
 
       html = render(show_live)
       assert html =~ "Harvest updated successfully"
-      assert html =~ "some updated units"
+      assert html =~ "cuft"
     end
   end
 end
