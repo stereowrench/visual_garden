@@ -5,8 +5,8 @@ defmodule VisualGardenWeb.PlantLiveTest do
   import VisualGarden.GardensFixtures
 
   @create_attrs %{name: "my plant", qty: 1}
-  @update_attrs %{}
-  @invalid_attrs %{}
+  @update_attrs %{name: "my plant 2"}
+  @invalid_attrs %{name: nil}
 
   defp create_plant(_) do
     garden = garden_fixture()
@@ -74,13 +74,13 @@ defmodule VisualGardenWeb.PlantLiveTest do
       assert html =~ "Plant created successfully"
     end
 
-    test "updates plant in listing", %{conn: conn, plant: plant} do
-      {:ok, index_live, _html} = live(conn, ~p"/plants")
+    test "updates plant in listing", %{conn: conn, plant: plant, garden: garden, product: product} do
+      {:ok, index_live, _html} = live(conn, ~p"/gardens/#{garden.id}/plants")
 
       assert index_live |> element("#plants-#{plant.id} a", "Edit") |> render_click() =~
                "Edit Plant"
 
-      assert_patch(index_live, ~p"/plants/#{plant}/edit")
+      assert_patch(index_live, ~p"/gardens/#{garden.id}/products/#{product.id}/plants/#{plant}/edit")
 
       assert index_live
              |> form("#plant-form", plant: @invalid_attrs)
@@ -90,7 +90,7 @@ defmodule VisualGardenWeb.PlantLiveTest do
              |> form("#plant-form", plant: @update_attrs)
              |> render_submit()
 
-      assert_patch(index_live, ~p"/plants")
+      assert_patch(index_live, ~p"/gardens/#{garden.id}/plants")
 
       html = render(index_live)
       assert html =~ "Plant updated successfully"
