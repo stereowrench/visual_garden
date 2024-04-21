@@ -183,14 +183,21 @@ defmodule VisualGarden.GardensTest do
       garden = Gardens.get_garden!(product.garden_id)
       product2 = product_fixture(%{}, garden)
       plant2 = plant_fixture(%{product_id: product2.id})
-      assert Gardens.list_plants(product.garden_id) == [plant, plant2]
+
+      assert Gardens.list_plants(product.garden_id) == [
+               Repo.preload(plant, [:seed, :product]),
+               Repo.preload(plant2, [:seed, :product])
+             ]
     end
 
     test "list_plants/2 returns all plants in product" do
       plant = plant_fixture()
       product = Gardens.get_product!(plant.product_id)
       plant2 = plant_fixture(%{garden_id: product.garden_id})
-      assert Gardens.list_plants(product.garden_id, product.id) == [plant]
+
+      assert Gardens.list_plants(product.garden_id, product.id) == [
+               Repo.preload(plant, [:seed, :product])
+             ]
     end
 
     test "get_plant!/1 returns the plant with given id" do
@@ -200,7 +207,7 @@ defmodule VisualGarden.GardensTest do
 
     test "create_plant/1 with valid data creates a plant" do
       product = product_fixture()
-      valid_attrs = %{product_id: product.id, name: "my plant"}
+      valid_attrs = %{product_id: product.id, name: "my plant", qty: 1}
 
       assert {:ok, %Plant{} = plant} = Gardens.create_plant(valid_attrs)
     end
@@ -329,11 +336,12 @@ defmodule VisualGarden.GardensTest do
     test "create_event_log/1 till with valid data creates a event_log" do
       garden = garden_fixture()
       product = product_fixture(%{}, garden)
+
       valid_attrs = %{
         "product_id" => product.id,
         "event_type" => "till",
         "event_time" => DateTime.utc_now(),
-        "till_depth_in" => "120.5",
+        "till_depth_in" => "120.5"
       }
 
       assert {:ok, %EventLog{} = event_log} = Gardens.create_event_log("till", valid_attrs)
@@ -343,10 +351,11 @@ defmodule VisualGarden.GardensTest do
     test "create_event_log/1 water with valid data creates a event_log" do
       garden = garden_fixture()
       product = product_fixture(%{}, garden)
+
       valid_attrs = %{
         "product_id" => product.id,
         "event_type" => "water",
-        "event_time" => DateTime.utc_now(),
+        "event_time" => DateTime.utc_now()
       }
 
       assert {:ok, %EventLog{} = event_log} = Gardens.create_event_log("water", valid_attrs)
@@ -362,7 +371,7 @@ defmodule VisualGarden.GardensTest do
         "plant_id" => plant.id,
         "product_id" => product.id,
         "event_type" => "plant",
-        "event_time" => DateTime.utc_now(),
+        "event_time" => DateTime.utc_now()
       }
 
       assert {:ok, %EventLog{} = event_log} = Gardens.create_event_log("plant", valid_attrs)
@@ -379,7 +388,7 @@ defmodule VisualGarden.GardensTest do
         "event_type" => "transfer",
         "event_time" => DateTime.utc_now(),
         "transferred_to_id" => product.id,
-        "transferred_from_id" => product2.id,
+        "transferred_from_id" => product2.id
       }
 
       assert {:ok, %EventLog{} = event_log} = Gardens.create_event_log("transfer", valid_attrs)
@@ -389,7 +398,7 @@ defmodule VisualGarden.GardensTest do
     test "create_event_log/1 with invalid data returns error changeset" do
       attrs =
         @invalid_attrs
-        |> Enum.map(fn {a,b} -> {to_string(a), b} end)
+        |> Enum.map(fn {a, b} -> {to_string(a), b} end)
         |> Enum.into(%{})
 
       assert {:error, %Ecto.Changeset{}} = Gardens.create_event_log("water", attrs)
