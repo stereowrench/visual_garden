@@ -64,7 +64,7 @@
 <.header>
   Listing Plants
   <:actions>
-    <.link patch={~p"/plants/new"}>
+    <.link patch={~p"/gardens/#{@garden.id}/plants/new"}>
       <.button>New Plant</.button>
     </.link>
   </:actions>
@@ -122,6 +122,8 @@
     title={@page_title}
     action={@live_action}
     plant={@plant}
+    seeds={@seeds}
+    products={@products}
     garden={@garden}
     patch={
       unless @product do

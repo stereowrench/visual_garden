@@ -4,41 +4,71 @@ defmodule VisualGardenWeb.PlantLiveTest do
   import Phoenix.LiveViewTest
   import VisualGarden.GardensFixtures
 
-  @create_attrs %{}
+  @create_attrs %{name: "my plant", qty: 1}
   @update_attrs %{}
   @invalid_attrs %{}
 
   defp create_plant(_) do
-    plant = plant_fixture()
-    %{plant: plant}
+    garden = garden_fixture()
+    product = product_fixture(%{}, garden)
+    plant = plant_fixture(%{product_id: product.id}, garden)
+    %{plant: plant, product: product, garden: garden}
   end
 
   describe "Index" do
     setup [:create_plant]
 
-    test "lists all plants", %{conn: conn} do
-      {:ok, _index_live, html} = live(conn, ~p"/plants")
+    test "lists all plants", %{conn: conn, garden: garden} do
+      {:ok, _index_live, html} = live(conn, ~p"/gardens/#{garden.id}/plants")
 
       assert html =~ "Listing Plants"
     end
 
-    test "saves new plant", %{conn: conn} do
-      {:ok, index_live, _html} = live(conn, ~p"/plants")
+    test "lists all plants under product", %{conn: conn, garden: garden, product: product} do
+      {:ok, _index_live, html} = live(conn, ~p"/gardens/#{garden.id}/products/#{product.id}/plants")
 
-      assert index_live |> element("a", "New Plant") |> render_click() =~
-               "New Plant"
+      assert html =~ "Listing Plants"
+    end
 
-      assert_patch(index_live, ~p"/plants/new")
+    test "saves new plant from garden view", %{conn: conn, garden: garden, product: product} do
+      {:ok, index_live, _html} = live(conn, ~p"/gardens/#{garden.id}")
+
+      assert index_live |> element("a", "Plant a plant") |> render_click() =~
+               "Add Plant"
+
+      assert_patch(index_live, ~p"/gardens/#{garden.id}/plant")
 
       assert index_live
              |> form("#plant-form", plant: @invalid_attrs)
              |> render_change() =~ "can&#39;t be blank"
 
       assert index_live
-             |> form("#plant-form", plant: @create_attrs)
+             |> form("#plant-form", plant: Map.merge(@create_attrs, %{product_id: product.id}))
              |> render_submit()
 
-      assert_patch(index_live, ~p"/plants")
+      assert_patch(index_live, ~p"/gardens/#{garden.id}")
+
+      html = render(index_live)
+      assert html =~ "Plant created successfully"
+    end
+
+    test "saves new plant from plants view", %{conn: conn, garden: garden, product: product} do
+      {:ok, index_live, _html} = live(conn, ~p"/gardens/#{garden.id}/plants")
+
+      assert index_live |> element("a", "New Plant") |> render_click() =~
+               "New Plant"
+
+      assert_patch(index_live, ~p"/gardens/#{garden.id}/plants/new")
+
+      assert index_live
+             |> form("#plant-form", plant: @invalid_attrs)
+             |> render_change() =~ "can&#39;t be blank"
+
+      assert index_live
+             |> form("#plant-form", plant: Map.merge(@create_attrs, %{product_id: product.id}))
+             |> render_submit()
+
+      assert_patch(index_live, ~p"/gardens/#{garden.id}/plants")
 
       html = render(index_live)
       assert html =~ "Plant created successfully"

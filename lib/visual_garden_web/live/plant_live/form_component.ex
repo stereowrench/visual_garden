@@ -150,7 +150,7 @@ defmodule VisualGardenWeb.PlantLive.FormComponent do
     end
   end
 
-  defp save_plant(socket, :plant, plant_params) do
+  defp save_plant(socket, action, plant_params) when action in [:plant, :new] do
     plant_params =
       maybe_add_parents(plant_params, socket.assigns.garden)
 
@@ -168,7 +168,7 @@ defmodule VisualGardenWeb.PlantLive.FormComponent do
         {:noreply,
          socket
          |> put_notification(Normal.new(:info, "Plant created successfully"))
-         |> push_patch(to: ~p"/gardens/#{socket.assigns.garden.id}/")}
+         |> push_patch(to: socket.assigns.patch)}
 
       {:error, %Ecto.Changeset{} = changeset} ->
         {:noreply, assign_form(socket, changeset)}
