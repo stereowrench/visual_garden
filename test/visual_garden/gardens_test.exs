@@ -252,11 +252,11 @@ defmodule VisualGarden.GardensTest do
     end
 
     test "create_harvest/1 with valid data creates a harvest" do
-      valid_attrs = %{quantity: "120.5", units: "some units"}
+      valid_attrs = %{quantity: "120.5", units: "cuft"}
 
       assert {:ok, %Harvest{} = harvest} = Gardens.create_harvest(valid_attrs)
       assert harvest.quantity == Decimal.new("120.5")
-      assert harvest.units == "some units"
+      assert harvest.units == :cuft
     end
 
     test "create_harvest/1 with invalid data returns error changeset" do
@@ -265,11 +265,11 @@ defmodule VisualGarden.GardensTest do
 
     test "update_harvest/2 with valid data updates the harvest" do
       harvest = harvest_fixture()
-      update_attrs = %{quantity: "456.7", units: "some updated units"}
+      update_attrs = %{quantity: "456.7", units: "Quarts"}
 
       assert {:ok, %Harvest{} = harvest} = Gardens.update_harvest(harvest, update_attrs)
       assert harvest.quantity == Decimal.new("456.7")
-      assert harvest.units == "some updated units"
+      assert harvest.units == :Quarts
     end
 
     test "update_harvest/2 with invalid data returns error changeset" do
