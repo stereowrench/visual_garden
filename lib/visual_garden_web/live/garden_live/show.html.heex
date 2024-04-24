@@ -1,8 +1,15 @@
-<.live_component module={VisualGardenWeb.NavBar} id="navbar" garden={@garden} current={"Home"} />
+<.live_component module={VisualGardenWeb.NavBar} id="navbar" garden={@garden} current="Home" />
 
 <.header>
   <%= @garden.name %>
   <:subtitle>Grow, grow, grow!</:subtitle>
+  <:actions>
+    <button class="major-button">
+      <.link patch={~p"/gardens/#{@garden}/show/edit"} phx-click={JS.push_focus()}>
+        Edit garden
+      </.link>
+    </button>
+  </:actions>
 </.header>
 
 <div class="prose">
@@ -24,11 +31,7 @@
         Plant a plant
       </.link>
     </li>
-    <li>
-      <.link patch={~p"/gardens/#{@garden}/show/edit"} phx-click={JS.push_focus()}>
-        Edit garden
-      </.link>
-    </li>
+    <li></li>
     <li>
       <.link navigate={~p"/gardens/#{@garden}/seeds/new"} phx-click={JS.push_focus()}>
         Add seeds to inventory <sup title="Should not transition away when clicked">Fix me</sup>

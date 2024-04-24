@@ -428,16 +428,16 @@ defmodule VisualGardenWeb.CoreComponents do
 
   def header(assigns) do
     ~H"""
-    <header class={[@actions != [] && "flex items-center justify-between gap-6", @class]}>
-      <div>
-        <h1 class="text-lg font-semibold leading-8 text-zinc-800">
+    <header class={[@actions != [] && "md:flex md:items-center md:justify-between", @class]}>
+      <div class="min-w-0 flex-1">
+        <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
           <%= render_slot(@inner_block) %>
-        </h1>
+        </h2>
         <p :if={@subtitle != []} class="mt-2 text-sm leading-6 text-zinc-600">
           <%= render_slot(@subtitle) %>
         </p>
       </div>
-      <div class="flex-none"><%= render_slot(@actions) %></div>
+      <div class="mt-4 flex md:ml-4 md:mt-0"><%= render_slot(@actions) %></div>
     </header>
     """
   end
@@ -489,7 +489,11 @@ defmodule VisualGardenWeb.CoreComponents do
           phx-update={match?(%Phoenix.LiveView.LiveStream{}, @rows) && "stream"}
           class="relative divide-y divide-zinc-100 border-t border-zinc-200 text-sm leading-6 text-zinc-700"
         >
-          <tr :for={row <- @rows} id={@row_id && @row_id.(row)} class="group hover:bg-zinc-50 sm:table-row flex flex-col mb-4">
+          <tr
+            :for={row <- @rows}
+            id={@row_id && @row_id.(row)}
+            class="group hover:bg-zinc-50 sm:table-row flex flex-col mb-4"
+          >
             <td
               :for={{col, i} <- Enum.with_index(@col)}
               phx-click={@row_click && @row_click.(row)}
@@ -707,7 +711,12 @@ defmodule VisualGardenWeb.CoreComponents do
       >
         <div :for={item <- @item} class="py-1" role="none">
           <!-- Active: "bg-gray-100 text-gray-900", Not Active: "text-gray-700" -->
-          <.link navigate={item.patch} class="text-gray-700 block px-4 py-2 text-sm" role="menuitem" tabindex="-1">
+          <.link
+            navigate={item.patch}
+            class="text-gray-700 block px-4 py-2 text-sm"
+            role="menuitem"
+            tabindex="-1"
+          >
             <%= render_slot(item) %>
           </.link>
         </div>
