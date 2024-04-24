@@ -86,7 +86,7 @@ defmodule VisualGardenWeb.GardenLiveTest do
     test "updates garden within modal", %{conn: conn, garden: garden} do
       {:ok, show_live, _html} = live(conn, ~p"/gardens/#{garden}")
 
-      assert show_live |> element("a", "Edit") |> render_click() =~
+      assert show_live |> element("a", "Edit garden") |> render_click() =~
                "Edit Garden"
 
       assert_patch(show_live, ~p"/gardens/#{garden}/show/edit")
@@ -112,7 +112,7 @@ defmodule VisualGardenWeb.GardenLiveTest do
     test "creating a new plant", %{conn: conn, garden: garden} do
       {:ok, show_live, _html} = live(conn, ~p"/gardens/#{garden}")
 
-      assert show_live |> element("a", "Plant") |> render_click() =~ "Add Plant"
+      assert show_live |> element("a", "Plant a plant") |> render_click() =~ "Add Plant"
 
       assert_patch(show_live, ~p"/gardens/#{garden}/plant")
 
