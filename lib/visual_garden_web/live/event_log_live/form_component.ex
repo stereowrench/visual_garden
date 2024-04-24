@@ -25,14 +25,9 @@ defmodule VisualGardenWeb.EventLogLive.FormComponent do
           field={@form[:event_time_hidden]}
           type="datetime-local"
           label="Event time"
-        />
-        <.input
-          id="event-time"
-          field={@form[:event_time]}
-          type="hidden"
-          label="Event time"
           value={DateTime.utc_now()}
         />
+        <.input id="event-time" field={@form[:event_time]} type="hidden" />
 
         <%= if @action == :new_humidity do %>
           <.input field={@form[:humidity]} type="number" label="Humidity" />
@@ -112,6 +107,8 @@ defmodule VisualGardenWeb.EventLogLive.FormComponent do
 
   @impl true
   def handle_event("validate", %{"event_log" => event_log_params}, socket) do
+    IO.inspect(event_log_params)
+
     changeset =
       socket.assigns.event_log
       |> Gardens.change_event_log(
@@ -123,6 +120,7 @@ defmodule VisualGardenWeb.EventLogLive.FormComponent do
   end
 
   def handle_event("save", %{"event_log" => event_log_params}, socket) do
+    IO.inspect(event_log_params)
     save_event_log(socket, socket.assigns.action, event_log_params)
   end
 

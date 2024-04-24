@@ -6,7 +6,7 @@ defmodule VisualGardenWeb.ProductLive.Show do
   @impl true
   def mount(%{"id" => id}, _session, socket) do
     els = Gardens.list_event_logs(id)
-    socket = stream(socket, :events, els)
+    socket = assign(socket, :events, els)
     {:ok, socket}
   end
 
@@ -23,7 +23,7 @@ defmodule VisualGardenWeb.ProductLive.Show do
 
   @impl true
   def handle_info({VisualGardenWeb.EventLogLive.FormComponent, {:saved, event_log}}, socket) do
-    {:noreply, stream_insert(socket, :events, event_log)}
+    {:noreply, assign(socket, :events, Gardens.list_event_logs(socket.assigns.product.id))}
   end
 
   def handle_info({VisualGardenWeb.ProductLive.FormComponent, {:saved, product}}, socket) do
@@ -45,7 +45,7 @@ defmodule VisualGardenWeb.ProductLive.Show do
 
     {:noreply,
      socket
-     |> stream(:events, Gardens.list_event_logs(socket.assigns.product.id))
+     |> assign(:events, Gardens.list_event_logs(socket.assigns.product.id))
      |> put_notification(Normal.new(:info, "#{socket.assigns.product.name} was #{@names[evt]}"))}
   end
 

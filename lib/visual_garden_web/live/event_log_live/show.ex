@@ -26,7 +26,7 @@ defmodule VisualGardenWeb.EventLogLive.Show do
       <h3>Events</h3>
       <br />
       <ul role="list" class="-mb-8" id="event-log-list" phx-update="stream">
-        <%= for {_name, event} <- @events do %>
+        <%= for event <- Enum.sort_by(@events, & &1.event_time) do %>
           <li title="Event type" id={"event_log_#{event.id}"}>
             <div class="relative pb-8">
               <span class="absolute left-4 top-4 -ml-px h-full w-0.5 bg-gray-200" aria-hidden="true">

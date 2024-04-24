@@ -20,7 +20,7 @@ defmodule VisualGardenWeb.PlantLive.Show do
      |> assign(:garden, Gardens.get_garden!(garden_id))
      |> assign(:product, Gardens.get_product!(product_id))
      |> assign(:plant, Gardens.get_plant!(id))
-     |> stream(:events, Gardens.list_event_logs(product_id, id))}
+     |> assign(:events, Gardens.list_event_logs(product_id, id))}
   end
 
   defp page_title(:show), do: "Show Plant"
@@ -31,6 +31,6 @@ defmodule VisualGardenWeb.PlantLive.Show do
     {:noreply,
      socket
      |> assign(:plant, plant)
-     |> stream(:events, Gardens.list_event_logs(plant.product_id, plant.id))}
+     |> assign(:events, Gardens.list_event_logs(plant.product_id, plant.id))}
   end
 end

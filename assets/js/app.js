@@ -83,7 +83,7 @@ Hooks.SplitMenu = {
 Hooks.EventTime = {
   mounted() {
     const stored = document.getElementById("event-time");
-    const d = new Date(stored.value);
+    const d = new Date(this.el.value);
     const dateTimeLocalValue = new Date(
       d.getTime() - d.getTimezoneOffset() * 60000
     )
@@ -92,6 +92,7 @@ Hooks.EventTime = {
     this.el.value = dateTimeLocalValue;
     this.el.onchange = () => {
       stored.value = new Date(this.el.value).toISOString();
+      stored.dispatchEvent(new Event('input', {bubbles: true}))
     };
   },
 };
