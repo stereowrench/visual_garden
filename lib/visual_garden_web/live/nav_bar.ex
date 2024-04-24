@@ -4,7 +4,7 @@ defmodule VisualGardenWeb.NavBar do
   @impl true
   def render(assigns) do
     ~H"""
-    <div>
+    <div class="mb-7">
       <div class="sm:hidden">
         <label for="tabs" class="sr-only">Select a tab</label>
         <!-- Use an "onChange" listener to redirect the user to the selected tab URL. -->
