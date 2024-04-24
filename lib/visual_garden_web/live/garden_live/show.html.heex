@@ -6,30 +6,16 @@
 </.header>
 
 <div class="prose">
-  This garden, <%= @garden.name %> has
-  <.link class="link" patch={~p"/gardens/#{@garden.id}/beds"}>
-    <%= length(Enum.filter(@products, &(&1.type == :bed))) %> beds,
-  </.link>
-  <.link class="link" patch={~p"/gardens/#{@garden.id}/products"}>
-    <%= length(Enum.reject(@products, &(&1.type == :bed))) %> products,
-  </.link>
-  <.link class="link" patch={~p"/gardens/#{@garden.id}/seeds"}>
-    <%= length(Enum.reject(@products, &(&1.type == :bed))) %> seeds,
-  </.link>
-  and
-  <.link class="link" patch={~p"/gardens/#{@garden.id}/plants"}>
-    <%= length(@plants) %> plants.
-  </.link>
   You can:
   <ul>
     <li>
-      <.link patch={~p"/gardens/#{@garden.id}/products/new"}>
+      <.link navigate={~p"/gardens/#{@garden.id}/products/new"}>
         Add product (media, fertilizer, or compost)
         <sup title="Should not transition away when clicked">Fix me</sup>
       </.link>
     </li>
     <li>
-      <.link patch={~p"/gardens/#{@garden.id}/products/new_bed"}>
+      <.link navigate={~p"/gardens/#{@garden.id}/products/new_bed"}>
         Add bed for plants <sup title="Should not transition away when clicked">Fix me</sup>
       </.link>
     </li>
@@ -39,12 +25,12 @@
       </.link>
     </li>
     <li>
-      <.link patch={~p"/gardens/#{@garden}/show/edit"} phx-click={JS.push_focus()}>
+      <.link navigate={~p"/gardens/#{@garden}/show/edit"} phx-click={JS.push_focus()}>
         Edit garden
       </.link>
     </li>
     <li>
-      <.link patch={~p"/gardens/#{@garden}/seeds/new"} phx-click={JS.push_focus()}>
+      <.link navigate={~p"/gardens/#{@garden}/seeds/new"} phx-click={JS.push_focus()}>
         Add seeds to inventory <sup title="Should not transition away when clicked">Fix me</sup>
       </.link>
     </li>

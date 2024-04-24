@@ -8,7 +8,7 @@ defmodule VisualGardenWeb.NavBar do
       <div class="sm:hidden">
         <label for="tabs" class="sr-only">Select a tab</label>
         <!-- Use an "onChange" listener to redirect the user to the selected tab URL. -->
-        <.form :let={f} for={%{}} phx-change="select_tab" phx-target={@myself}>
+        <.form for={%{}} phx-change="select_tab" phx-target={@myself}>
           <select
             id="tabs"
             name="tabs"
@@ -24,7 +24,7 @@ defmodule VisualGardenWeb.NavBar do
         <div class="border-b border-gray-200">
           <nav class="-mb-px flex space-x-8" aria-label="Tabs">
             <%= for {name, path} <- routes(@garden) do %>
-              <.link patch={path} class={link_style(name, @current)}><%= name %></.link>
+              <.link navigate={path} class={link_style(name, @current)}><%= name %></.link>
             <% end %>
           </nav>
         </div>
