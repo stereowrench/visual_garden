@@ -707,7 +707,7 @@ defmodule VisualGardenWeb.CoreComponents do
       >
         <div :for={item <- @item} class="py-1" role="none">
           <!-- Active: "bg-gray-100 text-gray-900", Not Active: "text-gray-700" -->
-          <.link patch={item.patch} class="text-gray-700 block px-4 py-2 text-sm" role="menuitem" tabindex="-1">
+          <.link navigate={item.patch} class="text-gray-700 block px-4 py-2 text-sm" role="menuitem" tabindex="-1">
             <%= render_slot(item) %>
           </.link>
         </div>

@@ -40,7 +40,7 @@
 
   <.table id="plant-table" rows={@plants}>
     <:col :let={plant} label="Name">
-      <.link patch={~p"/gardens/#{@garden.id}/products/#{@product.id}/plants/#{plant.id}"}>
+      <.link navigate={~p"/gardens/#{@garden.id}/products/#{@product.id}/plants/#{plant.id}"}>
         <%= plant.name %>
       </.link>
     </:col>
