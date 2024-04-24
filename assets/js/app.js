@@ -97,6 +97,14 @@ Hooks.EventTime = {
   },
 };
 
+Hooks.LocalTime = {
+  mounted() {
+    const timeUTC = this.el.dataset.dt;
+    const date = new Date(timeUTC);
+    this.el.innerHTML = date.toLocaleString();
+  }
+}
+
 let liveSocket = new LiveSocket("/live", Socket, {
   longPollFallbackMs: 2500,
   params: { _csrf_token: csrfToken },

@@ -54,4 +54,24 @@ defmodule VisualGardenWeb.ProductLive.Show do
   defp page_title(:new_water), do: "Watering"
   defp page_title(:till), do: "Tilling"
   defp page_title(:transfer), do: "Transferring"
+
+  defp last_watered(events) do
+    events
+    |> last_watered_dt()
+    |> case do
+      nil -> "never"
+      dt -> Timex.format!(dt, "{relative}", :relative)
+    end
+  end
+
+  defp last_watered_dt(events) do
+    events
+    |> Enum.sort_by(& &1.event_time)
+    |> Enum.filter(&(&1.event_type == :water))
+    |> Enum.take(1)
+    |> case do
+      [] -> nil
+      [%{event_time: dt}] -> dt
+    end
+  end
 end
