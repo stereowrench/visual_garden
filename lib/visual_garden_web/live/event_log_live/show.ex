@@ -44,7 +44,9 @@ defmodule VisualGardenWeb.EventLogLive.Show do
                     </p>
                   </div>
                   <div class="whitespace-nowrap text-right text-sm text-gray-500">
-                    <time datetime="2020-09-20">Sep 20</time>
+                    <time datetime={event.event_time}>
+                      <%= Timex.format!(event.event_time, "{relative}", :relative) %>
+                    </time>
                   </div>
                 </div>
               </div>
@@ -77,7 +79,9 @@ defmodule VisualGardenWeb.EventLogLive.Show do
     <%= @event.transferred_amount %> <%= to_string(@event.transfer_units) %> transferred from
     <.link
       class="underline"
-      navigate={~p"/gardens/#{@event.transferred_from.garden_id}/products/#{@event.transferred_from_id}"}
+      navigate={
+        ~p"/gardens/#{@event.transferred_from.garden_id}/products/#{@event.transferred_from_id}"
+      }
     >
      <%= @event.transferred_from.name %>
     </.link>
@@ -87,17 +91,22 @@ defmodule VisualGardenWeb.EventLogLive.Show do
   defp do_render_event(:plant, assigns) do
     ~H"""
     Planted <%= @event.plant.qty %>
-    <.link class="underline" navigate={~p"/gardens/#{@event.product.garden_id}/seeds/#{@event.plant.seed.id}"}>
-      <%= @event.plant.seed.name %>
-    </.link>
-    as
+    <%= if @event.plant.seed != nil do %>
+      <.link
+        class="underline"
+        navigate={~p"/gardens/#{@event.product.garden_id}/seeds/#{@event.plant.seed.id}"}
+      >
+        <%= @event.plant.seed.name %>
+      </.link>
+      as
+    <% end %>
     <.link
       class="underline"
       navigate={
         ~p"/gardens/#{@event.product.garden_id}/products/#{@event.product.id}/plants/#{@event.plant.id}"
       }
     >
-    <%= @event.plant.name %>.
+      <%= @event.plant.name %>.
     </.link>
     """
   end
