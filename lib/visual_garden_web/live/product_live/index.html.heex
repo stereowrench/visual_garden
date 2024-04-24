@@ -31,12 +31,26 @@
       id={"products-" <> to_string(name)}
       rows={products}
       row_id={fn product -> "product-row-#{product.id}" end}
-      row_click={fn product -> JS.navigate(~p"/gardens/#{@garden.id}/products/#{product}") end}
+      row_click={
+        fn product ->
+          case product.type do
+            :bed ->
+              JS.navigate(~p"/gardens/#{@garden.id}/beds/#{product}")
+
+            _ ->
+              JS.navigate(~p"/gardens/#{@garden.id}/products/#{product}")
+          end
+        end
+      }
     >
       <:col :let={product} label="Name"><%= product.name %></:col>
       <:action :let={product}>
         <div class="sr-only">
-          <.link navigate={~p"/gardens/#{@garden.id}/products/#{product}"}>Show</.link>
+          <%= if @live_action in [:beds] do %>
+            <.link navigate={~p"/gardens/#{@garden.id}/beds/#{product}"}>Show</.link>
+          <% else %>
+            <.link navigate={~p"/gardens/#{@garden.id}/products/#{product}"}>Show</.link>
+          <% end %>
         </div>
         <.link patch={~p"/gardens/#{@garden.id}/products/#{product}/edit"}>Edit</.link>
       </:action>

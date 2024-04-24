@@ -5,19 +5,37 @@
   <:subtitle><%= VisualGarden.Gardens.Product.friendly_type(@product.type) %></:subtitle>
   <:actions>
     <.split_menu id="water-menu" button_text="Water" button_action="water">
-      <:item patch={~p"/gardens/#{@garden.id}/products/#{@product}/show/new_water"}>
+      <:item patch={
+        if @product.type == :bed do
+          ~p"/gardens/#{@garden.id}/beds/#{@product}/show/new_water"
+        else
+          ~p"/gardens/#{@garden.id}/products/#{@product}/show/new_water"
+        end
+      }>
         Water at time
       </:item>
     </.split_menu>
     <.split_menu id="till-menu" button_text="Till" button_action="till">
-      <:item patch={~p"/gardens/#{@garden.id}/products/#{@product}/show/till"}>
+      <:item patch={
+        if @product.type == :bed do
+          ~p"/gardens/#{@garden.id}/beds/#{@product}/show/till"
+        else
+          ~p"/gardens/#{@garden.id}/products/#{@product}/show/till"
+        end
+      }>
         Till at time
       </:item>
     </.split_menu>
 
     <div class="relative inline-block text-left">
       <.link
-        patch={~p"/gardens/#{@garden.id}/products/#{@product}/show/transfer"}
+        patch={
+          if @product.type == :bed do
+            ~p"/gardens/#{@garden.id}/beds/#{@product}/show/transfer"
+          else
+            ~p"/gardens/#{@garden.id}/products/#{@product}/show/transfer"
+          end
+        }
         class="text-gray-700 block px-4 py-2 text-sm"
       >
         <.button>Transfer</.button>
@@ -25,7 +43,13 @@
     </div>
     <div class="relative inline-block text-left">
       <.link
-        patch={~p"/gardens/#{@garden.id}/products/#{@product}/show/edit"}
+        patch={
+          if @product.type == :bed do
+            ~p"/gardens/#{@garden.id}/beds/#{@product}/show/edit"
+          else
+            ~p"/gardens/#{@garden.id}/products/#{@product}/show/edit"
+          end
+        }
         phx-click={JS.push_focus()}
       >
         <.button>Edit product</.button>
@@ -37,8 +61,12 @@
 <dl class="mx-auto grid grid-cols-1 gap-px bg-gray-900/5 sm:grid-cols-2 lg:grid-cols-4">
   <div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-2 bg-white px-4 py-10 sm:px-6 xl:px-8">
     <dt class="text-sm font-medium leading-6 text-gray-500">Last watered</dt>
-    <dd class="text-xs font-medium text-gray-700" phx-hook="LocalTime" id="water-time" data-dt={last_watered_dt(@events)}>
-
+    <dd
+      class="text-xs font-medium text-gray-700"
+      phx-hook="LocalTime"
+      id="water-time"
+      data-dt={last_watered_dt(@events)}
+    >
     </dd>
     <dd class="w-full flex-none text-3xl font-medium leading-10 tracking-tight text-gray-900">
       <%= last_watered(@events) %>
@@ -52,7 +80,7 @@
 
   <.table id="plant-table" rows={@plants}>
     <:col :let={plant} label="Name">
-      <.link navigate={~p"/gardens/#{@garden.id}/products/#{@product.id}/plants/#{plant.id}"}>
+      <.link navigate={~p"/gardens/#{@garden.id}/beds/#{@product.id}/plants/#{plant.id}"}>
         <%= plant.name %>
       </.link>
     </:col>
@@ -73,13 +101,17 @@
   <VisualGardenWeb.EventLogLive.Show.render_events events={@events} />
 </div>
 
-<.back navigate={~p"/gardens/#{@garden.id}/products"}>Back to product</.back>
+<%= if @product.type == :bed do %>
+  <.back navigate={~p"/gardens/#{@garden.id}/beds"}>Back to beds</.back>
+<% else %>
+  <.back navigate={~p"/gardens/#{@garden.id}/products"}>Back to products</.back>
+<% end %>
 
 <.modal
   :if={@live_action == :edit}
   id="product-modal"
   show
-  on_cancel={JS.patch(~p"/gardens/#{@garden.id}/products/#{@product}")}
+  on_cancel={modal_cancel(@product)}
 >
   <.live_component
     module={VisualGardenWeb.ProductLive.FormComponent}
@@ -87,7 +119,7 @@
     title={@page_title}
     action={@live_action}
     product={@product}
-    patch={~p"/gardens/#{@garden.id}/products/#{@product}"}
+    patch={modal_patch(@product)}
   />
 </.modal>
 
@@ -95,11 +127,11 @@
   :if={@live_action in [:new_water, :till, :transfer]}
   id="event-log-modal"
   show
-  on_cancel={JS.patch(~p"/gardens/#{@garden.id}/products/#{@product}")}
+  on_cancel={modal_cancel(@product)}
 >
   <.live_component
     module={VisualGardenWeb.EventLogLive.FormComponent}
-    patch={~p"/gardens/#{@garden.id}/products/#{@product}"}
+    patch={modal_patch(@product)}
     action={@live_action}
     id="event-modal"
     product={@product}

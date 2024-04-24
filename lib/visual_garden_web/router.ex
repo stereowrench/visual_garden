@@ -35,12 +35,20 @@ defmodule VisualGardenWeb.Router do
       live "/gardens/:garden_id/products/:id/edit", ProductLive.Index, :edit
 
       live "/gardens/:garden_id/products/:id", ProductLive.Show, :show
+      live "/gardens/:garden_id/beds/:id", ProductLive.Show, :show
+
+      live "/gardens/:garden_id/beds/:id/show/edit", ProductLive.Show, :edit
+      live "/gardens/:garden_id/beds/:id/show/new_water", ProductLive.Show, :new_water
+      live "/gardens/:garden_id/beds/:id/show/till", ProductLive.Show, :till
+      live "/gardens/:garden_id/beds/:id/show/transfer", ProductLive.Show, :transfer
+
       live "/gardens/:garden_id/products/:id/show/edit", ProductLive.Show, :edit
       live "/gardens/:garden_id/products/:id/show/new_water", ProductLive.Show, :new_water
       live "/gardens/:garden_id/products/:id/show/till", ProductLive.Show, :till
       live "/gardens/:garden_id/products/:id/show/transfer", ProductLive.Show, :transfer
 
       live "/gardens/:garden_id/products/:product_id/plants", PlantLive.Index, :index
+      live "/gardens/:garden_id/beds/:product_id/plants", PlantLive.Index, :index
       live "/gardens/:garden_id/plants", PlantLive.Index, :index
       live "/gardens/:garden_id/plants/new", PlantLive.Index, :new
       live "/gardens/:garden_id/products/:product_id/plants/new", PlantLive.Index, :new

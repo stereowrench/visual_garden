@@ -74,4 +74,20 @@ defmodule VisualGardenWeb.ProductLive.Show do
       [%{event_time: dt}] -> dt
     end
   end
+
+  defp modal_cancel(product) do
+    if product.type == :bed do
+      JS.patch(~p"/gardens/#{product.garden_id}/beds/#{product}")
+    else
+      JS.patch(~p"/gardens/#{product.garden_id}/products/#{product}")
+    end
+  end
+
+  defp modal_patch(product) do
+    if product.type == :bed do
+      ~p"/gardens/#{product.garden_id}/beds/#{product}"
+    else
+      ~p"/gardens/#{product.garden_id}/products/#{product}"
+    end
+  end
 end
