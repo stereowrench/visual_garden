@@ -54,8 +54,8 @@ defmodule VisualGardenWeb.NavBar do
     [
       {"Home", ~p"/gardens/#{garden.id}"},
       {"Plants", ~p"/gardens/#{garden.id}/plants"},
-      {"Seeds", ~p"/gardens/#{garden.id}/seeds"},
-      {"Products", ~p"/gardens/#{garden.id}/products"},
+      {"Seeds, etc", ~p"/gardens/#{garden.id}/seeds"},
+      {"Media, etc.", ~p"/gardens/#{garden.id}/products"},
       {"Beds", ~p"/gardens/#{garden.id}/beds"}
     ]
   end

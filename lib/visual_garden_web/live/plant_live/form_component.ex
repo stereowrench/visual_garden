@@ -52,7 +52,7 @@ defmodule VisualGardenWeb.PlantLive.FormComponent do
                 type="select"
                 label="Type"
                 prompt="Choose a value"
-                options={Ecto.Enum.values(VisualGarden.Gardens.Product, :type) -- [:bed]}
+                options={[:bed]}
               />
             </.inputs_for>
           <% end %>
