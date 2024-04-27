@@ -4,6 +4,7 @@ defmodule VisualGarden.Library do
   """
 
   import Ecto.Query, warn: false
+  alias VisualGarden.Library.TaxonomySearch
   alias VisualGarden.Repo
 
   alias VisualGarden.Library.Genus
@@ -103,6 +104,26 @@ defmodule VisualGarden.Library do
   end
 
   alias VisualGarden.Library.Species
+
+  def search_species(search_term) do
+    query =
+      from(b in TaxonomySearch,
+        where:
+          fragment(
+            "searchable @@ websearch_to_tsquery(?)",
+            ^search_term
+          ),
+        order_by: {
+          :desc,
+          fragment(
+            "ts_rank_cd(searchable, websearch_to_tsquery(?), 4)",
+            ^search_term
+          )
+        }
+      )
+
+    Repo.all(query)
+  end
 
   @doc """
   Returns the list of species.
