@@ -57,7 +57,6 @@ defmodule VisualGardenWeb.Router do
       live "/gardens/:garden_id/products/:product_id/plants/:id", PlantLive.Show, :show
       live "/gardens/:garden_id/products/:product_id/plants/:id/show/edit", PlantLive.Show, :edit
 
-
       live "/event_logs", EventLogLive.Index, :index
       live "/event_logs/new", EventLogLive.Index, :new
       live "/event_logs/:id/edit", EventLogLive.Index, :edit
@@ -78,6 +77,34 @@ defmodule VisualGardenWeb.Router do
 
       live "/gardens/:garden_id/seeds/:id", SeedLive.Show, :show
       live "/gardens/:garden_id/seeds/:id/show/edit", SeedLive.Show, :edit
+
+      live "/schedules", ScheduleLive.Index, :index
+      live "/schedules/new", ScheduleLive.Index, :new
+      live "/schedules/:id/edit", ScheduleLive.Index, :edit
+
+      live "/schedules/:id", ScheduleLive.Show, :show
+      live "/schedules/:id/show/edit", ScheduleLive.Show, :edit
+
+      live "/regions", RegionLive.Index, :index
+      live "/regions/new", RegionLive.Index, :new
+      live "/regions/:id/edit", RegionLive.Index, :edit
+
+      live "/regions/:id", RegionLive.Show, :show
+      live "/regions/:id/show/edit", RegionLive.Show, :edit
+
+      live "/species", SpeciesLive.Index, :index
+      live "/species/new", SpeciesLive.Index, :new
+      live "/species/:id/edit", SpeciesLive.Index, :edit
+
+      live "/species/:id", SpeciesLive.Show, :show
+      live "/species/:id/show/edit", SpeciesLive.Show, :edit
+
+      live "/genera", GenusLive.Index, :index
+      live "/genera/new", GenusLive.Index, :new
+      live "/genera/:id/edit", GenusLive.Index, :edit
+
+      live "/genera/:id", GenusLive.Show, :show
+      live "/genera/:id/show/edit", GenusLive.Show, :edit
     end
   end
 
