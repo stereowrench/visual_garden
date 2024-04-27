@@ -51,6 +51,15 @@
                       text="Gardens"
                     />
                   </li>
+                  <li>
+                    <!-- Current: "bg-gray-50 text-indigo-600", Default: "text-gray-700 hover:text-indigo-600 hover:bg-gray-50" -->
+                    <.nav_link
+                      active={@active_tab}
+                      name={:library}
+                      path={~p"/species"}
+                      text="Library"
+                    />
+                  </li>
                 </ul>
               </li>
             </ul>
@@ -88,6 +97,15 @@
                   name={:gardens}
                   path={~p"/gardens"}
                   text="Gardens"
+                />
+              </li>
+              <li>
+                <!-- Current: "bg-gray-50 text-indigo-600", Default: "text-gray-700 hover:text-indigo-600 hover:bg-gray-50" -->
+                <.nav_link
+                  active={@active_tab}
+                  name={:library}
+                  path={~p"/species"}
+                  text="Library"
                 />
               </li>
             </ul>
