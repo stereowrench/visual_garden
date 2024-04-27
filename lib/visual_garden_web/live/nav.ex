@@ -10,7 +10,7 @@ defmodule VisualGardenWeb.Nav do
      |> attach_hook(:active_tab, :handle_params, &set_active_tab/3)}
   end
 
-  defp set_active_tab(params, _url, socket) do
+  defp set_active_tab(_params, _url, socket) do
     active_tab =
       case {socket.view, socket.assigns.live_action} do
         {sv, _} when sv in [ProductLive.Show, ProductLive.Index] ->
