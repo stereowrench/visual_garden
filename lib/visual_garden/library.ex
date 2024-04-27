@@ -114,7 +114,7 @@ defmodule VisualGarden.Library do
 
   """
   def list_species do
-    Repo.all(Species)
+    Repo.all(Species, preload: [:genus])
   end
 
   @doc """

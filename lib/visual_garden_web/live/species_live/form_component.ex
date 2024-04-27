@@ -23,6 +23,7 @@ defmodule VisualGardenWeb.SpeciesLive.FormComponent do
           field={@form[:genus_id]}
           phx-target={@myself}
           label="Genus"
+          options={@genera}
         />
         <:actions>
           <.button phx-disable-with="Saving...">Save Species</.button>
@@ -39,18 +40,19 @@ defmodule VisualGardenWeb.SpeciesLive.FormComponent do
     {:ok,
      socket
      |> assign(assigns)
+     |> assign(:genera, Library.list_genera() |> Enum.map(&value_mapper/1))
      |> assign_form(changeset)}
   end
 
   @impl true
   def handle_event("live_select_change", %{"text" => _text, "id" => live_select_id}, socket) do
-    genera =
-      Library.list_genera()
-      |> Enum.map(&value_mapper/1)
+    # genera =
+    #   Library.list_genera()
+    #   |> Enum.map(&value_mapper/1)
 
-    # |> Enum.map()
+    # # |> Enum.map()
 
-    send_update(LiveSelect.Component, id: live_select_id, options: genera)
+    # send_update(LiveSelect.Component, id: live_select_id, options: genera)
 
     {:noreply, socket}
   end
