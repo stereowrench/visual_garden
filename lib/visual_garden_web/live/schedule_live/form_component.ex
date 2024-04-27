@@ -1,6 +1,5 @@
 defmodule VisualGardenWeb.ScheduleLive.FormComponent do
   use VisualGardenWeb, :live_component
-
   alias VisualGarden.Library
 
   @impl true
@@ -23,7 +22,8 @@ defmodule VisualGardenWeb.ScheduleLive.FormComponent do
         <.input field={@form[:start_day]} type="number" label="Start day" />
         <.input field={@form[:end_month]} type="number" label="End month" />
         <.input field={@form[:end_day]} type="number" label="End day" />
-        <.input field={@form[:end_month_adjusted]} type="number" label="End month adjusted" />
+        <.live_select field={@form[:region]} />
+        <.live_select field={@form[:species]} />
         <:actions>
           <.button phx-disable-with="Saving...">Save Schedule</.button>
         </:actions>
@@ -40,6 +40,15 @@ defmodule VisualGardenWeb.ScheduleLive.FormComponent do
      socket
      |> assign(assigns)
      |> assign_form(changeset)}
+  end
+
+  @impl true
+  def handle_event("live_select_change", %{"text" => _text, "id" => live_select_id}, socket) do
+    genera = Library.list_genera()
+    IO.inspect live_select_id
+    send_update(LiveSelect.Component, id: live_select_id, options: genera)
+
+    {:noreply, socket}
   end
 
   @impl true
@@ -63,7 +72,7 @@ defmodule VisualGardenWeb.ScheduleLive.FormComponent do
 
         {:noreply,
          socket
-         |> put_flash(:info, "Schedule updated successfully")
+         |> put_notification(Normal.new(:info, "Schedule updated successfully"))
          |> push_patch(to: socket.assigns.patch)}
 
       {:error, %Ecto.Changeset{} = changeset} ->
@@ -78,7 +87,7 @@ defmodule VisualGardenWeb.ScheduleLive.FormComponent do
 
         {:noreply,
          socket
-         |> put_flash(:info, "Schedule created successfully")
+         |> put_notification(Normal.new(:info, "Schedule created successfully"))
          |> push_patch(to: socket.assigns.patch)}
 
       {:error, %Ecto.Changeset{} = changeset} ->

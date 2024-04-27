@@ -15,5 +15,6 @@ defmodule VisualGarden.Library.Region do
     region
     |> cast(attrs, [:name])
     |> validate_required([:name])
+    |> unique_constraint([:name])
   end
 end

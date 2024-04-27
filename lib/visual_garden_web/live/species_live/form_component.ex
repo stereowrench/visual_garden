@@ -1,6 +1,5 @@
 defmodule VisualGardenWeb.SpeciesLive.FormComponent do
   use VisualGardenWeb, :live_component
-
   alias VisualGarden.Library
 
   @impl true
@@ -20,6 +19,11 @@ defmodule VisualGardenWeb.SpeciesLive.FormComponent do
         phx-submit="save"
       >
         <.input field={@form[:name]} type="text" label="Name" />
+        <.live_select
+          field={@form[:genus_id]}
+          phx-target={@myself}
+          label="Genus"
+        />
         <:actions>
           <.button phx-disable-with="Saving...">Save Species</.button>
         </:actions>
@@ -36,6 +40,23 @@ defmodule VisualGardenWeb.SpeciesLive.FormComponent do
      socket
      |> assign(assigns)
      |> assign_form(changeset)}
+  end
+
+  @impl true
+  def handle_event("live_select_change", %{"text" => _text, "id" => live_select_id}, socket) do
+    genera =
+      Library.list_genera()
+      |> Enum.map(&value_mapper/1)
+
+    # |> Enum.map()
+
+    send_update(LiveSelect.Component, id: live_select_id, options: genera)
+
+    {:noreply, socket}
+  end
+
+  defp value_mapper(struct) do
+    %{label: struct.name, value: struct.id}
   end
 
   @impl true
@@ -59,7 +80,7 @@ defmodule VisualGardenWeb.SpeciesLive.FormComponent do
 
         {:noreply,
          socket
-         |> put_flash(:info, "Species updated successfully")
+         |> put_notification(Normal.new(:info, "Species updated successfully"))
          |> push_patch(to: socket.assigns.patch)}
 
       {:error, %Ecto.Changeset{} = changeset} ->
@@ -74,7 +95,7 @@ defmodule VisualGardenWeb.SpeciesLive.FormComponent do
 
         {:noreply,
          socket
-         |> put_flash(:info, "Species created successfully")
+         |> put_notification(Normal.new(:info, "Species created successfully"))
          |> push_patch(to: socket.assigns.patch)}
 
       {:error, %Ecto.Changeset{} = changeset} ->

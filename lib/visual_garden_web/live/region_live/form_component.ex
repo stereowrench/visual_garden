@@ -59,7 +59,7 @@ defmodule VisualGardenWeb.RegionLive.FormComponent do
 
         {:noreply,
          socket
-         |> put_flash(:info, "Region updated successfully")
+         |> put_notification(Normal.new(:info, "Region updated successfully"))
          |> push_patch(to: socket.assigns.patch)}
 
       {:error, %Ecto.Changeset{} = changeset} ->
@@ -74,7 +74,7 @@ defmodule VisualGardenWeb.RegionLive.FormComponent do
 
         {:noreply,
          socket
-         |> put_flash(:info, "Region created successfully")
+         |> put_notification(Normal.new(:info, "Region created successfully"))
          |> push_patch(to: socket.assigns.patch)}
 
       {:error, %Ecto.Changeset{} = changeset} ->

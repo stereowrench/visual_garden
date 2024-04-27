@@ -59,7 +59,7 @@ defmodule VisualGardenWeb.GenusLive.FormComponent do
 
         {:noreply,
          socket
-         |> put_flash(:info, "Genus updated successfully")
+         |> put_notification(Normal.new(:info, "Genus updated successfully"))
          |> push_patch(to: socket.assigns.patch)}
 
       {:error, %Ecto.Changeset{} = changeset} ->
@@ -74,7 +74,7 @@ defmodule VisualGardenWeb.GenusLive.FormComponent do
 
         {:noreply,
          socket
-         |> put_flash(:info, "Genus created successfully")
+         |> put_notification(Normal.new(:info, "Genus created successfully"))
          |> push_patch(to: socket.assigns.patch)}
 
       {:error, %Ecto.Changeset{} = changeset} ->
