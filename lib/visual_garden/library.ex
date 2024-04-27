@@ -114,7 +114,8 @@ defmodule VisualGarden.Library do
 
   """
   def list_species do
-    Repo.all(Species, preload: [:genus])
+    Repo.all(Species)
+    |> Repo.preload(:genus)
   end
 
   @doc """
@@ -131,7 +132,7 @@ defmodule VisualGarden.Library do
       ** (Ecto.NoResultsError)
 
   """
-  def get_species!(id), do: Repo.get!(Species, id)
+  def get_species!(id), do: Repo.get!(Species, id) |> Repo.preload(:genus)
 
   @doc """
   Creates a species.

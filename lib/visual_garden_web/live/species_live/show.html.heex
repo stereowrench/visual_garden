@@ -1,5 +1,7 @@
+<.live_component module={VisualGardenWeb.NavBarLibrary} id="navbar" current={"Species"} />
+
 <.header>
-  Species <%= @species.id %>
+  <i><%= @species.genus.name %> <%= @species.name %></i> <%= cultivar(@species) %>
   <:subtitle>This is a species record from your database.</:subtitle>
   <:actions>
     <.link patch={~p"/species/#{@species}/show/edit"} phx-click={JS.push_focus()}>
@@ -7,10 +9,6 @@
     </.link>
   </:actions>
 </.header>
-
-<.list>
-  <:item title="Name"><%= @species.name %></:item>
-</.list>
 
 <.back navigate={~p"/species"}>Back to species</.back>
 

@@ -1,4 +1,5 @@
 defmodule VisualGardenWeb.SpeciesLive.FormComponent do
+  alias VisualGarden.Repo
   use VisualGardenWeb, :live_component
   alias VisualGarden.Library
 
@@ -19,7 +20,7 @@ defmodule VisualGardenWeb.SpeciesLive.FormComponent do
         phx-submit="save"
       >
         <.input field={@form[:name]} type="text" label="Name" />
-        <.input field={@form[:var]} type="text" label="Cultivar" />
+        <.input field={@form[:cultivar]} type="text" label="Cultivar" />
         <.live_select
           field={@form[:genus_id]}
           phx-target={@myself}
@@ -94,6 +95,7 @@ defmodule VisualGardenWeb.SpeciesLive.FormComponent do
   defp save_species(socket, :new, species_params) do
     case Library.create_species(species_params) do
       {:ok, species} ->
+        species = Repo.preload(species, :genus)
         notify_parent({:saved, species})
 
         {:noreply,

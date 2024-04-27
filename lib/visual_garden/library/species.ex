@@ -4,7 +4,7 @@ defmodule VisualGarden.Library.Species do
 
   schema "species" do
     field :name, :string
-    field :var, :string
+    field :cultivar, :string
     belongs_to :genus, VisualGarden.Library.Genus
 
     has_many :schedules, VisualGarden.Library.Schedule
@@ -12,11 +12,19 @@ defmodule VisualGarden.Library.Species do
     timestamps(type: :utc_datetime)
   end
 
+  @spec changeset(
+          {map(), map()}
+          | %{
+              :__struct__ => atom() | %{:__changeset__ => map(), optional(any()) => any()},
+              optional(atom()) => any()
+            },
+          :invalid | %{optional(:__struct__) => none(), optional(atom() | binary()) => any()}
+        ) :: Ecto.Changeset.t()
   @doc false
   def changeset(species, attrs) do
     species
-    |> cast(attrs, [:name, :genus_id, :var])
+    |> cast(attrs, [:name, :genus_id, :cultivar])
     |> validate_required([:name, :genus_id])
-    |> unique_constraint([:name, :genus_id])
+    |> unique_constraint([:name, :genus_id, :cultivar])
   end
 end
