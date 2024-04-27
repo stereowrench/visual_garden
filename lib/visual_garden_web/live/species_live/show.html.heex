@@ -1,0 +1,26 @@
+<.header>
+  Species <%= @species.id %>
+  <:subtitle>This is a species record from your database.</:subtitle>
+  <:actions>
+    <.link patch={~p"/species/#{@species}/show/edit"} phx-click={JS.push_focus()}>
+      <.button>Edit species</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.list>
+  <:item title="Name"><%= @species.name %></:item>
+</.list>
+
+<.back navigate={~p"/species"}>Back to species</.back>
+
+<.modal :if={@live_action == :edit} id="species-modal" show on_cancel={JS.patch(~p"/species/#{@species}")}>
+  <.live_component
+    module={VisualGardenWeb.SpeciesLive.FormComponent}
+    id={@species.id}
+    title={@page_title}
+    action={@live_action}
+    species={@species}
+    patch={~p"/species/#{@species}"}
+  />
+</.modal>

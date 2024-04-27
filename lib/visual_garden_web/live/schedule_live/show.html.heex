@@ -1,0 +1,30 @@
+<.header>
+  Schedule <%= @schedule.id %>
+  <:subtitle>This is a schedule record from your database.</:subtitle>
+  <:actions>
+    <.link patch={~p"/schedules/#{@schedule}/show/edit"} phx-click={JS.push_focus()}>
+      <.button>Edit schedule</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.list>
+  <:item title="Start month"><%= @schedule.start_month %></:item>
+  <:item title="Start day"><%= @schedule.start_day %></:item>
+  <:item title="End month"><%= @schedule.end_month %></:item>
+  <:item title="End day"><%= @schedule.end_day %></:item>
+  <:item title="End month adjusted"><%= @schedule.end_month_adjusted %></:item>
+</.list>
+
+<.back navigate={~p"/schedules"}>Back to schedules</.back>
+
+<.modal :if={@live_action == :edit} id="schedule-modal" show on_cancel={JS.patch(~p"/schedules/#{@schedule}")}>
+  <.live_component
+    module={VisualGardenWeb.ScheduleLive.FormComponent}
+    id={@schedule.id}
+    title={@page_title}
+    action={@live_action}
+    schedule={@schedule}
+    patch={~p"/schedules/#{@schedule}"}
+  />
+</.modal>

@@ -1,0 +1,26 @@
+<.header>
+  Region <%= @region.id %>
+  <:subtitle>This is a region record from your database.</:subtitle>
+  <:actions>
+    <.link patch={~p"/regions/#{@region}/show/edit"} phx-click={JS.push_focus()}>
+      <.button>Edit region</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.list>
+  <:item title="Name"><%= @region.name %></:item>
+</.list>
+
+<.back navigate={~p"/regions"}>Back to regions</.back>
+
+<.modal :if={@live_action == :edit} id="region-modal" show on_cancel={JS.patch(~p"/regions/#{@region}")}>
+  <.live_component
+    module={VisualGardenWeb.RegionLive.FormComponent}
+    id={@region.id}
+    title={@page_title}
+    action={@live_action}
+    region={@region}
+    patch={~p"/regions/#{@region}"}
+  />
+</.modal>
