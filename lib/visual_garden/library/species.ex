@@ -4,6 +4,7 @@ defmodule VisualGarden.Library.Species do
 
   schema "species" do
     field :name, :string
+    field :var, :string
     belongs_to :genus, VisualGarden.Library.Genus
 
     has_many :schedules, VisualGarden.Library.Schedule
@@ -14,7 +15,7 @@ defmodule VisualGarden.Library.Species do
   @doc false
   def changeset(species, attrs) do
     species
-    |> cast(attrs, [:name, :genus_id])
+    |> cast(attrs, [:name, :genus_id, :var])
     |> validate_required([:name, :genus_id])
     |> unique_constraint([:name, :genus_id])
   end

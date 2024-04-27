@@ -19,6 +19,7 @@ defmodule VisualGardenWeb.SpeciesLive.FormComponent do
         phx-submit="save"
       >
         <.input field={@form[:name]} type="text" label="Name" />
+        <.input field={@form[:var]} type="text" label="Cultivar" />
         <.live_select
           field={@form[:genus_id]}
           phx-target={@myself}

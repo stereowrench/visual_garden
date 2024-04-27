@@ -22,8 +22,8 @@ defmodule VisualGardenWeb.ScheduleLive.FormComponent do
         <.input field={@form[:start_day]} type="number" label="Start day" />
         <.input field={@form[:end_month]} type="number" label="End month" />
         <.input field={@form[:end_day]} type="number" label="End day" />
-        <.live_select field={@form[:region]} />
-        <.live_select field={@form[:species]} />
+        <.live_select field={@form[:region]} phx-target={@myself} options={@regions} />
+        <.live_select field={@form[:species]} phx-target={@myself} options={@species} />
         <:actions>
           <.button phx-disable-with="Saving...">Save Schedule</.button>
         </:actions>
@@ -39,13 +39,23 @@ defmodule VisualGardenWeb.ScheduleLive.FormComponent do
     {:ok,
      socket
      |> assign(assigns)
+     |> assign(
+       :regions,
+       Library.list_regions()
+       |> Enum.map(fn region -> %{label: region.name, value: region.id} end)
+     )
+     |> assign(
+       :regions,
+       Library.list_species()
+       |> Enum.map(fn species -> %{label: species.genus.name <> " " <> species.name, value: species.id} end)
+     )
      |> assign_form(changeset)}
   end
 
   @impl true
   def handle_event("live_select_change", %{"text" => _text, "id" => live_select_id}, socket) do
     genera = Library.list_genera()
-    IO.inspect live_select_id
+    IO.inspect(live_select_id)
     send_update(LiveSelect.Component, id: live_select_id, options: genera)
 
     {:noreply, socket}
