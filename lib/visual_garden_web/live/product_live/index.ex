@@ -73,7 +73,7 @@ defmodule VisualGardenWeb.ProductLive.Index do
   end
 
   @impl true
-  def handle_info({VisualGardenWeb.ProductLive.FormComponent, {:saved, product}}, socket) do
+  def handle_info({VisualGardenWeb.ProductLive.FormComponent, {:saved, _product}}, socket) do
     {:noreply, assign_products(socket)}
   end
 

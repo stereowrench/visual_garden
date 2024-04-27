@@ -520,7 +520,7 @@ defmodule VisualGarden.Gardens do
         preload: ^@event_preloads
     )
   end
-  def list_event_logs(product_id, plant_id) do
+  def list_event_logs(_product_id, plant_id) do
     Repo.all(
       from e in EventLog,
         where: e.plant_id == ^plant_id,

@@ -22,7 +22,7 @@ defmodule VisualGardenWeb.ProductLive.Show do
   end
 
   @impl true
-  def handle_info({VisualGardenWeb.EventLogLive.FormComponent, {:saved, event_log}}, socket) do
+  def handle_info({VisualGardenWeb.EventLogLive.FormComponent, {:saved, _event_log}}, socket) do
     {:noreply, assign(socket, :events, Gardens.list_event_logs(socket.assigns.product.id))}
   end
 
@@ -35,6 +35,7 @@ defmodule VisualGardenWeb.ProductLive.Show do
     "till" => "tilled"
   }
 
+  @impl true
   def handle_event(evt, %{}, socket) when evt in ["water", "till"] do
     {:ok, _event} =
       Gardens.create_event_log(evt, %{
