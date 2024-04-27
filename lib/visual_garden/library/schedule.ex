@@ -3,11 +3,11 @@ defmodule VisualGarden.Library.Schedule do
   import Ecto.Changeset
 
   schema "schedules" do
-    field :start_month, :integer
+    field :start_month, :decimal
     field :start_day, :integer
-    field :end_month, :integer
+    field :end_month, :decimal
     field :end_day, :integer
-    field :end_month_adjusted, :integer
+    field :end_month_adjusted, :decimal
 
     belongs_to :region, VisualGarden.Library.Region
     belongs_to :species, VisualGarden.Library.Species

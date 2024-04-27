@@ -18,12 +18,12 @@ defmodule VisualGardenWeb.ScheduleLive.FormComponent do
         phx-change="validate"
         phx-submit="save"
       >
+        <.live_select field={@form[:region_id]} label="Region" phx-target={@myself} options={@regions} />
+        <.live_select field={@form[:species_id]} label="Species" phx-target={@myself} options={@species} />
         <.input field={@form[:start_month]} type="number" label="Start month" />
         <.input field={@form[:start_day]} type="number" label="Start day" />
         <.input field={@form[:end_month]} type="number" label="End month" />
         <.input field={@form[:end_day]} type="number" label="End day" />
-        <.live_select field={@form[:region]} phx-target={@myself} options={@regions} />
-        <.live_select field={@form[:species]} phx-target={@myself} options={@species} />
         <:actions>
           <.button phx-disable-with="Saving...">Save Schedule</.button>
         </:actions>
@@ -45,11 +45,18 @@ defmodule VisualGardenWeb.ScheduleLive.FormComponent do
        |> Enum.map(fn region -> %{label: region.name, value: region.id} end)
      )
      |> assign(
-       :regions,
+       :species,
        Library.list_species()
-       |> Enum.map(fn species -> %{label: species.genus.name <> " " <> species.name, value: species.id} end)
+       |> Enum.map(fn species -> %{label: species.genus.name <> " " <> species.name <> cultivar(species), value: species.id} end)
      )
      |> assign_form(changeset)}
+  end
+
+  defp cultivar(species) do
+    case species.cultivar do
+      nil -> ""
+      cv -> " '#{cv}'"
+    end
   end
 
   @impl true

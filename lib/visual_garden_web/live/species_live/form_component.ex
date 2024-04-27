@@ -19,14 +19,9 @@ defmodule VisualGardenWeb.SpeciesLive.FormComponent do
         phx-change="validate"
         phx-submit="save"
       >
-        <.input field={@form[:name]} type="text" label="Name" />
+        <.live_select field={@form[:genus_id]} phx-target={@myself} label="Genus" options={@genera} />
+        <.input field={@form[:name]} type="text" label="Species" />
         <.input field={@form[:cultivar]} type="text" label="Cultivar" />
-        <.live_select
-          field={@form[:genus_id]}
-          phx-target={@myself}
-          label="Genus"
-          options={@genera}
-        />
         <:actions>
           <.button phx-disable-with="Saving...">Save Species</.button>
         </:actions>
@@ -48,19 +43,7 @@ defmodule VisualGardenWeb.SpeciesLive.FormComponent do
 
   @impl true
   def handle_event("live_select_change", %{"text" => _text, "id" => live_select_id}, socket) do
-    # genera =
-    #   Library.list_genera()
-    #   |> Enum.map(&value_mapper/1)
-
-    # # |> Enum.map()
-
-    # send_update(LiveSelect.Component, id: live_select_id, options: genera)
-
     {:noreply, socket}
-  end
-
-  defp value_mapper(struct) do
-    %{label: struct.name, value: struct.id}
   end
 
   @impl true
@@ -75,6 +58,10 @@ defmodule VisualGardenWeb.SpeciesLive.FormComponent do
 
   def handle_event("save", %{"species" => species_params}, socket) do
     save_species(socket, socket.assigns.action, species_params)
+  end
+
+  defp value_mapper(struct) do
+    %{label: struct.name, value: struct.id}
   end
 
   defp save_species(socket, :edit, species_params) do
