@@ -18,8 +18,21 @@ defmodule VisualGardenWeb.ScheduleLive.FormComponent do
         phx-change="validate"
         phx-submit="save"
       >
-        <.live_select field={@form[:region_id]} label="Region" phx-target={@myself} options={@regions} />
-        <.live_select field={@form[:species_id]} label="Species" phx-target={@myself} options={@species} />
+        <.live_select field={@form[:region_id]} label="Region" phx-target={@myself} options={@regions}>
+          <:option :let={opt}>
+            <%= Phoenix.HTML.raw(opt) %>
+          </:option>
+        </.live_select>
+        <.live_select
+          field={@form[:species_id]}
+          label="Species"
+          phx-target={@myself}
+          options={@species}
+        >
+          <:option :let={opt}>
+            <%= Phoenix.HTML.raw(opt) %>
+          </:option>
+        </.live_select>
         <.input field={@form[:start_month]} type="number" label="Start month" />
         <.input field={@form[:start_day]} type="number" label="Start day" />
         <.input field={@form[:end_month]} type="number" label="End month" />
@@ -42,12 +55,17 @@ defmodule VisualGardenWeb.ScheduleLive.FormComponent do
      |> assign(
        :regions,
        Library.list_regions()
-       |> Enum.map(fn region -> %{label: region.name, value: region.id} end)
+       |> Enum.map(fn region -> %{label: html_escape(region.name), value: region.id} end)
      )
      |> assign(
        :species,
        Library.list_species()
-       |> Enum.map(fn species -> %{label: species.genus.name <> " " <> species.name <> cultivar(species), value: species.id} end)
+       |> Enum.map(fn species ->
+         %{
+           label: html_escape(species.genus.name <> " " <> species.name <> cultivar(species)),
+           value: species.id
+         }
+       end)
      )
      |> assign_form(changeset)}
   end
@@ -61,9 +79,9 @@ defmodule VisualGardenWeb.ScheduleLive.FormComponent do
 
   @impl true
   def handle_event("live_select_change", %{"text" => _text, "id" => live_select_id}, socket) do
-    genera = Library.list_genera()
-    IO.inspect(live_select_id)
-    send_update(LiveSelect.Component, id: live_select_id, options: genera)
+    # genera = Library.list_genera()
+    # IO.inspect(live_select_id)
+    # send_update(LiveSelect.Component, id: live_select_id, options: genera)
 
     {:noreply, socket}
   end
