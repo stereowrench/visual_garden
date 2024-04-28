@@ -3,11 +3,11 @@ defmodule VisualGarden.Library.Schedule do
   import Ecto.Changeset
 
   schema "schedules" do
-    field :start_month, :decimal
+    field :start_month, :integer
     field :start_day, :integer
-    field :end_month, :decimal
+    field :end_month, :integer
     field :end_day, :integer
-    field :end_month_adjusted, :decimal
+    field :end_month_adjusted, :integer
 
     belongs_to :region, VisualGarden.Library.Region
     belongs_to :species, VisualGarden.Library.Species
@@ -34,7 +34,7 @@ defmodule VisualGarden.Library.Schedule do
   defp add_end_month_adjusted(changeset) do
     if changeset.valid? do
       mo = get_field(changeset, :end_month)
-      put_change(changeset, :end_month_adjusted, Decimal.add(mo, 12))
+      put_change(changeset, :end_month_adjusted, mo + 12)
     else
       changeset
     end
