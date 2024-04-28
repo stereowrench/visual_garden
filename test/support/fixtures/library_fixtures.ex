@@ -22,10 +22,12 @@ defmodule VisualGarden.LibraryFixtures do
   Generate a species.
   """
   def species_fixture(attrs \\ %{}) do
+    genus = genus_fixture()
     {:ok, species} =
       attrs
       |> Enum.into(%{
-        name: "some name"
+        name: "some name",
+        genus_id: genus.id
       })
       |> VisualGarden.Library.create_species()
 

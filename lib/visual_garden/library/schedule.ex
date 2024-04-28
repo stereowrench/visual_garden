@@ -18,15 +18,23 @@ defmodule VisualGarden.Library.Schedule do
   @doc false
   def changeset(schedule, attrs) do
     schedule
-    |> cast(attrs, [:start_month, :start_day, :end_month, :end_day, :end_month_adjusted, :region_id, :species_id])
+    |> cast(attrs, [
+      :start_month,
+      :start_day,
+      :end_month,
+      :end_day,
+      :end_month_adjusted,
+      :region_id,
+      :species_id
+    ])
     |> validate_required([:start_month, :start_day, :end_month, :end_day, :region_id, :species_id])
     |> add_end_month_adjusted()
   end
 
   defp add_end_month_adjusted(changeset) do
     if changeset.valid? do
-      mo = get_change(changeset, :end_month)
-      put_change(changeset, :end_month_adjusted, mo + 12)
+      mo = get_field(changeset, :end_month)
+      put_change(changeset, :end_month_adjusted, Decimal.add(mo, 12))
     else
       changeset
     end

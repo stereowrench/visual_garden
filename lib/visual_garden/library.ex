@@ -355,7 +355,7 @@ defmodule VisualGarden.Library do
 
   """
   def list_schedules do
-    Repo.all(Schedule, preload: [:region, species: [:genus]])
+    Repo.all(Schedule) |> Repo.preload([:region, species: [:genus]])
   end
 
   @doc """

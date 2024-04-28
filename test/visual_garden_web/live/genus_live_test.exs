@@ -4,7 +4,7 @@ defmodule VisualGardenWeb.GenusLiveTest do
   import Phoenix.LiveViewTest
   import VisualGarden.LibraryFixtures
 
-  @create_attrs %{name: "some name"}
+  @create_attrs %{name: "some unique name"}
   @update_attrs %{name: "some updated name"}
   @invalid_attrs %{name: nil}
 

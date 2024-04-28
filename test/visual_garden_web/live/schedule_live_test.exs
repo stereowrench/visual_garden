@@ -4,12 +4,14 @@ defmodule VisualGardenWeb.ScheduleLiveTest do
   import Phoenix.LiveViewTest
   import VisualGarden.LibraryFixtures
 
-  @create_attrs %{start_month: 42, start_day: 42, end_month: 42, end_day: 42, end_month_adjusted: 42}
-  @update_attrs %{start_month: 43, start_day: 43, end_month: 43, end_day: 43, end_month_adjusted: 43}
-  @invalid_attrs %{start_month: nil, start_day: nil, end_month: nil, end_day: nil, end_month_adjusted: nil}
+  @create_attrs %{start_month: 42, start_day: 42, end_month: 42, end_day: 42}
+  @update_attrs %{start_month: 43, start_day: 43, end_month: 43, end_day: 42}
+  @invalid_attrs %{start_month: nil, start_day: nil, end_month: nil, end_day: nil}
 
   defp create_schedule(_) do
-    schedule = schedule_fixture()
+    region = region_fixture()
+    species = species_fixture()
+    schedule = schedule_fixture(%{region_id: region.id, species_id: species.id})
     %{schedule: schedule}
   end
 
