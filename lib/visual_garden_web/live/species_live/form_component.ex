@@ -19,7 +19,11 @@ defmodule VisualGardenWeb.SpeciesLive.FormComponent do
         phx-change="validate"
         phx-submit="save"
       >
-        <.live_select field={@form[:genus_id]} phx-target={@myself} label="Genus" options={@genera} />
+        <.live_select field={@form[:genus_id]} phx-target={@myself} label="Genus" options={@genera} debounce="100">
+          <:option :let={opt}>
+            <%= Phoenix.HTML.raw(opt.label) %>
+          </:option>
+        </.live_select>
         <.input field={@form[:name]} type="text" label="Species" />
         <.input field={@form[:cultivar]} type="text" label="Cultivar" />
         <:actions>
@@ -42,7 +46,17 @@ defmodule VisualGardenWeb.SpeciesLive.FormComponent do
   end
 
   @impl true
-  def handle_event("live_select_change", %{"text" => _text, "id" => live_select_id}, socket) do
+  def handle_event("live_select_change", %{"text" => text, "id" => live_select_id}, socket) do
+    opt =
+      text
+      |> Library.search_genus()
+      |> Enum.map(fn x ->
+        %{label: x.name, value: x.id}
+      end)
+      |> dbg
+
+    send_update(LiveSelect.Component, id: live_select_id, options: opt)
+
     {:noreply, socket}
   end
 
@@ -61,7 +75,7 @@ defmodule VisualGardenWeb.SpeciesLive.FormComponent do
   end
 
   defp value_mapper(struct) do
-    %{label: struct.name, value: struct.id}
+    %{label: html_escape(struct.name) |> safe_to_string(), value: struct.id}
   end
 
   defp save_species(socket, :edit, species_params) do

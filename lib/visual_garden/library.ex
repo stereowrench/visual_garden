@@ -103,6 +103,18 @@ defmodule VisualGarden.Library do
     Genus.changeset(genus, attrs)
   end
 
+  def search_genus(search_phrase) do
+    start_character = String.slice(search_phrase, 0..1)
+
+    from(
+      p in Genus,
+      where: ilike(p.name, ^"#{start_character}%"),
+      where: fragment("SIMILARITY(?, ?) > 0",  p.name, ^search_phrase),
+      order_by: fragment("LEVENSHTEIN(?, ?)", p.name, ^search_phrase)
+    )
+    |> Repo.all()
+  end
+
   alias VisualGarden.Library.Species
 
   def search_species(search_term) do
@@ -119,6 +131,21 @@ defmodule VisualGarden.Library do
             "ts_rank_cd(searchable, websearch_to_tsquery(?), 4)",
             ^search_term
           )
+        },
+        select: %{
+          id: b.species_id,
+          headline:
+            fragment(
+              """
+              ts_headline(
+                'english',
+                CONCAT(genus, ' ', species, ' ', cultivar, ' ', common_name, ''),
+                websearch_to_tsquery(?),
+                'StartSel=<b>,StopSel=</b>,MinWords=25,MaxWords=75'
+              )
+              """,
+              ^search_term
+            )
         }
       )
 
