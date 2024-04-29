@@ -18,7 +18,7 @@
   <:col :let={{_id, schedule}} label="End month"><%= schedule.end_month %></:col>
   <:col :let={{_id, schedule}} label="End day"><%= schedule.end_day %></:col>
   <:col :let={{_id, schedule}} label="Region"><%= schedule.region.name %></:col>
-  <:col :let={{_id, schedule}} label="Taxonomy"><i><%= "#{schedule.species.genus.name} #{schedule.species.name}" %></i></:col>
+  <:col :let={{_id, schedule}} label="Taxonomy"><i><%= species_display_string(schedule.species) %></i></:col>
   <:action :let={{_id, schedule}}>
     <div class="sr-only">
       <.link navigate={~p"/schedules/#{schedule}"}>Show</.link>

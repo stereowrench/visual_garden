@@ -32,9 +32,11 @@ defmodule VisualGarden.LibraryFixtures do
   Generate a schedule.
   """
   def schedule_fixture(attrs \\ %{}) do
+    region = region_fixture()
     {:ok, schedule} =
       attrs
       |> Enum.into(%{
+        region_id: region.id,
         end_day: 42,
         end_month: 42,
         end_month_adjusted: 42,

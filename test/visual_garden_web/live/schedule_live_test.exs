@@ -9,7 +9,7 @@ defmodule VisualGardenWeb.ScheduleLiveTest do
   @invalid_attrs %{start_month: nil, start_day: nil, end_month: nil, end_day: nil}
 
   defp create_schedule(_) do
-    region = region_fixture()
+    region = region_fixture(%{name: "my region"})
     species = species_fixture()
     schedule = schedule_fixture(%{region_id: region.id, species_id: species.id})
     %{schedule: schedule}

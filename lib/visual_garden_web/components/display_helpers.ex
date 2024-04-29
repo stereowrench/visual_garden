@@ -2,7 +2,7 @@ defmodule VisualGardenWeb.DisplayHelpers do
   alias VisualGarden.Library.Species
   use Phoenix.Component
 
-  @spec species_display_string(%Species{}) :: Macro.t()
+  @spec species_display_string(%Species{}) :: any()
   def species_display_string(species) do
     assigns = %{
       genus: species.genus,
@@ -23,8 +23,8 @@ defmodule VisualGardenWeb.DisplayHelpers do
         cv  -> "'#{cv}'"
       end
 
-    assigns = put_in(assigns.var_str, var_str)
-    assigns = put_in(assigns.cultivar_str, cultivar_str)
+    assigns = put_in(assigns[:var_str], var_str)
+    assigns = put_in(assigns[:cultivar_str], cultivar_str)
 
     ~H"""
     <i><%= @genus %> <%= @name %> <%= @var_str %></i><%= @cultivar_str %>

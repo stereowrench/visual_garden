@@ -49,7 +49,7 @@ defmodule VisualGardenWeb.SpeciesLiveTest do
     test "updates species in listing", %{conn: conn, species: species} do
       {:ok, index_live, _html} = live(conn, ~p"/species")
 
-      assert index_live |> element("#species-#{species.id} a", "Edit") |> render_click() =~
+      assert index_live |> element("#species-collection_#{species.id} a", "Edit") |> render_click() =~
                "Edit Species"
 
       assert_patch(index_live, ~p"/species/#{species}/edit")
