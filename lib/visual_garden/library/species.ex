@@ -17,7 +17,7 @@ defmodule VisualGarden.Library.Species do
   @doc false
   def changeset(species, attrs) do
     species
-    |> cast(attrs, [:name, :genus_id, :cultivar, :common_name])
+    |> cast(attrs, [:name, :genus, :cultivar, :common_name])
     |> validate_required([:name, :genus])
     |> unique_constraint([:name, :genus, :variant, :cultivar])
   end

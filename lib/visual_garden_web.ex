@@ -85,6 +85,7 @@ defmodule VisualGardenWeb do
       import Phoenix.HTML
       # Core UI components and translation
       import VisualGardenWeb.CoreComponents
+      import VisualGardenWeb.DisplayHelpers
       import VisualGardenWeb.Gettext
 
       # Shortcut for generating JS commands

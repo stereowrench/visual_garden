@@ -5,7 +5,6 @@ defmodule VisualGarden.Library do
 
   import Ecto.Query, warn: false
   alias VisualGarden.Library.Species
-  alias VisualGarden.Library.TaxonomySearch
   alias VisualGarden.Repo
 
 

@@ -19,12 +19,9 @@ defmodule VisualGardenWeb.SpeciesLive.FormComponent do
         phx-change="validate"
         phx-submit="save"
       >
-        <.live_select field={@form[:genus_id]} phx-target={@myself} label="Genus" options={@genera} debounce="100">
-          <:option :let={opt}>
-            <%= Phoenix.HTML.raw(opt.label) %>
-          </:option>
-        </.live_select>
+        <.input field={@form[:genus]} type="text" label="Genus" />
         <.input field={@form[:name]} type="text" label="Species" />
+        <.input field={@form[:variant]} type="text" label="Variant" />
         <.input field={@form[:cultivar]} type="text" label="Cultivar" />
         <:actions>
           <.button phx-disable-with="Saving...">Save Species</.button>
@@ -41,23 +38,7 @@ defmodule VisualGardenWeb.SpeciesLive.FormComponent do
     {:ok,
      socket
      |> assign(assigns)
-     |> assign(:genera, Library.list_genera() |> Enum.map(&value_mapper/1))
      |> assign_form(changeset)}
-  end
-
-  @impl true
-  def handle_event("live_select_change", %{"text" => text, "id" => live_select_id}, socket) do
-    opt =
-      text
-      |> Library.search_genus()
-      |> Enum.map(fn x ->
-        %{label: x.name, value: x.id}
-      end)
-      |> dbg
-
-    send_update(LiveSelect.Component, id: live_select_id, options: opt)
-
-    {:noreply, socket}
   end
 
   @impl true
@@ -96,7 +77,6 @@ defmodule VisualGardenWeb.SpeciesLive.FormComponent do
   defp save_species(socket, :new, species_params) do
     case Library.create_species(species_params) do
       {:ok, species} ->
-        species = Repo.preload(species, :genus)
         notify_parent({:saved, species})
 
         {:noreply,
