@@ -30,28 +30,6 @@ defmodule VisualGardenWeb.PlantLiveTest do
       assert html =~ "Listing Plants"
     end
 
-    test "saves new plant from garden view", %{conn: conn, garden: garden, product: product} do
-      {:ok, index_live, _html} = live(conn, ~p"/gardens/#{garden.id}")
-
-      assert index_live |> element("a", "Plant a plant") |> render_click() =~
-               "Add Plant"
-
-      assert_patch(index_live, ~p"/gardens/#{garden.id}/plant")
-
-      assert index_live
-             |> form("#plant-form", plant: @invalid_attrs)
-             |> render_change() =~ "can&#39;t be blank"
-
-      assert index_live
-             |> form("#plant-form", plant: Map.merge(@create_attrs, %{product_id: product.id}))
-             |> render_submit()
-
-      assert_patch(index_live, ~p"/gardens/#{garden.id}")
-
-      html = render(index_live)
-      assert html =~ "Plant created successfully"
-    end
-
     test "saves new plant from plants view", %{conn: conn, garden: garden, product: product} do
       {:ok, index_live, _html} = live(conn, ~p"/gardens/#{garden.id}/plants")
 

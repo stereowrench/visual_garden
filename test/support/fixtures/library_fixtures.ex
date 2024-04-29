@@ -33,10 +33,12 @@ defmodule VisualGarden.LibraryFixtures do
   """
   def schedule_fixture(attrs \\ %{}) do
     region = region_fixture()
+    species = species_fixture()
     {:ok, schedule} =
       attrs
       |> Enum.into(%{
         region_id: region.id,
+        species_id: species.id,
         end_day: 42,
         end_month: 42,
         end_month_adjusted: 42,

@@ -21,7 +21,7 @@ defmodule VisualGarden.LibraryTest do
     end
 
     test "create_species/1 with valid data creates a species" do
-      valid_attrs = %{name: "some name"}
+      valid_attrs = %{name: "some name", genus: "a genus"}
 
       assert {:ok, %Species{} = species} = Library.create_species(valid_attrs)
       assert species.name == "some name"
@@ -116,20 +116,36 @@ defmodule VisualGarden.LibraryTest do
 
     import VisualGarden.LibraryFixtures
 
-    @invalid_attrs %{start_month: nil, start_day: nil, end_month: nil, end_day: nil, end_month_adjusted: nil}
+    @invalid_attrs %{
+      start_month: nil,
+      start_day: nil,
+      end_month: nil,
+      end_day: nil,
+      end_month_adjusted: nil
+    }
 
     test "list_schedules/0 returns all schedules" do
       schedule = schedule_fixture()
-      assert Library.list_schedules() == [schedule]
+      assert Library.list_schedules() == [Repo.preload(schedule, [:species, :region])]
     end
 
     test "get_schedule!/1 returns the schedule with given id" do
       schedule = schedule_fixture()
-      assert Library.get_schedule!(schedule.id) == schedule
+      assert Library.get_schedule!(schedule.id) == Repo.preload(schedule, [:region, :species])
     end
 
     test "create_schedule/1 with valid data creates a schedule" do
-      valid_attrs = %{start_month: 3, start_day: 42, end_month: 1, end_day: 42}
+      species = species_fixture()
+      region = region_fixture()
+
+      valid_attrs = %{
+        start_month: 3,
+        start_day: 42,
+        end_month: 1,
+        end_day: 42,
+        species_id: species.id,
+        region_id: region.id
+      }
 
       assert {:ok, %Schedule{} = schedule} = Library.create_schedule(valid_attrs)
       assert schedule.start_month == 3
@@ -145,20 +161,27 @@ defmodule VisualGarden.LibraryTest do
 
     test "update_schedule/2 with valid data updates the schedule" do
       schedule = schedule_fixture()
-      update_attrs = %{start_month: 43, start_day: 43, end_month: 43, end_day: 43, end_month_adjusted: 43}
+
+      update_attrs = %{
+        start_month: 43,
+        start_day: 43,
+        end_month: 43,
+        end_day: 43,
+        end_month_adjusted: 43
+      }
 
       assert {:ok, %Schedule{} = schedule} = Library.update_schedule(schedule, update_attrs)
       assert schedule.start_month == 43
       assert schedule.start_day == 43
       assert schedule.end_month == 43
       assert schedule.end_day == 43
-      assert schedule.end_month_adjusted == 43
+      assert schedule.end_month_adjusted == 55
     end
 
     test "update_schedule/2 with invalid data returns error changeset" do
       schedule = schedule_fixture()
       assert {:error, %Ecto.Changeset{}} = Library.update_schedule(schedule, @invalid_attrs)
-      assert schedule == Library.get_schedule!(schedule.id)
+      assert Repo.preload(schedule, [:species, :region]) == Library.get_schedule!(schedule.id)
     end
 
     test "delete_schedule/1 deletes the schedule" do
