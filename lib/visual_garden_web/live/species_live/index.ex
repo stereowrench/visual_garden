@@ -44,11 +44,4 @@ defmodule VisualGardenWeb.SpeciesLive.Index do
 
     {:noreply, stream_delete(socket, :species_collection, species)}
   end
-
-  defp cultivar(species) do
-    case species.cultivar do
-      nil -> ""
-      cultivar -> "'#{cultivar}'"
-    end
-  end
 end

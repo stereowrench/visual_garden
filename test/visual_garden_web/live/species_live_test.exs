@@ -4,7 +4,7 @@ defmodule VisualGardenWeb.SpeciesLiveTest do
   import Phoenix.LiveViewTest
   import VisualGarden.LibraryFixtures
 
-  @create_attrs %{name: "some name"}
+  @create_attrs %{name: "some name", genus: "my genus"}
   @update_attrs %{name: "some updated name"}
   @invalid_attrs %{name: nil}
 
@@ -49,7 +49,7 @@ defmodule VisualGardenWeb.SpeciesLiveTest do
     test "updates species in listing", %{conn: conn, species: species} do
       {:ok, index_live, _html} = live(conn, ~p"/species")
 
-      assert index_live |> element("#species-collection_#{species.id} a", "Edit") |> render_click() =~
+      assert index_live |> element("#species_collection-#{species.id} a", "Edit") |> render_click() =~
                "Edit Species"
 
       assert_patch(index_live, ~p"/species/#{species}/edit")
@@ -72,7 +72,7 @@ defmodule VisualGardenWeb.SpeciesLiveTest do
     test "deletes species in listing", %{conn: conn, species: species} do
       {:ok, index_live, _html} = live(conn, ~p"/species")
 
-      assert index_live |> element("#species-#{species.id} a", "Delete") |> render_click()
+      assert index_live |> element("#species_collection-#{species.id} a", "Delete") |> render_click()
       refute has_element?(index_live, "#species-#{species.id}")
     end
   end

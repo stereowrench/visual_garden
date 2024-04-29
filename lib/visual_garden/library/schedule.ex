@@ -23,7 +23,6 @@ defmodule VisualGarden.Library.Schedule do
       :start_day,
       :end_month,
       :end_day,
-      :end_month_adjusted,
       :region_id,
       :species_id
     ])

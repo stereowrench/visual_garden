@@ -34,7 +34,7 @@ defmodule VisualGardenWeb.ScheduleLive.Index do
 
   @impl true
   def handle_info({VisualGardenWeb.ScheduleLive.FormComponent, {:saved, schedule}}, socket) do
-    {:noreply, stream_insert(socket, :schedules, schedule)}
+    {:noreply, stream_insert(socket, :schedules, Library.get_schedule!(schedule.id))}
   end
 
   @impl true

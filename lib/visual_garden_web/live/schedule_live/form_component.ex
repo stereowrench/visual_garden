@@ -20,7 +20,7 @@ defmodule VisualGardenWeb.ScheduleLive.FormComponent do
       >
         <.live_select field={@form[:region_id]} label="Region" phx-target={@myself} options={@regions}>
           <:option :let={opt}>
-            <%= Phoenix.HTML.raw(opt) %>
+            <%= Phoenix.HTML.raw(opt.label) %>
           </:option>
         </.live_select>
         <.live_select
@@ -30,7 +30,7 @@ defmodule VisualGardenWeb.ScheduleLive.FormComponent do
           options={@species}
         >
           <:option :let={opt}>
-            <%= Phoenix.HTML.raw(opt) %>
+            <%= Phoenix.HTML.raw(opt.label) %>
           </:option>
         </.live_select>
         <.input field={@form[:start_month]} type="number" label="Start month" />
@@ -62,19 +62,12 @@ defmodule VisualGardenWeb.ScheduleLive.FormComponent do
        Library.list_species()
        |> Enum.map(fn species ->
          %{
-           label: html_escape(species.genus.name <> " " <> species.name <> cultivar(species)),
+           label: html_escape(species_display_string(species)),
            value: species.id
          }
        end)
      )
      |> assign_form(changeset)}
-  end
-
-  defp cultivar(species) do
-    case species.cultivar do
-      nil -> ""
-      cv -> " '#{cv}'"
-    end
   end
 
   @impl true

@@ -36,9 +36,14 @@ defmodule VisualGardenWeb.ScheduleLiveTest do
              |> form("#schedule-form", schedule: @invalid_attrs)
              |> render_change() =~ "can&#39;t be blank"
 
+      region = region_fixture(%{name: "my new name"})
+      species = species_fixture(%{name: "my new region"})
+
       assert index_live
-             |> form("#schedule-form", schedule: @create_attrs)
-             |> render_submit()
+             |> form("#schedule-form",
+               schedule: @create_attrs
+             )
+             |> render_submit(%{schedule: %{region_id: region.id, species_id: species.id}})
 
       assert_patch(index_live, ~p"/schedules")
 

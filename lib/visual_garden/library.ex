@@ -227,7 +227,7 @@ defmodule VisualGarden.Library do
       ** (Ecto.NoResultsError)
 
   """
-  def get_schedule!(id), do: Repo.get!(Schedule, id)
+  def get_schedule!(id), do: Repo.get!(Schedule, id) |> Repo.preload([:region, :species])
 
   @doc """
   Creates a schedule.
