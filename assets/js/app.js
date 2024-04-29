@@ -22,7 +22,7 @@ import { Socket } from "phoenix";
 import { LiveSocket } from "phoenix_live_view";
 import topbar from "../vendor/topbar";
 import FlashyHooks from "flashy";
-import live_select from "live_select"
+import live_select from "live_select";
 
 let csrfToken = document
   .querySelector("meta[name='csrf-token']")
@@ -93,7 +93,7 @@ Hooks.EventTime = {
     this.el.value = dateTimeLocalValue;
     this.el.onchange = () => {
       stored.value = new Date(this.el.value).toISOString();
-      stored.dispatchEvent(new Event('input', {bubbles: true}))
+      stored.dispatchEvent(new Event("input", { bubbles: true }));
     };
   },
 };
@@ -103,8 +103,70 @@ Hooks.LocalTime = {
     const timeUTC = this.el.dataset.dt;
     const date = new Date(timeUTC);
     this.el.innerHTML = date.toLocaleString();
-  }
-}
+  },
+};
+
+Hooks.Sidebar = {
+  mounted() {
+    let menuOpen = false;
+
+    let listeners = (a) =>
+      a.addEventListener("click", () => {
+        if (!menuOpen) {
+          menuOpen = true;
+          document
+            .getElementById("off-canvas-menu")
+            .classList.add("translate-x-0");
+
+          document
+            .getElementById("off-canvas-menu")
+            .classList.remove("-translate-x-full");
+
+          document.getElementById("close-sidebar").classList.add("opacity-100");
+
+          document
+            .getElementById("close-sidebar")
+            .classList.remove("opacity-0");
+
+          document.getElementById("menu-backdrop").classList.add("opacity-100");
+
+          document
+            .getElementById("menu-backdrop")
+            .classList.remove("opacity-0");
+
+          document.getElementById("off-canvas").classList.add("z-50");
+
+          document.getElementById("off-canvas").style.display = "initial";
+        } else {
+          menuOpen = false;
+          document
+            .getElementById("off-canvas-menu")
+            .classList.add("-translate-x-full");
+
+          document
+            .getElementById("off-canvas-menu")
+            .classList.remove("translate-x-0");
+
+          document.getElementById("close-sidebar").classList.add("opacity-0");
+
+          document
+            .getElementById("close-sidebar")
+            .classList.remove("opacity-100");
+
+          document.getElementById("menu-backdrop").classList.add("opacity-0");
+
+          document
+            .getElementById("menu-backdrop")
+            .classList.remove("opacity-100");
+          document.getElementById("off-canvas").classList.remove("z-50");
+          document.getElementById("off-canvas").style.display = "none";
+        }
+      });
+
+    listeners(document.getElementById("open-sidebar"));
+    listeners(document.getElementById("close-sidebar"));
+  },
+};
 
 let liveSocket = new LiveSocket("/live", Socket, {
   longPollFallbackMs: 2500,
@@ -121,54 +183,6 @@ liveSocket.connect();
 // >> liveSocket.disableLatencySim()
 window.liveSocket = liveSocket;
 
-let menuOpen = false;
-
 // document.getElementById("open-sidebar").addEventListener("click", () => {
 //   menuOpen = true;
 // });
-
-let listeners = (a) =>
-  a.addEventListener("click", () => {
-    if (!menuOpen) {
-      menuOpen = true;
-      document.getElementById("off-canvas-menu").classList.add("translate-x-0");
-
-      document
-        .getElementById("off-canvas-menu")
-        .classList.remove("-translate-x-full");
-
-      document.getElementById("close-sidebar").classList.add("opacity-100");
-
-      document.getElementById("close-sidebar").classList.remove("opacity-0");
-
-      document.getElementById("menu-backdrop").classList.add("opacity-100");
-
-      document.getElementById("menu-backdrop").classList.remove("opacity-0");
-
-      document.getElementById("off-canvas").classList.add("z-50");
-
-      document.getElementById("off-canvas").style.display = "initial";
-    } else {
-      menuOpen = false;
-      document
-        .getElementById("off-canvas-menu")
-        .classList.add("-translate-x-full");
-
-      document
-        .getElementById("off-canvas-menu")
-        .classList.remove("translate-x-0");
-
-      document.getElementById("close-sidebar").classList.add("opacity-0");
-
-      document.getElementById("close-sidebar").classList.remove("opacity-100");
-
-      document.getElementById("menu-backdrop").classList.add("opacity-0");
-
-      document.getElementById("menu-backdrop").classList.remove("opacity-100");
-      document.getElementById("off-canvas").classList.remove("z-50");
-      document.getElementById("off-canvas").style.display = "none";
-    }
-  });
-
-listeners(document.getElementById("open-sidebar"));
-listeners(document.getElementById("close-sidebar"));
