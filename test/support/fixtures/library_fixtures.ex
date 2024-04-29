@@ -7,7 +7,7 @@ defmodule VisualGarden.LibraryFixtures do
       attrs
       |> Enum.into(%{
         name: "some name",
-        genus_id: "my genus"
+        genus: "my genus"
       })
       |> VisualGarden.Library.create_species()
 
