@@ -4,153 +4,10 @@ defmodule VisualGarden.Library do
   """
 
   import Ecto.Query, warn: false
+  alias VisualGarden.Library.Species
   alias VisualGarden.Library.TaxonomySearch
   alias VisualGarden.Repo
 
-  alias VisualGarden.Library.Genus
-
-  @doc """
-  Returns the list of genera.
-
-  ## Examples
-
-      iex> list_genera()
-      [%Genus{}, ...]
-
-  """
-  def list_genera do
-    Repo.all(Genus)
-  end
-
-  @doc """
-  Gets a single genus.
-
-  Raises `Ecto.NoResultsError` if the Genus does not exist.
-
-  ## Examples
-
-      iex> get_genus!(123)
-      %Genus{}
-
-      iex> get_genus!(456)
-      ** (Ecto.NoResultsError)
-
-  """
-  def get_genus!(id), do: Repo.get!(Genus, id)
-
-  @doc """
-  Creates a genus.
-
-  ## Examples
-
-      iex> create_genus(%{field: value})
-      {:ok, %Genus{}}
-
-      iex> create_genus(%{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
-  """
-  def create_genus(attrs \\ %{}) do
-    %Genus{}
-    |> Genus.changeset(attrs)
-    |> Repo.insert()
-  end
-
-  @doc """
-  Updates a genus.
-
-  ## Examples
-
-      iex> update_genus(genus, %{field: new_value})
-      {:ok, %Genus{}}
-
-      iex> update_genus(genus, %{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
-  """
-  def update_genus(%Genus{} = genus, attrs) do
-    genus
-    |> Genus.changeset(attrs)
-    |> Repo.update()
-  end
-
-  @doc """
-  Deletes a genus.
-
-  ## Examples
-
-      iex> delete_genus(genus)
-      {:ok, %Genus{}}
-
-      iex> delete_genus(genus)
-      {:error, %Ecto.Changeset{}}
-
-  """
-  def delete_genus(%Genus{} = genus) do
-    Repo.delete(genus)
-  end
-
-  @doc """
-  Returns an `%Ecto.Changeset{}` for tracking genus changes.
-
-  ## Examples
-
-      iex> change_genus(genus)
-      %Ecto.Changeset{data: %Genus{}}
-
-  """
-  def change_genus(%Genus{} = genus, attrs \\ %{}) do
-    Genus.changeset(genus, attrs)
-  end
-
-  def search_genus(search_phrase) do
-    start_character = String.slice(search_phrase, 0..1)
-
-    from(
-      p in Genus,
-      where: ilike(p.name, ^"#{start_character}%"),
-      where: fragment("SIMILARITY(?, ?) > 0",  p.name, ^search_phrase),
-      order_by: fragment("LEVENSHTEIN(?, ?)", p.name, ^search_phrase)
-    )
-    |> Repo.all()
-  end
-
-  alias VisualGarden.Library.Species
-
-  def search_species(search_term) do
-    query =
-      from(b in TaxonomySearch,
-        where:
-          fragment(
-            "searchable @@ websearch_to_tsquery(?)",
-            ^search_term
-          ),
-        order_by: {
-          :desc,
-          fragment(
-            "ts_rank_cd(searchable, websearch_to_tsquery(?), 4)",
-            ^search_term
-          )
-        },
-        select: %{
-          id: b.species_id,
-          headline:
-            fragment(
-              """
-              ts_headline(
-                'english',
-                CONCAT(genus, ' ', species, ' ', cultivar, ' ', common_name, ''),
-                websearch_to_tsquery(?),
-                'StartSel=<b>,StopSel=</b>,MinWords=25,MaxWords=75'
-              )
-              """,
-              ^search_term
-            )
-        }
-      )
-
-    Repo.all(query)
-  end
 
   @doc """
   Returns the list of species.
@@ -163,7 +20,6 @@ defmodule VisualGarden.Library do
   """
   def list_species do
     Repo.all(Species)
-    |> Repo.preload(:genus)
   end
 
   @doc """
@@ -180,7 +36,7 @@ defmodule VisualGarden.Library do
       ** (Ecto.NoResultsError)
 
   """
-  def get_species!(id), do: Repo.get!(Species, id) |> Repo.preload(:genus)
+  def get_species!(id), do: Repo.get!(Species, id)
 
   @doc """
   Creates a species.
@@ -355,7 +211,7 @@ defmodule VisualGarden.Library do
 
   """
   def list_schedules do
-    Repo.all(Schedule) |> Repo.preload([:region, species: [:genus]])
+    Repo.all(Schedule) |> Repo.preload([:region])
   end
 
   @doc """

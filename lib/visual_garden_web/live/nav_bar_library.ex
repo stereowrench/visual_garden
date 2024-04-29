@@ -52,7 +52,6 @@ defmodule VisualGardenWeb.NavBarLibrary do
 
   defp routes() do
     [
-      {"Genera", ~p"/genera"},
       {"Species", ~p"/species"},
       {"Regions", ~p"/regions"},
       {"Schedules", ~p"/schedules"},

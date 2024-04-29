@@ -3,60 +3,6 @@ defmodule VisualGarden.LibraryTest do
 
   alias VisualGarden.Library
 
-  describe "genera" do
-    alias VisualGarden.Library.Genus
-
-    import VisualGarden.LibraryFixtures
-
-    @invalid_attrs %{name: nil}
-
-    test "list_genera/0 returns all genera" do
-      genus = genus_fixture()
-      assert Library.list_genera() == [genus]
-    end
-
-    test "get_genus!/1 returns the genus with given id" do
-      genus = genus_fixture()
-      assert Library.get_genus!(genus.id) == genus
-    end
-
-    test "create_genus/1 with valid data creates a genus" do
-      valid_attrs = %{name: "some name"}
-
-      assert {:ok, %Genus{} = genus} = Library.create_genus(valid_attrs)
-      assert genus.name == "some name"
-    end
-
-    test "create_genus/1 with invalid data returns error changeset" do
-      assert {:error, %Ecto.Changeset{}} = Library.create_genus(@invalid_attrs)
-    end
-
-    test "update_genus/2 with valid data updates the genus" do
-      genus = genus_fixture()
-      update_attrs = %{name: "some updated name"}
-
-      assert {:ok, %Genus{} = genus} = Library.update_genus(genus, update_attrs)
-      assert genus.name == "some updated name"
-    end
-
-    test "update_genus/2 with invalid data returns error changeset" do
-      genus = genus_fixture()
-      assert {:error, %Ecto.Changeset{}} = Library.update_genus(genus, @invalid_attrs)
-      assert genus == Library.get_genus!(genus.id)
-    end
-
-    test "delete_genus/1 deletes the genus" do
-      genus = genus_fixture()
-      assert {:ok, %Genus{}} = Library.delete_genus(genus)
-      assert_raise Ecto.NoResultsError, fn -> Library.get_genus!(genus.id) end
-    end
-
-    test "change_genus/1 returns a genus changeset" do
-      genus = genus_fixture()
-      assert %Ecto.Changeset{} = Library.change_genus(genus)
-    end
-  end
-
   describe "species" do
     alias VisualGarden.Library.Species
 

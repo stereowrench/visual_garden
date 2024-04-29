@@ -98,13 +98,6 @@ defmodule VisualGardenWeb.Router do
 
       live "/species/:id", SpeciesLive.Show, :show
       live "/species/:id/show/edit", SpeciesLive.Show, :edit
-
-      live "/genera", GenusLive.Index, :index
-      live "/genera/new", GenusLive.Index, :new
-      live "/genera/:id/edit", GenusLive.Index, :edit
-
-      live "/genera/:id", GenusLive.Show, :show
-      live "/genera/:id/show/edit", GenusLive.Show, :edit
     end
   end
 

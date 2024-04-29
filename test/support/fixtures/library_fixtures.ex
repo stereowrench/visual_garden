@@ -1,33 +1,13 @@
 defmodule VisualGarden.LibraryFixtures do
-  @moduledoc """
-  This module defines test helpers for creating
-  entities via the `VisualGarden.Library` context.
-  """
-
-  @doc """
-  Generate a genus.
-  """
-  def genus_fixture(attrs \\ %{}) do
-    {:ok, genus} =
-      attrs
-      |> Enum.into(%{
-        name: "some name"
-      })
-      |> VisualGarden.Library.create_genus()
-
-    genus
-  end
-
   @doc """
   Generate a species.
   """
   def species_fixture(attrs \\ %{}) do
-    genus = genus_fixture()
     {:ok, species} =
       attrs
       |> Enum.into(%{
         name: "some name",
-        genus_id: genus.id
+        genus_id: "my genus"
       })
       |> VisualGarden.Library.create_species()
 
