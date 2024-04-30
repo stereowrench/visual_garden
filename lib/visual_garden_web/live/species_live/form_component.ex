@@ -23,6 +23,7 @@ defmodule VisualGardenWeb.SpeciesLive.FormComponent do
         <.input field={@form[:name]} type="text" label="Species" />
         <.input field={@form[:variant]} type="text" label="Variant" />
         <.input field={@form[:cultivar]} type="text" label="Cultivar" />
+        <.input field={@form[:common_name]} type="text" label="Common Name" />
         <:actions>
           <.button phx-disable-with="Saving...">Save Species</.button>
         </:actions>
