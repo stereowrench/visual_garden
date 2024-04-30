@@ -1,18 +1,31 @@
 # VisualGarden
 
-To start your Phoenix server:
+StereoWrench VisualGarden is an application to help you plan and manage your
+gardens. It is currently in the alpha stage.
 
-  * Run `mix setup` to install and setup dependencies
-  * Start Phoenix endpoint with `mix phx.server` or inside IEx with `iex -S mix phx.server`
+The project is licensed under AGPLv3.
 
-Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
+## Project Status
 
-Ready to run in production? Please [check our deployment guides](https://hexdocs.pm/phoenix/deployment.html).
+The project is in alpha. We are looking for a designer to contribute.
 
-## Learn more
+### Contributing
 
-  * Official website: https://www.phoenixframework.org/
-  * Guides: https://hexdocs.pm/phoenix/overview.html
-  * Docs: https://hexdocs.pm/phoenix
-  * Forum: https://elixirforum.com/c/phoenix-forum
-  * Source: https://github.com/phoenixframework/phoenix
+Please see the issues to help contribute. Additionally, we have divided the
+tickets into difficulty and domain categories:
+
+|     | Easy | Intermediate | Hard |
+| Documentation | https://github.com/stereowrench/visual_garden/issues?q=is%3Aopen+is%3Aissue+label%3Askill%3Aeasy+label%3Acat%3Adoc | https://github.com/stereowrench/visual_garden/issues?q=is%3Aopen+is%3Aissue+label%3Askill%3Aintermediate+label%3Acat%3Adoc+ | https://github.com/stereowrench/visual_garden/issues?q=is%3Aopen+is%3Aissue+label%3Askill%3Ahard+label%3Acat%3Adoc+ |
+| Development | https://github.com/stereowrench/visual_garden/issues?q=is%3Aopen+is%3Aissue+label%3Askill%3Aeasy+label%3Acat%3Adev+ | https://github.com/stereowrench/visual_garden/issues?q=is%3Aopen+is%3Aissue+label%3Askill%3Aintermediate+label%3Acat%3Adev+ | https://github.com/stereowrench/visual_garden/issues?q=is%3Aopen+is%3Aissue+label%3Askill%3Ahard+label%3Acat%3Adev+ |
+| Testing | https://github.com/stereowrench/visual_garden/issues?q=is%3Aopen+is%3Aissue+label%3Askill%3Aeasy+label%3Acat%3Atest+ | https://github.com/stereowrench/visual_garden/issues?q=is%3Aopen+is%3Aissue+label%3Askill%3Aintermediate+label%3Acat%3Atest+ | https://github.com/stereowrench/visual_garden/issues?q=is%3Aopen+is%3Aissue+label%3Askill%3Ahard+label%3Acat%3Atest+ |
+| Design | https://github.com/stereowrench/visual_garden/issues?q=is%3Aopen+is%3Aissue+label%3Askill%3Aeasy+label%3Acat%3Adesign+ | https://github.com/stereowrench/visual_garden/issues?q=is%3Aopen+is%3Aissue+label%3Askill%3Aintermediate+label%3Acat%3Adesign+ | https://github.com/stereowrench/visual_garden/issues?q=is%3Aopen+is%3Aissue+label%3Askill%3Ahard+label%3Acat%3Adesign+ |
+
+
+## Development
+
+## Roadmap
+
+## Production
+
+The app is currently not suitable for production and thus the instructions for
+deployment have been omitted.
