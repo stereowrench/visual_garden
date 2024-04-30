@@ -61,7 +61,8 @@ defmodule VisualGarden.MixProject do
       {:flashy, "~> 0.2.5"},
       {:petal_components, "~> 1.9.2"},
       {:timex, "~> 3.7"},
-      {:live_select, "~> 1.0"}
+      {:live_select, "~> 1.0"},
+      {:earmark, "~> 1.4"}
     ]
   end
 
