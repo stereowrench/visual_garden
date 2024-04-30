@@ -15,6 +15,7 @@ Please see the issues to help contribute. Additionally, we have divided the
 tickets into difficulty and domain categories:
 
 |     | Easy | Intermediate | Hard |
+| --- | ---- | ------------ | ---- |
 | Documentation | [Easy](https://github.com/stereowrench/visual_garden/issues?q=is%3Aopen+is%3Aissue+label%3Askill%3Aeasy+label%3Acat%3Adoc) | [Intermediate](https://github.com/stereowrench/visual_garden/issues?q=is%3Aopen+is%3Aissue+label%3Askill%3Aintermediate+label%3Acat%3Adoc+) | [Hard](https://github.com/stereowrench/visual_garden/issues?q=is%3Aopen+is%3Aissue+label%3Askill%3Ahard+label%3Acat%3Adoc+) |
 | Development | [Easy](https://github.com/stereowrench/visual_garden/issues?q=is%3Aopen+is%3Aissue+label%3Askill%3Aeasy+label%3Acat%3Adev+ )| [Intermediate](https://github.com/stereowrench/visual_garden/issues?q=is%3Aopen+is%3Aissue+label%3Askill%3Aintermediate+label%3Acat%3Adev+ )| [Hard](https://github.com/stereowrench/visual_garden/issues?q=is%3Aopen+is%3Aissue+label%3Askill%3Ahard+label%3Acat%3Adev+) |
 | Testing | [Easy](https://github.com/stereowrench/visual_garden/issues?q=is%3Aopen+is%3Aissue+label%3Askill%3Aeasy+label%3Acat%3Atest+) | [Intermediate](https://github.com/stereowrench/visual_garden/issues?q=is%3Aopen+is%3Aissue+label%3Askill%3Aintermediate+label%3Acat%3Atest+) | [Hard](https://github.com/stereowrench/visual_garden/issues?q=is%3Aopen+is%3Aissue+label%3Askill%3Ahard+label%3Acat%3Atest+) |
