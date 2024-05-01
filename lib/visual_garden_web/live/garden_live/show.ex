@@ -44,4 +44,82 @@ defmodule VisualGardenWeb.GardenLive.Show do
     |> assign(:plants, plants)
     |> assign(:total_plants, total_plants)
   end
+
+  def x_shift(mo) do
+    if mo == 1 do
+      0
+    else
+      start = Date.new!(DateTime.utc_now().year, 1, 1)
+      en = Timex.end_of_month(DateTime.utc_now().year, mo - 1)
+      Timex.diff(en, start, :days) + 1
+    end
+  end
+
+  def x_shift_date(date) do
+    start = Date.new!(DateTime.utc_now().year, 1, 1)
+    Timex.diff(date, start, :days)
+  end
+
+  @num_squares 3
+
+  def stub_planner_entries do
+    [
+      %{
+        crop_name: "Corn",
+        plant_date: ~D[2024-04-03],
+        bed: 1,
+        square: 2,
+        days_to_maturation: 90,
+        id: -3
+      }
+    ]
+  end
+
+  defp generate_available_regions(entries) do
+    # group entires by bed
+    # create start, finish pairs
+    # add beginning and end of year
+    # group by 2s
+
+    grouped =
+      entries
+      |> Enum.group_by(& &1.square)
+
+    grouped =
+      Enum.map(1..@num_squares, fn
+        square_num ->
+          case grouped[square_num] do
+            nil -> {square_num, []}
+            _el -> {square_num, grouped[square_num]}
+          end
+      end)
+      |> Enum.into(%{})
+
+    for {group, es} <- grouped, into: %{} do
+      plant_dates = Enum.map(es, & &1.plant_date)
+      days = Enum.map(es, & &1.days_to_maturation)
+
+      pairs =
+        for {date, days} <- Enum.zip(plant_dates, days), do: [date, Timex.shift(date, days: days)]
+
+      pairs = List.flatten(pairs)
+
+      new_list =
+        ([Date.new!(DateTime.utc_now().year, 1, 1)] ++
+           pairs ++ [Timex.end_of_year(DateTime.utc_now().year)])
+        |> IO.inspect()
+
+      chunks = Enum.chunk_every(new_list, 2)
+
+      spans =
+        for [a, b] <- chunks do
+          %{
+            start_date: a,
+            finish_date: b
+          }
+        end
+
+      {group, spans}
+    end
+  end
 end

@@ -6,6 +6,7 @@ defmodule VisualGarden.Gardens.Garden do
     field :name, :string
 
     has_many :products, VisualGarden.Gardens.Product
+    belongs_to :region, VisualGarden.Library.Region
 
     timestamps(type: :utc_datetime)
   end
@@ -13,7 +14,7 @@ defmodule VisualGarden.Gardens.Garden do
   @doc false
   def changeset(garden, attrs) do
     garden
-    |> cast(attrs, [:name])
+    |> cast(attrs, [:name, :region_id])
     |> cast_assoc(:products)
     |> validate_required([:name])
   end

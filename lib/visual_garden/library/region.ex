@@ -6,6 +6,7 @@ defmodule VisualGarden.Library.Region do
     field :name, :string
 
     has_many :schedules, VisualGarden.Library.Schedule
+    has_many :gardens, VisualGarden.Gardens.Garden
 
     timestamps(type: :utc_datetime)
   end

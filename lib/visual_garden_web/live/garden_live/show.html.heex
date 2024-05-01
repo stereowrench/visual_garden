@@ -12,7 +12,6 @@
   </:actions>
 </.header>
 
-
 <dl class="mx-auto grid grid-cols-1 gap-px bg-gray-900/5 sm:grid-cols-2 lg:grid-cols-4">
   <div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-2 bg-white px-4 py-10 sm:px-6 xl:px-8">
     <dt class="text-sm font-medium leading-6 text-gray-500">Total Plants</dt>
@@ -28,6 +27,64 @@
 </dl>
 
 <.back navigate={~p"/gardens"}>Back to gardens</.back>
+
+<svg viewBox="0 0 500 100" xmlns="http://www.w3.org/2000/svg">
+  <%= for mo <- 1..12 do %>
+    <%!-- <.link patch={~p"/gardens/"}> --%>
+    <rect
+      width={Timex.days_in_month(DateTime.utc_now().year, mo)}
+      height="25"
+      x={40 + x_shift(mo)}
+      style="stroke-width:0.5;stroke:black"
+      fill="none"
+    >
+    </rect>
+    <text y="13" x={40 + x_shift(mo) + 3} style="font-size:11px;">
+      <%= Timex.month_name(mo) |> String.slice(0..2) %>
+    </text>
+    <%!-- </.link> --%>
+  <% end %>
+  <%= for square <- [1,2,3] do %>
+    <text y={13 + 25 + 25 * (square - 1)} x="0" style="font-size:11px;">Sq <%= square %></text>
+  <% end %>
+  <%= for entry <- stub_planner_entries() do %>
+    <.link patch={~p"/planner/foo"}>
+      <rect
+        width={entry.days_to_maturation}
+        height="25"
+        y={25 + 25 * (entry.square - 1)}
+        style="fill:yellow;"
+        class="crop-span"
+        x={40 + x_shift_date(entry.plant_date)}
+      >
+      </rect>
+      <text
+        dominant-baseline="central"
+        text-anchor="middle"
+        x={40 + x_shift_date(entry.plant_date) + entry.days_to_maturation / 2}
+        y={25 + 25 * (entry.square - 1) + 25 / 2}
+        style="font-size: 11px"
+      >
+        <%= entry.crop_name %>
+      </text>
+    </.link>
+
+    <%= for {group, spans} <- generate_available_regions(stub_planner_entries()) do %>
+      <%= for %{start_date: a, finish_date: b} <- spans do %>
+        <.link patch={~p"/planner/foo"}>
+          <rect
+            width={Timex.diff(b, a, :days)}
+            height="25"
+            y={25 + 25 * (group - 1)}
+            class="new-crop-span"
+            x={40 + x_shift_date(a)}
+          >
+          </rect>
+        </.link>
+      <% end %>
+    <% end %>
+  <% end %>
+</svg>
 
 <.modal
   :if={@live_action == :edit}
