@@ -28,19 +28,19 @@
 
 <.back navigate={~p"/gardens"}>Back to gardens</.back>
 
-<svg viewBox="0 0 500 100" xmlns="http://www.w3.org/2000/svg">
-  <%= for mo <- 1..12 do %>
+<svg viewBox="0 0 600 100" xmlns="http://www.w3.org/2000/svg">
+  <%= for mo <- generate_months(@garden.tz) do %>
     <%!-- <.link patch={~p"/gardens/"}> --%>
     <rect
-      width={Timex.days_in_month(DateTime.utc_now().year, mo)}
+      width={mo.days_in_month}
       height="25"
-      x={40 + x_shift(mo)}
+      x={40 + x_shift(mo.mo_num, @garden.tz)}
       style="stroke-width:0.5;stroke:black"
       fill="none"
     >
     </rect>
-    <text y="13" x={40 + x_shift(mo) + 3} style="font-size:11px;">
-      <%= Timex.month_name(mo) |> String.slice(0..2) %>
+    <text y="13" x={40 + x_shift(mo.mo_num, @garden.tz) + 3} style="font-size:11px;">
+      <%= mo.month_name %>
     </text>
     <%!-- </.link> --%>
   <% end %>
@@ -55,13 +55,13 @@
         y={25 + 25 * (entry.square - 1)}
         style="fill:yellow;"
         class="crop-span"
-        x={40 + x_shift_date(entry.plant_date)}
+        x={40 + x_shift_date(entry.plant_date, @garden.tz)}
       >
       </rect>
       <text
         dominant-baseline="central"
         text-anchor="middle"
-        x={40 + x_shift_date(entry.plant_date) + entry.days_to_maturation / 2}
+        x={40 + x_shift_date(entry.plant_date, @garden.tz) + entry.days_to_maturation / 2}
         y={25 + 25 * (entry.square - 1) + 25 / 2}
         style="font-size: 11px"
       >
@@ -77,7 +77,7 @@
             height="25"
             y={25 + 25 * (group - 1)}
             class="new-crop-span"
-            x={40 + x_shift_date(a)}
+            x={40 + x_shift_date(a, @garden.tz)}
           >
           </rect>
         </.link>

@@ -45,19 +45,70 @@ defmodule VisualGardenWeb.GardenLive.Show do
     |> assign(:total_plants, total_plants)
   end
 
-  def x_shift(mo) do
-    if mo == 1 do
-      0
-    else
-      start = Date.new!(DateTime.utc_now().year, 1, 1)
-      en = Timex.end_of_month(DateTime.utc_now().year, mo - 1)
-      Timex.diff(en, start, :days) + 1
+  def extent_dates(tz) do
+    now =
+      DateTime.utc_now()
+      |> Timex.Timezone.convert(tz)
+      |> Timex.to_date()
+
+    start_d = Timex.shift(now, days: -180) |> Timex.beginning_of_month()
+    end_d = Timex.shift(now, days: 365) |> Timex.end_of_month()
+    {start_d, end_d}
+  end
+
+  def months_in_extent({start_d, end_d}) do
+    Timex.diff(end_d, start_d, :months)
+  end
+
+  def generate_months(tz) do
+    days = {start_d, _} = extent_dates(tz)
+
+    for mo <- 1..months_in_extent(days) do
+      ed =
+        start_d
+        |> Timex.shift(months: mo - 1)
+
+      days_in_month =
+        ed |> Timex.days_in_month()
+
+      month_name = Timex.month_shortname(ed.month)
+
+      %{
+        days_in_month: days_in_month,
+        month_name: month_name,
+        mo_num: mo
+      }
     end
   end
 
-  def x_shift_date(date) do
-    start = Date.new!(DateTime.utc_now().year, 1, 1)
-    Timex.diff(date, start, :days)
+  def x_shift(mo, tz) do
+    {start_d, _end_d} = extent_dates(tz)
+
+    beg = start_d
+
+    en =
+      start_d
+      |> Timex.shift(months: mo - 1)
+      |> Timex.shift(days: -1)
+      |> Timex.end_of_month()
+
+    Timex.diff(en, beg, :days)
+  end
+
+  def x_shift_date(date, tz) do
+    {start_d, _} = extent_dates(tz)
+    Timex.diff(date, start_d, :days)
+  end
+
+  def clamp_date(start, en, date) do
+    case Timex.diff(date, start, :days) do
+      b when b > 0 ->
+        case Timex.diff(en, date) do
+          c when c > 0 -> date
+          _ -> en
+        end
+      _ -> start
+    end
   end
 
   @num_squares 3
@@ -76,11 +127,6 @@ defmodule VisualGardenWeb.GardenLive.Show do
   end
 
   defp generate_available_regions(entries) do
-    # group entires by bed
-    # create start, finish pairs
-    # add beginning and end of year
-    # group by 2s
-
     grouped =
       entries
       |> Enum.group_by(& &1.square)
