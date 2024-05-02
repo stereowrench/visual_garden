@@ -19,7 +19,12 @@ defmodule VisualGardenWeb.GardenLive.FormComponent do
         phx-change="validate"
         phx-submit="save"
       >
-        <.input field={@form[:name]} label="Name"/>
+        <.input field={@form[:name]} label="Name" />
+        <.live_select field={@form[:tz]} label="Timezone" phx-target={@myself} options={@tz_opts}>
+          <:option :let={opt}>
+            <.highlight matches={@highlights[opt.label]} string={opt.label} />
+          </:option>
+        </.live_select>
         <:actions>
           <.button phx-disable-with="Saving...">Save Garden</.button>
         </:actions>
@@ -35,7 +40,59 @@ defmodule VisualGardenWeb.GardenLive.FormComponent do
     {:ok,
      socket
      |> assign(assigns)
+     |> assign(:tz_opts, tz_opts())
+     |> assign(:highlights, %{})
      |> assign_form(changeset)}
+  end
+
+  defp tz_opts do
+    Tzdata.zone_list()
+    |> Enum.map(&{&1, &1})
+    |> Enum.into(%{})
+  end
+
+  def highlight(assigns) do
+    string = assigns.string
+    matches = assigns.matches
+
+    case matches do
+      nil ->
+        ~H"<%= @string %>"
+
+      _ ->
+        hs =
+          1..String.length(string)
+          |> Enum.map(fn idx ->
+            case idx in matches do
+              true ->
+                assigns = %{string: string, idx: idx - 1}
+                ~H"<b><%= String.at(@string, @idx) %></b>"
+
+              false ->
+                assigns = %{string: string, idx: idx - 1}
+                ~H"<%= String.at(@string, @idx) %>"
+            end
+          end)
+
+        assigns = %{hs: hs}
+
+        ~H"""
+        <%= for h <- @hs, do: h %>
+        """
+    end
+  end
+
+  @impl true
+  def handle_event("live_select_change", %{"text" => text, "id" => live_select_id}, socket) do
+    matches = Seqfuzz.matches(tz_opts(), text, &elem(&1, 0), filter: true, sort: true)
+
+    opts = Enum.map(matches, fn {m, _} -> m end) |> Enum.take(10)
+
+    highlights =
+      Enum.map(matches, fn {{a, _}, c} -> {a, c.matches} end) |> Enum.take(10) |> Enum.into(%{})
+
+    send_update(LiveSelect.Component, id: live_select_id, options: opts)
+    {:noreply, assign(socket, :highlights, highlights)}
   end
 
   @impl true

@@ -5,6 +5,7 @@ defmodule VisualGarden.Gardens.Garden do
   schema "gardens" do
     field :name, :string
 
+    field :tz, :string
     has_many :products, VisualGarden.Gardens.Product
     belongs_to :region, VisualGarden.Library.Region
 
@@ -14,8 +15,9 @@ defmodule VisualGarden.Gardens.Garden do
   @doc false
   def changeset(garden, attrs) do
     garden
-    |> cast(attrs, [:name, :region_id])
+    |> cast(attrs, [:name, :region_id, :tz])
     |> cast_assoc(:products)
-    |> validate_required([:name])
+    |> validate_inclusion(:tz, Tzdata.zone_list())
+    |> validate_required([:name, :tz])
   end
 end

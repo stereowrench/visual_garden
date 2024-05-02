@@ -62,7 +62,8 @@ defmodule VisualGarden.MixProject do
       {:petal_components, "~> 1.9.2"},
       {:timex, "~> 3.7"},
       {:live_select, "~> 1.0"},
-      {:earmark, "~> 1.4"}
+      {:earmark, "~> 1.4"},
+      {:seqfuzz, "~> 0.2.0"}
     ]
   end
 
