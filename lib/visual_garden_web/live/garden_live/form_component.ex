@@ -77,7 +77,7 @@ defmodule VisualGardenWeb.GardenLive.FormComponent do
         assigns = %{hs: hs}
 
         ~H"""
-        <%= for h <- @hs, do: h %>
+        <%= for h <- @hs do %><%= h %><% end %>
         """
     end
   end
