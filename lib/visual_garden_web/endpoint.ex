@@ -22,7 +22,7 @@ defmodule VisualGardenWeb.Endpoint do
   plug Plug.Static,
     at: "/",
     from: :visual_garden,
-    gzip: false,
+    gzip: true,
     only: VisualGardenWeb.static_paths()
 
   # Code reloading can be explicitly enabled under the
