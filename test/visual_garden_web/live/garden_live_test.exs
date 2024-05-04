@@ -36,7 +36,7 @@ defmodule VisualGardenWeb.GardenLiveTest do
 
       assert index_live
              |> form("#garden-form", garden: @create_attrs)
-             |> render_submit()
+             |> render_submit(%{garden: %{tz: "America/Chicago"}})
 
       assert_patch(index_live, ~p"/gardens")
 

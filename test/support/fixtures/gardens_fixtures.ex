@@ -11,7 +11,8 @@ defmodule VisualGarden.GardensFixtures do
     {:ok, garden} =
       attrs
       |> Enum.into(%{
-        name: "My Garden"
+        name: "My Garden",
+        tz: "America/Chicago"
       })
       |> VisualGarden.Gardens.create_garden()
 

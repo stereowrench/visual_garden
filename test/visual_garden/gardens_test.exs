@@ -21,7 +21,7 @@ defmodule VisualGarden.GardensTest do
     end
 
     test "create_garden/1 with valid data creates a garden" do
-      valid_attrs = %{name: "My Other Garden"}
+      valid_attrs = %{name: "My Other Garden", tz: "America/Chicago"}
 
       assert {:ok, %Garden{} = garden} = Gardens.create_garden(valid_attrs)
     end
