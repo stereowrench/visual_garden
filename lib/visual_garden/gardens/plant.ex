@@ -21,7 +21,7 @@ defmodule VisualGarden.Gardens.Plant do
       |> validate_number(:qty, greater_than_or_equal_to: 1)
       |> validate_seed()
       |> validate_plant()
-      |> validate_required([:name, :qty])
+      |> validate_required([:name, :qty, :row, :column])
       |> cast_assoc(:seed, with: &VisualGarden.Gardens.Seed.changeset/2)
       |> cast_assoc(:product, with: &VisualGarden.Gardens.Product.changeset/2)
   end

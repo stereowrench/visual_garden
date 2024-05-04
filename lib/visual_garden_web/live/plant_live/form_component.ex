@@ -54,10 +54,11 @@ defmodule VisualGardenWeb.PlantLive.FormComponent do
           <% end %>
           <%= if @bed do %>
             <div class="square-grid" style={["--length: #{@bed.length};", "--width: #{@bed.width}"]}>
-              <%= for {{label, val}, idx} <- Enum.with_index(squares_options(@bed)) |> IO.inspect() do %>
+              <%= for {{_label, val}, idx} <- Enum.with_index(squares_options(@bed)) do %>
                 <label class="square-label">
                   <input
                     class="square-check"
+                    phx-update="ignore"
                     type="radio"
                     name="Square"
                     id={"square_picker_#{idx}"}
@@ -134,11 +135,42 @@ defmodule VisualGardenWeb.PlantLive.FormComponent do
     end
   end
 
+  defp parse_square(square, bed) do
+    with b when not is_nil(b) <- bed,
+         _ when not is_nil(square) <- square do
+      # i + bed.length * j
+      # is length, j is width
+      {z, ""} = Integer.parse(square)
+      # => i
+      x = rem(z, bed.length)
+      # => j
+      y = trunc(:math.floor(z / bed.length))
+      {x, y}
+    end
+  end
+
+  defp add_square(plant_params, bed, square) do
+    loc =
+      square
+      |> parse_square(bed)
+
+    case loc do
+      {x, y} ->
+        plant_params
+        |> put_in(["row"], x)
+        |> put_in(["column"], y)
+
+      _ ->
+        plant_params
+    end
+  end
+
   @impl true
-  def handle_event("validate", %{"plant" => plant_params}, socket) do
+  def handle_event("validate", %{"plant" => plant_params} = params, socket) do
     cleaned =
       plant_params
       |> apply_stubs(socket.assigns.garden)
+      |> add_square(socket.assigns.bed, params["Square"])
 
     changeset =
       socket.assigns.plant
@@ -176,8 +208,8 @@ defmodule VisualGardenWeb.PlantLive.FormComponent do
     {:noreply, assign_form(socket, changeset)}
   end
 
-  def handle_event("save", %{"plant" => plant_params}, socket) do
-    save_plant(socket, socket.assigns.action, plant_params)
+  def handle_event("save", %{"plant" => plant_params} = params, socket) do
+    save_plant(socket, socket.assigns.action, plant_params, params["Square"])
   end
 
   defp save_plant(socket, :edit, plant_params) do
@@ -195,9 +227,11 @@ defmodule VisualGardenWeb.PlantLive.FormComponent do
     end
   end
 
-  defp save_plant(socket, action, plant_params) when action in [:plant, :new] do
+  defp save_plant(socket, action, plant_params, square) when action in [:plant, :new] do
     plant_params =
-      maybe_add_parents(plant_params, socket.assigns.garden)
+      plant_params
+      |> maybe_add_parents(socket.assigns.garden)
+      |> add_square(socket.assigns.bed, square)
 
     case Gardens.create_plant(plant_params) do
       {:ok, plant} ->
@@ -216,6 +250,7 @@ defmodule VisualGardenWeb.PlantLive.FormComponent do
          |> push_patch(to: socket.assigns.patch)}
 
       {:error, %Ecto.Changeset{} = changeset} ->
+        IO.inspect(changeset)
         {:noreply, assign_form(socket, changeset)}
     end
   end
@@ -242,9 +277,9 @@ defmodule VisualGardenWeb.PlantLive.FormComponent do
   defp notify_parent(msg), do: send(self(), {__MODULE__, msg})
 
   defp squares_options(bed) do
-    for i <- 1..bed.length do
-      for j <- 1..bed.width do
-        {"#{i}, #{j}", i + bed.length * j}
+    for i <- 0..(bed.length - 1) do
+      for j <- 0..(bed.width - 1) do
+        {"#{i}, #{j}", i * bed.width + j}
       end
     end
     |> List.flatten()
