@@ -51,23 +51,22 @@ defmodule VisualGardenWeb.PlantLive.FormComponent do
               <.input field={product[:length]} label="Length" type="number" value="bed" />
               <.input field={product[:width]} label="Width" type="number" value="bed" />
             </.inputs_for>
-          <% else %>
-            <%= if @bed do %>
-              <div class="square-grid" style={["--length: #{@bed.length};", "--width: #{@bed.width}"]}>
-                <%= for {{label, val}, idx} <- Enum.with_index(squares_options(@bed)) |> IO.inspect() do %>
-                  <label class="square-label">
-                    <input
-                      class="square-check"
-                      type="radio"
-                      name="Square"
-                      id={"square_picker_#{idx}"}
-                      value={val}
-                    />
-                    <span></span>
-                  </label>
-                <% end %>
-              </div>
-            <% end %>
+          <% end %>
+          <%= if @bed do %>
+            <div class="square-grid" style={["--length: #{@bed.length};", "--width: #{@bed.width}"]}>
+              <%= for {{label, val}, idx} <- Enum.with_index(squares_options(@bed)) |> IO.inspect() do %>
+                <label class="square-label">
+                  <input
+                    class="square-check"
+                    type="radio"
+                    name="Square"
+                    id={"square_picker_#{idx}"}
+                    value={val}
+                  />
+                  <span></span>
+                </label>
+              <% end %>
+            </div>
           <% end %>
         <% end %>
         <:actions>
@@ -109,14 +108,26 @@ defmodule VisualGardenWeb.PlantLive.FormComponent do
   defp apply_stubs(params, garden) do
     params =
       if params["product_id"] == "-1" do
-        params = put_in(params["product"], %{})
+        params =
+          if params["product"] do
+            params
+          else
+            put_in(params["product"], %{})
+          end
+
         put_in(params["product"]["garden_id"], garden.id)
       else
         params
       end
 
     if params["seed_id"] == "-1" do
-      params = put_in(params["seed"], %{})
+      params =
+        if params["seed"] do
+          params
+        else
+          put_in(params["seed"], %{})
+        end
+
       put_in(params["seed"]["garden_id"], garden.id)
     else
       params
@@ -125,7 +136,10 @@ defmodule VisualGardenWeb.PlantLive.FormComponent do
 
   @impl true
   def handle_event("validate", %{"plant" => plant_params}, socket) do
-    cleaned = apply_stubs(plant_params, socket.assigns.garden)
+    cleaned =
+      plant_params
+      |> apply_stubs(socket.assigns.garden)
+      |> dbg
 
     changeset =
       socket.assigns.plant
@@ -138,14 +152,14 @@ defmodule VisualGardenWeb.PlantLive.FormComponent do
           nil
 
         pid ->
-          if plant_params["product_id"] == "-1" do
+          if plant_params["product_id"] in ["", "-1"] do
             length = plant_params["product"]["length"]
             width = plant_params["product"]["width"]
 
             if length && width do
               with {len, ""} <- Integer.parse(length),
                    {wid, ""} <- Integer.parse(width) do
-                %{length: len, wid: wid}
+                %{length: len, width: wid}
               else
                 _ -> nil
               end
