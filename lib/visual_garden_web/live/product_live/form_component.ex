@@ -19,18 +19,11 @@ defmodule VisualGardenWeb.ProductLive.FormComponent do
         phx-change="validate"
         phx-submit="save"
       >
-        <%!-- <.input field={@form[:garden_id]}
-          type="text"
-          list="gardens-list"
-          label="Garden"
-        />
-        <datalist :for={garden <- @gardens} id="gardens-list">
-          <option value={garden.id}><%= garden.name %></option>
-        </datalist> --%>
-
         <.input field={@form[:name]} type="text" label="Name" />
-        <%= if @action == :new_bed do %>
+        <%= if @action in [:new_bed, :edit_bed] do %>
           <.input type="hidden" field={@form[:type]} value="bed" options={[:bed]} />
+          <.input type="number" field={@form[:length]} label="Length (ft.)" />
+          <.input type="number" field={@form[:width]} label="Width (ft.)" />
         <% else %>
           <.input
             field={@form[:type]}
@@ -72,7 +65,7 @@ defmodule VisualGardenWeb.ProductLive.FormComponent do
     save_product(socket, socket.assigns.action, product_params)
   end
 
-  defp save_product(socket, :edit, product_params) do
+  defp save_product(socket, action, product_params) when action in [:edit, :edit_bed] do
     case Gardens.update_product(socket.assigns.product, product_params) do
       {:ok, product} ->
         notify_parent({:saved, product})

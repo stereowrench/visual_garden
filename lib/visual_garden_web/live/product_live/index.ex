@@ -17,7 +17,7 @@ defmodule VisualGardenWeb.ProductLive.Index do
       Gardens.list_products(socket.assigns.garden_id)
 
     products =
-      if socket.assigns.live_action in [:beds, :new_bed] do
+      if socket.assigns.live_action in [:beds, :new_bed, :edit_bed] do
         Enum.filter(products, &(&1.type == :bed))
       else
         Enum.reject(products, &(&1.type == :bed))
@@ -28,11 +28,6 @@ defmodule VisualGardenWeb.ProductLive.Index do
   end
 
   @impl true
-  @spec handle_params(map(), any(), %{
-          :assigns =>
-            atom() | %{:live_action => :edit | :index | :new | :new_bed, optional(any()) => any()},
-          optional(any()) => any()
-        }) :: {:noreply, map()}
   def handle_params(params, _url, socket) do
     {:noreply, apply_action(socket, socket.assigns.live_action, params)}
   end
@@ -41,6 +36,13 @@ defmodule VisualGardenWeb.ProductLive.Index do
     socket
     |> assign(:garden, Gardens.get_garden!(garden_id))
     |> assign(:page_title, "Edit product")
+    |> assign(:product, Gardens.get_product!(id))
+  end
+
+  defp apply_action(socket, :edit_bed, %{"garden_id" => garden_id, "id" => id}) do
+    socket
+    |> assign(:garden, Gardens.get_garden!(garden_id))
+    |> assign(:page_title, "Edit bed")
     |> assign(:product, Gardens.get_product!(id))
   end
 
@@ -87,5 +89,12 @@ defmodule VisualGardenWeb.ProductLive.Index do
 
   def friendly_type(name) do
     Product.friendly_type(name)
+  end
+
+  def name_str(product) do
+    case product.type do
+      :bed -> "#{product.name} (#{product.length}x#{product.width})"
+      _ -> product.name
+    end
   end
 end

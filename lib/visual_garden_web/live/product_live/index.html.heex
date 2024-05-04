@@ -2,17 +2,17 @@
   module={VisualGardenWeb.NavBar}
   id="navbar"
   garden={@garden}
-  current={if @live_action in [:beds, :new_bad], do: "Beds", else: "Products"}
+  current={if @live_action in [:beds, :new_bad, :edit_bed], do: "Beds", else: "Products"}
 />
 
 <.header>
-  <%= if @live_action in [:beds, :new_bed] do %>
+  <%= if @live_action in [:beds, :new_bed, :edit_bed] do %>
     Listing beds
   <% else %>
     Listing products
   <% end %>
   <:actions>
-    <%= if @live_action == :beds do %>
+    <%= if @live_action in [:beds, :new_bed, :edit_bed] do %>
       <.link patch={~p"/gardens/#{@garden.id}/products/new_bed"}>
         <.button>New bed</.button>
       </.link>
@@ -43,16 +43,20 @@
         end
       }
     >
-      <:col :let={product} label="Name"><%= product.name %></:col>
+      <:col :let={product} label="Name"><%= name_str(product) %></:col>
       <:action :let={product}>
         <div class="sr-only">
-          <%= if @live_action in [:beds] do %>
+          <%= if @live_action in [:beds, :new_bed, :edit_bed] do %>
             <.link navigate={~p"/gardens/#{@garden.id}/beds/#{product}"}>Show</.link>
           <% else %>
             <.link navigate={~p"/gardens/#{@garden.id}/products/#{product}"}>Show</.link>
           <% end %>
         </div>
-        <.link patch={~p"/gardens/#{@garden.id}/products/#{product}/edit"}>Edit</.link>
+        <%= if @live_action in [:beds, :new_bed, :edit_bed] do %>
+          <.link navigate={~p"/gardens/#{@garden.id}/beds/#{product}/edit"}>Edit</.link>
+        <% else %>
+          <.link navigate={~p"/gardens/#{@garden.id}/products/#{product}/edit"}>Edi</.link>
+        <% end %>
       </:action>
       <:action :let={product}>
         <.link
@@ -69,10 +73,18 @@
 </div>
 
 <.modal
-  :if={@live_action in [:new, :edit, :new_bed]}
+  :if={@live_action in [:new, :edit, :new_bed, :edit_bed]}
   id="product-modal"
   show
-  on_cancel={JS.patch(~p"/gardens/#{@garden.id}/products")}
+  on_cancel={
+    JS.patch(
+      if @live_action in [:bed, :new_bed, :edit_bed] do
+        ~p"/gardens/#{@garden.id}/beds"
+      else
+        ~p"/gardens/#{@garden.id}/products"
+      end
+    )
+  }
 >
   <.live_component
     module={VisualGardenWeb.ProductLive.FormComponent}
@@ -80,7 +92,13 @@
     title={@page_title}
     action={@live_action}
     product={@product}
-    patch={~p"/gardens/#{@garden.id}/products"}
+    patch={
+      if @live_action in [:bed, :new_bed, :edit_bed] do
+        ~p"/gardens/#{@garden.id}/beds"
+      else
+        ~p"/gardens/#{@garden.id}/products"
+      end
+    }
     garden={@garden}
   />
 </.modal>
