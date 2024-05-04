@@ -1,4 +1,5 @@
 defmodule VisualGardenWeb.Endpoint do
+  use Sentry.PlugCapture
   use Phoenix.Endpoint, otp_app: :visual_garden
 
   # The session will be stored in the cookie and signed,
@@ -50,4 +51,5 @@ defmodule VisualGardenWeb.Endpoint do
   plug Plug.Head
   plug Plug.Session, @session_options
   plug VisualGardenWeb.Router
+  plug Sentry.PlugContext
 end
