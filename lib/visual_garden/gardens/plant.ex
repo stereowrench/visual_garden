@@ -8,6 +8,9 @@ defmodule VisualGarden.Gardens.Plant do
     field :name, :string
     field :qty, :integer
 
+    field :row, :integer
+    field :column, :integer
+
     timestamps(type: :utc_datetime)
   end
 
@@ -16,7 +19,7 @@ defmodule VisualGarden.Gardens.Plant do
     cl =
       plant
 
-    valid_attrs = [:name, :qty]
+    valid_attrs = [:name, :qty, :row, :column]
 
     valid_attrs =
       if attrs["seed_id"] == "-1" or attrs[:seed_id] == "-1" do
