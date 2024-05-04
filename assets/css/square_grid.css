@@ -1,0 +1,57 @@
+/* https://stackoverflow.com/a/24517881/1905235 */
+
+.square-grid {
+  display: grid;
+  grid-template-rows: repeat(var(--width), 50px);
+  grid-template-columns: repeat(var(--length), 50px);
+}
+
+.square-check[type='radio'] {
+  display: none;
+}
+
+.square-label {
+  display: inline-block;
+  /* padding: 5px 10px; */
+  cursor: pointer;
+}
+
+.square-label span {
+  position: relative;
+  line-height: 22px;
+}
+
+.square-label span:before,
+.square-label span:after {
+  content: "";
+}
+
+.square-label span:before {
+  border: 1px solid #222021;
+  /* width: 30px;
+  height: 30px; */
+
+  width: 100%;
+  height: 100%;
+  /* margin-right: 10px; */
+  display: inline-block;
+  vertical-align: top;
+}
+
+.square-label span:after {
+  background: #222021;
+  /* width: 30px;
+  height: 30px; */
+  width: 100%;
+  height: 100%;
+  position: relative;
+  display: block;
+  top: -100%;
+  left: 0px;
+  transition: 300ms;
+  opacity: 0;
+}
+
+.square-label input:checked + span:after {
+  opacity: 1;
+}

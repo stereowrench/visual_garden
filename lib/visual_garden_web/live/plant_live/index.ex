@@ -10,7 +10,7 @@ defmodule VisualGardenWeb.PlantLive.Index do
      socket
      |> assign(:product, Gardens.get_product!(product_id))
      |> assign(:seeds, Gardens.list_seeds(garden_id))
-     |> assign(:products, Gardens.list_products(garden_id))
+     |> assign(:beds, Gardens.list_beds(garden_id))
      |> assign(:garden, Gardens.get_garden!(garden_id))
      |> stream(:plants, Gardens.list_plants(garden_id, product_id))}
   end
@@ -21,7 +21,7 @@ defmodule VisualGardenWeb.PlantLive.Index do
      |> assign(:product, nil)
      |> assign(:garden, Gardens.get_garden!(garden_id))
      |> assign(:seeds, Gardens.list_seeds(garden_id))
-     |> assign(:products, Gardens.list_products(garden_id))
+     |> assign(:beds, Gardens.list_beds(garden_id))
      |> stream(:plants, Gardens.list_plants(garden_id))}
   end
 

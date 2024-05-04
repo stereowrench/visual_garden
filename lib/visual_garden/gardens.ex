@@ -117,6 +117,10 @@ defmodule VisualGarden.Gardens do
     Repo.all(from p in Product, where: p.garden_id == ^garden_id)
   end
 
+  def list_beds(garden_id) do
+    Repo.all(from p in Product, where: p.garden_id == ^garden_id and p.type == :bed)
+  end
+
   @doc """
   Gets a single products.
 
@@ -520,6 +524,7 @@ defmodule VisualGarden.Gardens do
         preload: ^@event_preloads
     )
   end
+
   def list_event_logs(_product_id, plant_id) do
     Repo.all(
       from e in EventLog,

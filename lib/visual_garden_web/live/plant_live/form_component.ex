@@ -42,7 +42,7 @@ defmodule VisualGardenWeb.PlantLive.FormComponent do
             type="select"
             label="Placed In"
             prompt="Choose a product to place it in"
-            options={["New Product": -1] ++ Enum.map(@products, &{&1.name, &1.id})}
+            options={["New Product": -1] ++ Enum.map(@beds, &{&1.name, &1.id})}
           />
           <%= if get_field(@form, :product_id) == "-1" do %>
             <.inputs_for :let={product} field={@form[:product]}>
@@ -55,6 +55,17 @@ defmodule VisualGardenWeb.PlantLive.FormComponent do
                 options={[:bed]}
               />
             </.inputs_for>
+          <% else %>
+            <%= if @bed do %>
+              <div class="square-grid" style={["--length: #{@bed.length};", "--width: #{@bed.width}"]}>
+                <%= for {{label, val}, idx} <- Enum.with_index(squares_options(@bed)) |> IO.inspect() do %>
+                  <label class="square-label">
+                    <input class="square-check" type="radio" name="Square" id={"square_picker_#{idx}"} value={val} />
+                    <span></span>
+                  </label>
+                <% end %>
+              </div>
+            <% end %>
           <% end %>
         <% end %>
         <:actions>
@@ -77,8 +88,14 @@ defmodule VisualGardenWeb.PlantLive.FormComponent do
         p -> p
       end
 
-
     changeset = Gardens.change_plant(plant, %{garden_id: assigns.garden.id})
+
+    socket =
+      if Map.has_key?(assigns, :bed) do
+        socket
+      else
+        assign(socket, :bed, nil)
+      end
 
     {:ok,
      socket
@@ -113,6 +130,14 @@ defmodule VisualGardenWeb.PlantLive.FormComponent do
       |> Gardens.change_plant(cleaned)
       |> Map.put(:action, :validate)
 
+    bed =
+      case get_field(changeset, :product_id) do
+        nil -> nil
+        pid -> Gardens.get_product!(pid)
+      end
+
+    socket = assign(socket, :bed, bed)
+
     {:noreply, assign_form(socket, changeset)}
   end
 
@@ -132,21 +157,6 @@ defmodule VisualGardenWeb.PlantLive.FormComponent do
 
       {:error, %Ecto.Changeset{} = changeset} ->
         {:noreply, assign_form(socket, changeset)}
-    end
-  end
-
-  defp maybe_add_parents(params, garden) do
-    params =
-      if params["seed_id"] == "-1" do
-        put_in(params["seed"]["garden_id"], garden.id)
-      else
-        params
-      end
-
-    if params["product_id"] == "-1" do
-      put_in(params["product"]["garden_id"], garden.id)
-    else
-      params
     end
   end
 
@@ -175,9 +185,33 @@ defmodule VisualGardenWeb.PlantLive.FormComponent do
     end
   end
 
+  defp maybe_add_parents(params, garden) do
+    params =
+      if params["seed_id"] == "-1" do
+        put_in(params["seed"]["garden_id"], garden.id)
+      else
+        params
+      end
+
+    if params["product_id"] == "-1" do
+      put_in(params["product"]["garden_id"], garden.id)
+    else
+      params
+    end
+  end
+
   defp assign_form(socket, %Ecto.Changeset{} = changeset) do
     assign(socket, :form, to_form(changeset))
   end
 
   defp notify_parent(msg), do: send(self(), {__MODULE__, msg})
+
+  defp squares_options(bed) do
+    for i <- 1..bed.length do
+      for j <- 1..bed.width do
+        {"#{i}, #{j}", i + bed.length * j}
+      end
+    end
+    |> List.flatten()
+  end
 end
