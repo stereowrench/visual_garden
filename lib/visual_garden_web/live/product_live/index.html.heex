@@ -53,9 +53,9 @@
           <% end %>
         </div>
         <%= if @live_action in [:beds, :new_bed, :edit_bed] do %>
-          <.link navigate={~p"/gardens/#{@garden.id}/beds/#{product}/edit"}>Edit</.link>
+          <.link patch={~p"/gardens/#{@garden.id}/beds/#{product}/edit"}>Edit</.link>
         <% else %>
-          <.link navigate={~p"/gardens/#{@garden.id}/products/#{product}/edit"}>Edi</.link>
+          <.link patch={~p"/gardens/#{@garden.id}/products/#{product}/edit"}>Edit</.link>
         <% end %>
       </:action>
       <:action :let={product}>

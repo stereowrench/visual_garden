@@ -10,7 +10,7 @@ defmodule VisualGardenWeb.PlantLiveTest do
 
   defp create_plant(_) do
     garden = garden_fixture()
-    product = product_fixture(%{}, garden)
+    product = product_fixture(%{type: "bed", length: 3, width: 4}, garden)
     plant = plant_fixture(%{product_id: product.id}, garden)
     %{plant: plant, product: product, garden: garden}
   end
