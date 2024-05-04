@@ -16,10 +16,6 @@ defmodule VisualGarden.Gardens.Plant do
 
   @doc false
   def changeset(plant, attrs) do
-    cl =
-      plant
-
-    cl =
       plant
       |> cast(attrs, [:name, :qty, :row, :column, :seed_id, :product_id])
       |> validate_number(:qty, greater_than_or_equal_to: 1)
