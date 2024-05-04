@@ -139,7 +139,6 @@ defmodule VisualGardenWeb.PlantLive.FormComponent do
     cleaned =
       plant_params
       |> apply_stubs(socket.assigns.garden)
-      |> dbg
 
     changeset =
       socket.assigns.plant
