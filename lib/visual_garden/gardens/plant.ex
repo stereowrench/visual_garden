@@ -19,37 +19,39 @@ defmodule VisualGarden.Gardens.Plant do
     cl =
       plant
 
-    valid_attrs = [:name, :qty, :row, :column]
-
-    valid_attrs =
-      if attrs["seed_id"] == "-1" or attrs[:seed_id] == "-1" do
-        valid_attrs
-      else
-        valid_attrs ++ [:seed_id]
-      end
-
-    valid_attrs =
-      if attrs["product_id"] == "-1" or attrs[:product_id] == "-1" do
-        valid_attrs
-      else
-        valid_attrs ++ [:product_id]
-      end
-
     cl =
-      cl
-      |> cast(attrs, valid_attrs)
+      plant
+      |> cast(attrs, [:name, :qty, :row, :column, :seed_id, :product_id])
       |> validate_number(:qty, greater_than_or_equal_to: 1)
-
-    cl =
-      cl
+      |> validate_seed()
+      |> validate_plant()
       |> validate_required([:name, :qty])
       |> cast_assoc(:seed, with: &VisualGarden.Gardens.Seed.changeset/2)
       |> cast_assoc(:product, with: &VisualGarden.Gardens.Product.changeset/2)
+  end
 
-    unless attrs["product"] || attrs[:product] do
-      validate_required(cl, [:product_id])
-    else
-      cl
+  defp validate_seed(cs) do
+    case get_field(cs, :seed_id) do
+      -1 ->
+        delete_change(cs, :seed_id)
+
+      _ ->
+        cs
+    end
+  end
+
+  defp validate_plant(cs) do
+    case get_field(cs, :product_id) do
+      -1 ->
+        cs
+        |> delete_change(:product_id)
+
+      _ ->
+        if get_field(cs, :product) == nil do
+          validate_required(cs, :product_id)
+        else
+          cs
+        end
     end
   end
 end
