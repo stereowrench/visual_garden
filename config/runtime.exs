@@ -53,6 +53,9 @@ if config_env() == :prod do
 
   config :visual_garden, :dns_cluster_query, System.get_env("DNS_CLUSTER_QUERY")
 
+  config :sentry,
+    dsn: System.get_env("SENTRY_DSN")
+
   config :visual_garden, VisualGardenWeb.Endpoint,
     # url: [host: host, port: 443, scheme: "https"],
     url: [host: host, port: 80, scheme: "http"],
