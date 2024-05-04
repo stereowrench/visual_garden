@@ -153,7 +153,6 @@ defmodule VisualGardenWeb.GardenLive.Show do
       new_list =
         ([Date.new!(DateTime.utc_now().year, 1, 1)] ++
            pairs ++ [Timex.end_of_year(DateTime.utc_now().year)])
-        |> IO.inspect()
 
       chunks = Enum.chunk_every(new_list, 2)
 
