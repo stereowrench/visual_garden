@@ -48,8 +48,8 @@ defmodule VisualGardenWeb.PlantLive.FormComponent do
             <.inputs_for :let={product} field={@form[:product]}>
               <.input label="Bed Name" type="text" field={product[:name]} />
               <.input field={product[:type]} type="hidden" value="bed" />
-              <.input field={product[:length]} label="Length" type="number" value="bed" />
-              <.input field={product[:width]} label="Width" type="number" value="bed" />
+              <.input field={product[:length]} label="Length" type="number" />
+              <.input field={product[:width]} label="Width" type="number" />
             </.inputs_for>
           <% end %>
           <%= if @bed do %>
@@ -150,8 +150,11 @@ defmodule VisualGardenWeb.PlantLive.FormComponent do
         nil ->
           nil
 
+        "" ->
+          nil
+
         pid ->
-          if plant_params["product_id"] in ["", "-1"] do
+          if plant_params["product_id"] in ["-1"] do
             length = plant_params["product"]["length"]
             width = plant_params["product"]["width"]
 

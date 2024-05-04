@@ -23,7 +23,7 @@ defmodule VisualGarden.Gardens.Product do
 
   defp maybe_require_dimensions(cs) do
     case get_field(cs, :type) do
-      "bed" ->
+      :bed ->
         cs
         |> validate_required([:length, :width])
 
