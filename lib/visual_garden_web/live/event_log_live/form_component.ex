@@ -107,8 +107,6 @@ defmodule VisualGardenWeb.EventLogLive.FormComponent do
 
   @impl true
   def handle_event("validate", %{"event_log" => event_log_params}, socket) do
-    IO.inspect(event_log_params)
-
     changeset =
       socket.assigns.event_log
       |> Gardens.change_event_log(
@@ -120,7 +118,6 @@ defmodule VisualGardenWeb.EventLogLive.FormComponent do
   end
 
   def handle_event("save", %{"event_log" => event_log_params}, socket) do
-    IO.inspect(event_log_params)
     save_event_log(socket, socket.assigns.action, event_log_params)
   end
 
