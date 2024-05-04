@@ -1,5 +1,6 @@
 defmodule VisualGardenWeb.Router do
   use VisualGardenWeb, :router
+  import PhoenixStorybook.Router
 
   pipeline :browser do
     plug :accepts, ["html"]
@@ -12,6 +13,17 @@ defmodule VisualGardenWeb.Router do
 
   pipeline :api do
     plug :accepts, ["json"]
+  end
+
+  scope "/" do
+    storybook_assets()
+
+    pipe_through :browser
+
+    live_storybook("/storybook/doggo",
+      backend_module: VisualGardenWeb.Storybook.Doggo,
+      session_name: :live_storybook_doggo
+    )
   end
 
   scope "/", VisualGardenWeb do
