@@ -46,21 +46,23 @@ defmodule VisualGardenWeb.PlantLive.FormComponent do
           />
           <%= if get_field(@form, :product_id) == "-1" do %>
             <.inputs_for :let={product} field={@form[:product]}>
-              <.input label="Product Name" type="text" field={product[:name]} />
-              <.input
-                field={product[:type]}
-                type="select"
-                label="Type"
-                prompt="Choose a value"
-                options={[:bed]}
-              />
+              <.input label="Bed Name" type="text" field={product[:name]} />
+              <.input field={product[:type]} type="hidden" value="bed" />
+              <.input field={product[:length]} label="Length" type="number" value="bed" />
+              <.input field={product[:width]} label="Width" type="number" value="bed" />
             </.inputs_for>
           <% else %>
             <%= if @bed do %>
               <div class="square-grid" style={["--length: #{@bed.length};", "--width: #{@bed.width}"]}>
                 <%= for {{label, val}, idx} <- Enum.with_index(squares_options(@bed)) |> IO.inspect() do %>
                   <label class="square-label">
-                    <input class="square-check" type="radio" name="Square" id={"square_picker_#{idx}"} value={val} />
+                    <input
+                      class="square-check"
+                      type="radio"
+                      name="Square"
+                      id={"square_picker_#{idx}"}
+                      value={val}
+                    />
                     <span></span>
                   </label>
                 <% end %>
@@ -132,8 +134,25 @@ defmodule VisualGardenWeb.PlantLive.FormComponent do
 
     bed =
       case get_field(changeset, :product_id) do
-        nil -> nil
-        pid -> Gardens.get_product!(pid)
+        nil ->
+          nil
+
+        pid ->
+          if plant_params["product_id"] == "-1" do
+            length = plant_params["product"]["length"]
+            width = plant_params["product"]["width"]
+
+            if length && width do
+              with {len, ""} <- Integer.parse(length),
+                   {wid, ""} <- Integer.parse(width) do
+                %{length: len, wid: wid}
+              else
+                _ -> nil
+              end
+            end
+          else
+            Gardens.get_product!(pid)
+          end
       end
 
     socket = assign(socket, :bed, bed)
