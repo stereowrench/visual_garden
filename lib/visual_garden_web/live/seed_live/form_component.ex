@@ -21,6 +21,7 @@ defmodule VisualGardenWeb.SeedLive.FormComponent do
       >
         <.input field={@form[:name]} type="text" label="Name" />
         <.input field={@form[:description]} type="text" label="Description" />
+        <.input field={@form[:days_to_maturation]} type="number" label="Days to maturation" />
         <:actions>
           <.button phx-disable-with="Saving...">Save Seed</.button>
         </:actions>
