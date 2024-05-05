@@ -105,6 +105,67 @@ defmodule VisualGarden.Library do
     Species.changeset(species, attrs)
   end
 
+  @species_cte """
+  SELECT
+  	species.id as species_id,
+    schedules.region_id as region_id0,
+    LAG(schedules.region_id, 1)
+  OVER (
+  		PARTITION BY
+  			SPECIES."name",
+  			GENUS
+  )
+    as region_id1,
+    LAG(schedules.region_id, 2)
+  OVER (
+  		PARTITION BY
+  			SPECIES."name",
+  			GENUS
+  )
+    as region_id2,
+  	LAG(SCHEDULES.ID, 0) OVER (
+  		PARTITION BY
+  			SPECIES."name",
+  			GENUS
+  		ORDER BY
+  			"name" DESC,
+  			GENUS DESC,
+  			VARIANT DESC,
+  			CULTIVAR DESC
+  	) AS L0,
+  	LAG(SCHEDULES.ID, 1) OVER (
+  		PARTITION BY
+  			SPECIES."name",
+  			GENUS
+  		ORDER BY
+  			"name" DESC,
+  			GENUS DESC,
+  			VARIANT DESC,
+  			CULTIVAR DESC
+  	) AS L1,
+  	LAG(SCHEDULES.ID, 2) OVER (
+  		PARTITION BY
+  			SPECIES."name",
+  			GENUS
+  		ORDER BY
+  			"name" DESC,
+  			GENUS DESC,
+  			VARIANT DESC,
+  			CULTIVAR DESC
+  	) AS L2
+  FROM
+  	SPECIES
+  	LEFT JOIN SCHEDULES ON SPECIES.ID = SCHEDULES.SPECIES_ID
+  """
+  def list_species_with_schedule(region_id) do
+    Species
+    |> with_cte("squery", as: fragment(@species_cte))
+    |> join(:inner, [s], q in "squery", on: s.id == q.species_id)
+    |> where([s, q], coalesce(q.region_id0, q.region_id1) |> coalesce(q.region_id2) == ^region_id)
+    |> select([s, q], {s, coalesce(q.l0, q.l1) |> coalesce(q.l2)})
+    |> Repo.all()
+  end
+
   alias VisualGarden.Library.Region
 
   @doc """
