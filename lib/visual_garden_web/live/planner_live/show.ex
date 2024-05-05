@@ -2,24 +2,36 @@ defmodule VisualGardenWeb.PlannerLive.Show do
   alias VisualGarden.Gardens
   use VisualGardenWeb, :live_view
 
-  alias VisualGarden.Library
-
   @impl true
   def mount(_params, _session, socket) do
     {:ok, socket}
   end
 
   @impl true
-  def handle_params(%{"garden_id" => id}, _, socket) do
+  def handle_params(%{"garden_id" => id} = params, _, socket) do
     garden = Gardens.get_garden!(id)
 
     {:noreply,
      socket
+     |> add_params(params)
      |> assign(:page_title, page_title(socket.assigns.live_action))
      |> assign(:planner_entries, stub_planner_entries())
      |> assign(:beds, Gardens.list_beds(id))
      |> assign(:extent_dates, extent_dates(garden.tz))
      |> assign(:garden, garden)}
+  end
+
+  def add_params(socket, %{"bed_id" => bid, "square" => sq, "start_time" => start_time}) do
+    socket
+    |> assign(:bed, Gardens.get_product!(bid))
+    |> assign(:square, sq)
+    |> assign(:start_time, Date.from_iso8601!(start_time))
+
+    # |> assign(:seeds, )
+  end
+
+  def add_params(socket, _) do
+    socket
   end
 
   def stub_planner_entries do
@@ -47,5 +59,6 @@ defmodule VisualGardenWeb.PlannerLive.Show do
   end
 
   defp page_title(:show), do: "Show Planner"
+  defp page_title(:new), do: "New Planner"
   defp page_title(:edit), do: "Edit Planner"
 end

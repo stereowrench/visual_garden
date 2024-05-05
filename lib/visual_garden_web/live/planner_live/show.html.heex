@@ -9,3 +9,18 @@
     extent_dates={@extent_dates}
   />
 <% end %>
+
+<.modal
+    :if={@live_action in [:new, :edit]}
+    id="planer-modal"
+    show
+    on_cancel={JS.patch(~p"/planners/#{@garden.id}")}
+>
+<.live_component
+    module={VisualGardenWeb.PlannerLive.FormComponent}
+    id={"planner-#{@bed.id}"}
+    bed={@bed}
+    square={@square}
+    patch={~p"/planners/#{@garden.id}"}
+/>
+</.modal>

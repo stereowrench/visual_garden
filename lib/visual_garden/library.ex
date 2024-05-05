@@ -7,7 +7,6 @@ defmodule VisualGarden.Library do
   alias VisualGarden.Library.Species
   alias VisualGarden.Repo
 
-
   @doc """
   Returns the list of species.
 
@@ -36,6 +35,10 @@ defmodule VisualGarden.Library do
 
   """
   def get_species!(id), do: Repo.get!(Species, id)
+
+  def list_common_species() do
+    Repo.all(from s in Species, where: not is_nil(s.common_name))
+  end
 
   @doc """
   Creates a species.

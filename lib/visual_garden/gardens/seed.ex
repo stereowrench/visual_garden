@@ -6,6 +6,7 @@ defmodule VisualGarden.Gardens.Seed do
     field :name, :string
     field :description, :string
     belongs_to :garden, VisualGarden.Gardens.Garden
+    belongs_to :species, VisualGarden.Library.Species
 
     field :days_to_maturation, :integer
 
@@ -15,8 +16,8 @@ defmodule VisualGarden.Gardens.Seed do
   @doc false
   def changeset(seed, attrs) do
     seed
-    |> cast(attrs, [:name, :description, :garden_id, :days_to_maturation])
-    |> validate_required([:name, :description, :garden_id, :days_to_maturation])
-    |> validate_number(:days_to_maturation, min: 0)
+    |> cast(attrs, [:name, :description, :garden_id, :days_to_maturation, :species_id])
+    |> validate_required([:name, :description, :garden_id, :days_to_maturation, :species_id])
+    |> validate_number(:days_to_maturation, greater_than: 0)
   end
 end

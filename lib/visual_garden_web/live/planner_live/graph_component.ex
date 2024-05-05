@@ -60,7 +60,7 @@ defmodule VisualGardenWeb.PlannerLive.GraphComponent do
 
         <%= for {group, spans} <- generate_available_regions(@planner_entries, @extent_dates, @bed) do %>
           <%= for %{start_date: a, finish_date: b} <- spans do %>
-            <.link patch={~p"/planner/foo"}>
+            <.link patch={~p"/planners/#{@garden.id}/#{@bed.id}/#{group}/new?#{[start_date: Date.to_string(a)]}"}>
               <rect
                 width={Timex.diff(b, a, :days)}
                 height="25"

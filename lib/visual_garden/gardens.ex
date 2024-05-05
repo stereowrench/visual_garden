@@ -4,6 +4,7 @@ defmodule VisualGarden.Gardens do
   """
 
   import Ecto.Query, warn: false
+  alias VisualGarden.Gardens.PlannerEntry
   alias VisualGarden.Repo
 
   alias VisualGarden.Gardens.Garden
@@ -673,4 +674,9 @@ defmodule VisualGarden.Gardens do
   # def change_event_log(%EventLog{event_type: "water"} = event_log, attrs \\ %{}) do
   #   EventLog.changeset(event_log, attrs)
   # end
+
+  def change_planner_entry(%PlannerEntry{} = entry, attrs \\ %{}) do
+    entry
+    |> PlannerEntry.changeset(attrs)
+  end
 end

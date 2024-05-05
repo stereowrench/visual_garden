@@ -2,6 +2,7 @@ defmodule VisualGardenWeb.GardenLive.FormComponent do
   use VisualGardenWeb, :live_component
 
   alias VisualGarden.Gardens
+  alias VisualGardenWeb.KeywordHighlighter
 
   @impl true
   def render(assigns) do
@@ -52,34 +53,7 @@ defmodule VisualGardenWeb.GardenLive.FormComponent do
   end
 
   def highlight(assigns) do
-    string = assigns.string
-    matches = assigns.matches
-
-    case matches do
-      nil ->
-        ~H"<%= @string %>"
-
-      _ ->
-        hs =
-          1..String.length(string)
-          |> Enum.map(fn idx ->
-            case idx in matches do
-              true ->
-                assigns = %{string: string, idx: idx - 1}
-                ~H"<b><%= String.at(@string, @idx) %></b>"
-
-              false ->
-                assigns = %{string: string, idx: idx - 1}
-                ~H"<%= String.at(@string, @idx) %>"
-            end
-          end)
-
-        assigns = %{hs: hs}
-
-        ~H"""
-        <%= for h <- @hs do %><%= h %><% end %>
-        """
-    end
+    KeywordHighlighter.highlight(assigns.string, assigns.matches)
   end
 
   @impl true
