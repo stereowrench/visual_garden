@@ -176,7 +176,7 @@ defmodule VisualGardenWeb.PlannerLive.GraphComponent do
 
       new_list =
         [Date.new!(DateTime.utc_now().year, 1, 1)] ++
-          pairs ++ [Timex.end_of_year(DateTime.utc_now().year)]
+          pairs ++ [Timex.shift(DateTime.utc_now(), years: 2)]
 
       chunks = Enum.chunk_every(new_list, 2)
 
