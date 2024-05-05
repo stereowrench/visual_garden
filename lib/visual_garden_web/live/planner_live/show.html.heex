@@ -1,8 +1,11 @@
 <%= for bed <- @beds do %>
+  <h2>Bed <%= bed.name %></h2>
   <.live_component
     module={VisualGardenWeb.PlannerLive.GraphComponent}
+    bed={bed}
     garden={@garden}
-    id="garden_graph"
+    id={"garden_graph-" <> to_string(bed.id)}
     planner_entries={@planner_entries}
+    extent_dates={@extent_dates}
   />
 <% end %>

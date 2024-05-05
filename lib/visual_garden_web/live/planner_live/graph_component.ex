@@ -5,21 +5,25 @@ defmodule VisualGardenWeb.PlannerLive.GraphComponent do
   def render(assigns) do
     ~H"""
     <svg viewBox="0 0 600 100" xmlns="http://www.w3.org/2000/svg">
-      <%= for mo <- generate_months(@garden.tz) do %>
+      <%= for mo <- generate_months(@garden.tz, @extent_dates) do %>
         <rect
           width={mo.days_in_month}
           height="25"
-          x={40 + x_shift(mo.mo_num, @garden.tz)}
+          x={40 + x_shift(mo.mo_num, @garden.tz, @extent_dates)}
           style="stroke-width:0.5;stroke:black"
           fill="none"
         >
         </rect>
-        <text y="13" x={40 + x_shift(mo.mo_num, @garden.tz) + 3} style="font-size:11px;">
+        <text y="13" x={40 + x_shift(mo.mo_num, @garden.tz, @extent_dates) + 3} style="font-size:11px;">
           <%= mo.month_name %>
         </text>
       <% end %>
-      <%= for square <- [1,2,3] do %>
-        <text y={13 + 25 + 25 * (square - 1)} x="0" style="font-size:11px;">Sq <%= square %></text>
+      <%= for i <- 0..(@bed.length - 1) do %>
+        <%= for j <- 0..(@bed.width - 1) do %>
+          <text y={13 + 25 + 25 * (i * @bed.width + j)} x="0" style="font-size:11px;">
+            Sq <%= i %>, <%= j %>
+          </text>
+        <% end %>
       <% end %>
       <%= for entry <- @planner_entries do %>
         <.link patch={~p"/planner/foo"}>
@@ -29,13 +33,13 @@ defmodule VisualGardenWeb.PlannerLive.GraphComponent do
             y={25 + 25 * (entry.square - 1)}
             style="fill:yellow;"
             class="crop-span"
-            x={40 + x_shift_date(entry.plant_date, @garden.tz)}
+            x={40 + x_shift_date(entry.plant_date, @garden.tz, @extent_dates)}
           >
           </rect>
           <text
             dominant-baseline="central"
             text-anchor="middle"
-            x={40 + x_shift_date(entry.plant_date, @garden.tz) + entry.days_to_maturation / 2}
+            x={40 + x_shift_date(entry.plant_date, @garden.tz, @extent_dates) + entry.days_to_maturation / 2}
             y={25 + 25 * (entry.square - 1) + 25 / 2}
             style="font-size: 11px"
           >
@@ -43,7 +47,7 @@ defmodule VisualGardenWeb.PlannerLive.GraphComponent do
           </text>
         </.link>
 
-        <%= for {group, spans} <- generate_available_regions(@planner_entries) do %>
+        <%= for {group, spans} <- generate_available_regions(@planner_entries, @extent_dates) do %>
           <%= for %{start_date: a, finish_date: b} <- spans do %>
             <.link patch={~p"/planner/foo"}>
               <rect
@@ -51,7 +55,7 @@ defmodule VisualGardenWeb.PlannerLive.GraphComponent do
                 height="25"
                 y={25 + 25 * (group - 1)}
                 class="new-crop-span"
-                x={40 + x_shift_date(a, @garden.tz)}
+                x={40 + x_shift_date(a, @garden.tz, @extent_dates)}
               >
               </rect>
             </.link>
@@ -67,23 +71,12 @@ defmodule VisualGardenWeb.PlannerLive.GraphComponent do
     {:ok, assign(socket, assigns)}
   end
 
-  def extent_dates(tz) do
-    now =
-      DateTime.utc_now()
-      |> Timex.Timezone.convert(tz)
-      |> Timex.to_date()
-
-    start_d = Timex.shift(now, days: -180) |> Timex.beginning_of_month()
-    end_d = Timex.shift(now, days: 365) |> Timex.end_of_month()
-    {start_d, end_d}
-  end
-
   def months_in_extent({start_d, end_d}) do
     Timex.diff(end_d, start_d, :months)
   end
 
-  def generate_months(tz) do
-    days = {start_d, _} = extent_dates(tz)
+  def generate_months(tz, extent_dates) do
+    days = {start_d, _} = extent_dates
 
     for mo <- 1..months_in_extent(days) do
       ed =
@@ -103,8 +96,8 @@ defmodule VisualGardenWeb.PlannerLive.GraphComponent do
     end
   end
 
-  def x_shift(mo, tz) do
-    {start_d, _end_d} = extent_dates(tz)
+  def x_shift(mo, tz, extent_dates) do
+    {start_d, _end_d} = extent_dates
 
     beg = start_d
 
@@ -117,8 +110,8 @@ defmodule VisualGardenWeb.PlannerLive.GraphComponent do
     Timex.diff(en, beg, :days)
   end
 
-  def x_shift_date(date, tz) do
-    {start_d, _} = extent_dates(tz)
+  def x_shift_date(date, tz, extent_dates) do
+    {start_d, _} = extent_dates
     Timex.diff(date, start_d, :days)
   end
 
@@ -137,7 +130,9 @@ defmodule VisualGardenWeb.PlannerLive.GraphComponent do
 
   @num_squares 3
 
-  defp generate_available_regions(entries) do
+  defp generate_available_regions(entries, extent_dates) do
+    {sd, ed} = extent_dates
+
     grouped =
       entries
       |> Enum.group_by(& &1.square)
@@ -170,8 +165,8 @@ defmodule VisualGardenWeb.PlannerLive.GraphComponent do
       spans =
         for [a, b] <- chunks do
           %{
-            start_date: a,
-            finish_date: b
+            start_date: clamp_date(DateTime.utc_now(), ed, a),
+            finish_date: clamp_date(sd, ed, b)
           }
         end
 
