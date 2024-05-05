@@ -60,6 +60,15 @@
                       text="Library"
                     />
                   </li>
+                  <li>
+                    <!-- Current: "bg-gray-50 text-indigo-600", Default: "text-gray-700 hover:text-indigo-600 hover:bg-gray-50" -->
+                    <.nav_link
+                      active={@active_tab}
+                      name={:planner}
+                      path={~p"/planners"}
+                      text="Planner"
+                    />
+                  </li>
                 </ul>
               </li>
             </ul>
@@ -106,6 +115,16 @@
                   name={:library}
                   path={~p"/species"}
                   text="Library"
+                />
+              </li>
+
+              <li>
+                <!-- Current: "bg-gray-50 text-indigo-600", Default: "text-gray-700 hover:text-indigo-600 hover:bg-gray-50" -->
+                <.nav_link
+                  active={@active_tab}
+                  name={:planner}
+                  path={~p"/planners"}
+                  text="Planner"
                 />
               </li>
             </ul>

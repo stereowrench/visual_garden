@@ -73,7 +73,7 @@ defmodule VisualGardenWeb.ScheduleLive.FormComponent do
   end
 
   @impl true
-  def handle_event("live_select_change", %{"text" => _text, "id" => live_select_id}, socket) do
+  def handle_event("live_select_change", %{"text" => _text, "id" => _live_select_id}, socket) do
     # genera = Library.list_genera()
     # IO.inspect(live_select_id)
     # send_update(LiveSelect.Component, id: live_select_id, options: genera)

@@ -1,0 +1,11 @@
+<.header>
+  Listing Gardens
+</.header>
+
+<.table
+  id="gardens"
+  rows={@streams.gardens}
+  row_click={fn {_id, garden} -> JS.navigate(~p"/planners/#{garden}") end}
+>
+  <:col :let={{_id, garden}} label="name"><%= garden.name %></:col>
+</.table>

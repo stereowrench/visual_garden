@@ -31,7 +31,7 @@ defmodule VisualGardenWeb.DisplayHelpers do
 
     assigns = put_in(assigns[:var_str], var_str)
     assigns = put_in(assigns[:cultivar_str], cultivar_str)
-    assigns = put_in(assigns[:common_str], common_str)
+    put_in(assigns[:common_str], common_str)
   end
 
   @spec species_display_string(%Species{}) :: any()

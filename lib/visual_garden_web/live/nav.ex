@@ -1,6 +1,6 @@
 defmodule VisualGardenWeb.Nav do
-  alias VisualGardenWeb.ScheduleLive
   alias VisualGardenWeb.GenusLive
+  alias VisualGardenWeb.PlannerLive
   alias VisualGardenWeb.RegionLive
   alias VisualGardenWeb.SpeciesLive
   alias VisualGardenWeb.PlantLive
@@ -19,16 +19,17 @@ defmodule VisualGardenWeb.Nav do
   defp set_active_tab(_params, _url, socket) do
     active_tab =
       case {socket.view, socket.assigns.live_action} do
-        {sv, _} when sv in [
-          SpeciesLive.Index,
-          SpeciesLive.Show,
-          RegionLive.Show,
-          RegionLive.Index,
-          GenusLive.Index,
-          GenusLive.Show,
-          ScheduleLive.Index,
-          ScheduleLive.Show
-        ] ->
+        {sv, _}
+        when sv in [
+               SpeciesLive.Index,
+               SpeciesLive.Show,
+               RegionLive.Show,
+               RegionLive.Index,
+               GenusLive.Index,
+               GenusLive.Show,
+               ScheduleLive.Index,
+               ScheduleLive.Show
+             ] ->
           :library
 
         {sv, _}
@@ -43,6 +44,9 @@ defmodule VisualGardenWeb.Nav do
                PlantLive.Show
              ] ->
           :gardens
+
+        {sv, _} when sv in [PlannerLive.Show, PlannerLive.Index] ->
+          :planer
 
         {_, _} ->
           nil
