@@ -28,7 +28,6 @@ defmodule VisualGarden.Library.Schedule do
     ])
     |> validate_required([:start_month, :start_day, :end_month, :end_day, :region_id, :species_id])
     |> add_end_month_adjusted()
-    |> unique_constraint([:species_id, :region_id])
   end
 
   defp add_end_month_adjusted(changeset) do
