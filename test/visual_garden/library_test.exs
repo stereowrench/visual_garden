@@ -195,4 +195,62 @@ defmodule VisualGarden.LibraryTest do
       assert %Ecto.Changeset{} = Library.change_schedule(schedule)
     end
   end
+
+  describe "library_seeds" do
+    alias VisualGarden.Library.LibrarySeed
+
+    import VisualGarden.LibraryFixtures
+
+    @invalid_attrs %{type: nil, days_to_maturation: nil, manufacturer: nil}
+
+    test "list_library_seeds/0 returns all library_seeds" do
+      library_seed = library_seed_fixture()
+      assert Library.list_library_seeds() == [library_seed]
+    end
+
+    test "get_library_seed!/1 returns the library_seed with given id" do
+      library_seed = library_seed_fixture()
+      assert Library.get_library_seed!(library_seed.id) == library_seed
+    end
+
+    test "create_library_seed/1 with valid data creates a library_seed" do
+      valid_attrs = %{type: :transplant, days_to_maturation: 42, manufacturer: "some manufacturer"}
+
+      assert {:ok, %LibrarySeed{} = library_seed} = Library.create_library_seed(valid_attrs)
+      assert library_seed.type == :transplant
+      assert library_seed.days_to_maturation == 42
+      assert library_seed.manufacturer == "some manufacturer"
+    end
+
+    test "create_library_seed/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = Library.create_library_seed(@invalid_attrs)
+    end
+
+    test "update_library_seed/2 with valid data updates the library_seed" do
+      library_seed = library_seed_fixture()
+      update_attrs = %{type: :seed, days_to_maturation: 43, manufacturer: "some updated manufacturer"}
+
+      assert {:ok, %LibrarySeed{} = library_seed} = Library.update_library_seed(library_seed, update_attrs)
+      assert library_seed.type == :seed
+      assert library_seed.days_to_maturation == 43
+      assert library_seed.manufacturer == "some updated manufacturer"
+    end
+
+    test "update_library_seed/2 with invalid data returns error changeset" do
+      library_seed = library_seed_fixture()
+      assert {:error, %Ecto.Changeset{}} = Library.update_library_seed(library_seed, @invalid_attrs)
+      assert library_seed == Library.get_library_seed!(library_seed.id)
+    end
+
+    test "delete_library_seed/1 deletes the library_seed" do
+      library_seed = library_seed_fixture()
+      assert {:ok, %LibrarySeed{}} = Library.delete_library_seed(library_seed)
+      assert_raise Ecto.NoResultsError, fn -> Library.get_library_seed!(library_seed.id) end
+    end
+
+    test "change_library_seed/1 returns a library_seed changeset" do
+      library_seed = library_seed_fixture()
+      assert %Ecto.Changeset{} = Library.change_library_seed(library_seed)
+    end
+  end
 end

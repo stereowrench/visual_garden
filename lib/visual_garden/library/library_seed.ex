@@ -1,4 +1,4 @@
-defmodule VisualGarden.Library.Seeds do
+defmodule VisualGarden.Library.LibrarySeed do
   use Ecto.Schema
   import Ecto.Changeset
 

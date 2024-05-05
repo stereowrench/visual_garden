@@ -1,0 +1,44 @@
+<.live_component module={VisualGardenWeb.NavBarLibrary} id="navbar" current={"Plantables"} />
+<.header>
+  Listing Library seeds
+  <:actions>
+    <.link patch={~p"/library_seeds/new"}>
+      <.button>New Library seed</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.table
+  id="library_seeds"
+  rows={@streams.library_seeds}
+  row_click={fn {_id, library_seed} -> JS.navigate(~p"/library_seeds/#{library_seed}") end}
+>
+  <:col :let={{_id, library_seed}} label="Type"><%= library_seed.type %></:col>
+  <:col :let={{_id, library_seed}} label="Days to maturation"><%= library_seed.days_to_maturation %></:col>
+  <:col :let={{_id, library_seed}} label="Manufacturer"><%= library_seed.manufacturer %></:col>
+  <:action :let={{_id, library_seed}}>
+    <div class="sr-only">
+      <.link navigate={~p"/library_seeds/#{library_seed}"}>Show</.link>
+    </div>
+    <.link patch={~p"/library_seeds/#{library_seed}/edit"}>Edit</.link>
+  </:action>
+  <:action :let={{id, library_seed}}>
+    <.link
+      phx-click={JS.push("delete", value: %{id: library_seed.id}) |> hide("##{id}")}
+      data-confirm="Are you sure?"
+    >
+      Delete
+    </.link>
+  </:action>
+</.table>
+
+<.modal :if={@live_action in [:new, :edit]} id="library_seed-modal" show on_cancel={JS.patch(~p"/library_seeds")}>
+  <.live_component
+    module={VisualGardenWeb.LibrarySeedLive.FormComponent}
+    id={@library_seed.id || :new}
+    title={@page_title}
+    action={@live_action}
+    library_seed={@library_seed}
+    patch={~p"/library_seeds"}
+  />
+</.modal>

@@ -49,4 +49,20 @@ defmodule VisualGarden.LibraryFixtures do
 
     schedule
   end
+
+  @doc """
+  Generate a library_seed.
+  """
+  def library_seed_fixture(attrs \\ %{}) do
+    {:ok, library_seed} =
+      attrs
+      |> Enum.into(%{
+        days_to_maturation: 42,
+        manufacturer: "some manufacturer",
+        type: :transplant
+      })
+      |> VisualGarden.Library.create_library_seed()
+
+    library_seed
+  end
 end

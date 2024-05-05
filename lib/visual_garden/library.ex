@@ -357,4 +357,100 @@ defmodule VisualGarden.Library do
   def change_schedule(%Schedule{} = schedule, attrs \\ %{}) do
     Schedule.changeset(schedule, attrs)
   end
+
+  alias VisualGarden.Library.LibrarySeed
+
+  @doc """
+  Returns the list of library_seeds.
+
+  ## Examples
+
+      iex> list_library_seeds()
+      [%LibrarySeed{}, ...]
+
+  """
+  def list_library_seeds do
+    Repo.all(LibrarySeed)
+  end
+
+  @doc """
+  Gets a single library_seed.
+
+  Raises `Ecto.NoResultsError` if the Library seed does not exist.
+
+  ## Examples
+
+      iex> get_library_seed!(123)
+      %LibrarySeed{}
+
+      iex> get_library_seed!(456)
+      ** (Ecto.NoResultsError)
+
+  """
+  def get_library_seed!(id), do: Repo.get!(LibrarySeed, id)
+
+  @doc """
+  Creates a library_seed.
+
+  ## Examples
+
+      iex> create_library_seed(%{field: value})
+      {:ok, %LibrarySeed{}}
+
+      iex> create_library_seed(%{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def create_library_seed(attrs \\ %{}) do
+    %LibrarySeed{}
+    |> LibrarySeed.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @doc """
+  Updates a library_seed.
+
+  ## Examples
+
+      iex> update_library_seed(library_seed, %{field: new_value})
+      {:ok, %LibrarySeed{}}
+
+      iex> update_library_seed(library_seed, %{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def update_library_seed(%LibrarySeed{} = library_seed, attrs) do
+    library_seed
+    |> LibrarySeed.changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
+  Deletes a library_seed.
+
+  ## Examples
+
+      iex> delete_library_seed(library_seed)
+      {:ok, %LibrarySeed{}}
+
+      iex> delete_library_seed(library_seed)
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def delete_library_seed(%LibrarySeed{} = library_seed) do
+    Repo.delete(library_seed)
+  end
+
+  @doc """
+  Returns an `%Ecto.Changeset{}` for tracking library_seed changes.
+
+  ## Examples
+
+      iex> change_library_seed(library_seed)
+      %Ecto.Changeset{data: %LibrarySeed{}}
+
+  """
+  def change_library_seed(%LibrarySeed{} = library_seed, attrs \\ %{}) do
+    LibrarySeed.changeset(library_seed, attrs)
+  end
 end
