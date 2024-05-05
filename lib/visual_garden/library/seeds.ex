@@ -6,7 +6,7 @@ defmodule VisualGarden.Library.Seeds do
     field :type, Ecto.Enum, values: [:transplant, :seed, :set, :slip]
     field :days_to_maturation, :integer
     field :manufacturer, :string
-    field :species_id, :id
+    belongs_to :species, VisualGarden.Library.Species
 
     timestamps(type: :utc_datetime)
   end
@@ -14,7 +14,7 @@ defmodule VisualGarden.Library.Seeds do
   @doc false
   def changeset(seeds, attrs) do
     seeds
-    |> cast(attrs, [:type, :days_to_maturation, :manufacturer])
-    |> validate_required([:type, :days_to_maturation, :manufacturer])
+    |> cast(attrs, [:type, :days_to_maturation, :manufacturer, :species_id])
+    |> validate_required([:type, :days_to_maturation, :manufacturer, :species_id])
   end
 end
