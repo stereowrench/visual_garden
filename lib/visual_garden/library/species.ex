@@ -20,5 +20,6 @@ defmodule VisualGarden.Library.Species do
     |> cast(attrs, [:name, :genus, :variant, :cultivar, :common_name])
     |> validate_required([:name, :genus])
     |> unique_constraint([:name, :genus, :variant, :cultivar])
+    |> unique_constraint([:common_name])
   end
 end
