@@ -1,6 +1,8 @@
-<.live_component
-  module={VisualGardenWeb.PlannerLive.GraphComponent}
-  garden={@garden}
-  id="garden_graph"
-  planner_entries={@planner_entries}
-/>
+<%= for bed <- @beds do %>
+  <.live_component
+    module={VisualGardenWeb.PlannerLive.GraphComponent}
+    garden={@garden}
+    id="garden_graph"
+    planner_entries={@planner_entries}
+  />
+<% end %>

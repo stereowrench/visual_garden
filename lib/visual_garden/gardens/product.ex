@@ -10,6 +10,8 @@ defmodule VisualGarden.Gardens.Product do
     field :length, :integer
     field :width, :integer
 
+    has_many :planner_entries, VisualGarden.Gardens.PlannerEntry
+
     timestamps(type: :utc_datetime)
   end
 

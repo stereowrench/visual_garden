@@ -15,6 +15,7 @@ defmodule VisualGardenWeb.PlannerLive.Show do
      socket
      |> assign(:page_title, page_title(socket.assigns.live_action))
      |> assign(:planner_entries, stub_planner_entries())
+     |> assign(:beds, Gardens.list_beds(id))
      |> assign(:garden, Gardens.get_garden!(id))}
   end
 
