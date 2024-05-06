@@ -67,8 +67,8 @@ defmodule VisualGardenWeb.Router do
       live "/gardens/:garden_id/products/:product_id/plants/new", PlantLive.Index, :new
       live "/gardens/:garden_id/products/:product_id/plants/:id/edit", PlantLive.Index, :edit
 
-      live "/gardens/:garden_id/products/:product_id/plants/:id", PlantLive.Show, :show
-      live "/gardens/:garden_id/products/:product_id/plants/:id/show/edit", PlantLive.Show, :edit
+      live "/gardens/:garden_id/beds/:product_id/plants/:id", PlantLive.Show, :show
+      live "/gardens/:garden_id/beds/:product_id/plants/:id/show/edit", PlantLive.Show, :edit
 
       live "/event_logs", EventLogLive.Index, :index
       live "/event_logs/new", EventLogLive.Index, :new
