@@ -214,7 +214,14 @@ defmodule VisualGarden.LibraryTest do
     end
 
     test "create_library_seed/1 with valid data creates a library_seed" do
-      valid_attrs = %{type: :transplant, days_to_maturation: 42, manufacturer: "some manufacturer"}
+      species = species_fixture()
+
+      valid_attrs = %{
+        type: :transplant,
+        days_to_maturation: 42,
+        manufacturer: "some manufacturer",
+        species_id: species.id
+      }
 
       assert {:ok, %LibrarySeed{} = library_seed} = Library.create_library_seed(valid_attrs)
       assert library_seed.type == :transplant
@@ -228,9 +235,16 @@ defmodule VisualGarden.LibraryTest do
 
     test "update_library_seed/2 with valid data updates the library_seed" do
       library_seed = library_seed_fixture()
-      update_attrs = %{type: :seed, days_to_maturation: 43, manufacturer: "some updated manufacturer"}
 
-      assert {:ok, %LibrarySeed{} = library_seed} = Library.update_library_seed(library_seed, update_attrs)
+      update_attrs = %{
+        type: :seed,
+        days_to_maturation: 43,
+        manufacturer: "some updated manufacturer"
+      }
+
+      assert {:ok, %LibrarySeed{} = library_seed} =
+               Library.update_library_seed(library_seed, update_attrs)
+
       assert library_seed.type == :seed
       assert library_seed.days_to_maturation == 43
       assert library_seed.manufacturer == "some updated manufacturer"
@@ -238,7 +252,10 @@ defmodule VisualGarden.LibraryTest do
 
     test "update_library_seed/2 with invalid data returns error changeset" do
       library_seed = library_seed_fixture()
-      assert {:error, %Ecto.Changeset{}} = Library.update_library_seed(library_seed, @invalid_attrs)
+
+      assert {:error, %Ecto.Changeset{}} =
+               Library.update_library_seed(library_seed, @invalid_attrs)
+
       assert library_seed == Library.get_library_seed!(library_seed.id)
     end
 

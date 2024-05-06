@@ -42,8 +42,12 @@ defmodule VisualGardenWeb.PlantLiveTest do
              |> form("#plant-form", plant: @invalid_attrs)
              |> render_change() =~ "can&#39;t be blank"
 
-      assert index_live
+      index_live
              |> form("#plant-form", plant: Map.merge(@create_attrs, %{product_id: product.id}))
+             |> render_change()
+
+      assert index_live
+             |> form("#plant-form", Square: "9", plant: Map.merge(@create_attrs, %{product_id: product.id}))
              |> render_submit()
 
       assert_patch(index_live, ~p"/gardens/#{garden.id}/plants")

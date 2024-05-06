@@ -104,7 +104,7 @@ defmodule VisualGardenWeb.LibrarySeedLive.FormComponent do
 
         {:noreply,
          socket
-         |> put_flash(:info, "Library seed updated successfully")
+         |> put_notification(Normal.new(:info, "Library seed updated successfully"))
          |> push_patch(to: socket.assigns.patch)}
 
       {:error, %Ecto.Changeset{} = changeset} ->
@@ -119,7 +119,7 @@ defmodule VisualGardenWeb.LibrarySeedLive.FormComponent do
 
         {:noreply,
          socket
-         |> put_flash(:info, "Library seed created successfully")
+         |> put_notification(Normal.new(:info, "Library seed created successfully"))
          |> push_patch(to: socket.assigns.patch)}
 
       {:error, %Ecto.Changeset{} = changeset} ->

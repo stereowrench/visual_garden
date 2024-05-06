@@ -212,7 +212,12 @@ defmodule VisualGardenWeb.PlantLive.FormComponent do
     save_plant(socket, socket.assigns.action, plant_params, params["Square"])
   end
 
-  defp save_plant(socket, :edit, plant_params) do
+  defp save_plant(socket, :edit, plant_params, square) do
+    plant_params =
+      plant_params
+      |> maybe_add_parents(socket.assigns.garden)
+      |> add_square(socket.assigns.bed, square)
+
     case Gardens.update_plant(socket.assigns.plant, plant_params) do
       {:ok, plant} ->
         notify_parent({:saved, plant})

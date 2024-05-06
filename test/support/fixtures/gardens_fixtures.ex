@@ -3,6 +3,7 @@ defmodule VisualGarden.GardensFixtures do
   This module defines test helpers for creating
   entities via the `VisualGarden.Gardens` context.
   """
+alias VisualGarden.LibraryFixtures
 
   @doc """
   Generate a garden.
@@ -42,6 +43,7 @@ defmodule VisualGarden.GardensFixtures do
   Generate a seed.
   """
   def seed_fixture(attrs \\ %{}, garden \\ nil) do
+    species = LibraryFixtures.species_fixture()
     garden =
       if garden == nil do
         garden_fixture()
@@ -54,6 +56,8 @@ defmodule VisualGarden.GardensFixtures do
       |> Enum.into(%{
         description: "some description",
         garden_id: garden.id,
+        days_to_maturation: 51,
+        species_id: species.id,
         name: "some name"
       })
       |> VisualGarden.Gardens.create_seed()
@@ -79,6 +83,8 @@ defmodule VisualGarden.GardensFixtures do
       |> Enum.into(%{
         product_id: product.id,
         qty: 1,
+        row: 2,
+        column: 3,
         name: "My plant"
       })
       |> VisualGarden.Gardens.create_plant()

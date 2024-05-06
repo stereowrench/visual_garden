@@ -1,4 +1,5 @@
 defmodule VisualGarden.GardensTest do
+  alias VisualGarden.LibraryFixtures
   use VisualGarden.DataCase
 
   alias VisualGarden.Gardens
@@ -132,7 +133,15 @@ defmodule VisualGarden.GardensTest do
 
     test "create_seed/1 with valid data creates a seed" do
       garden = garden_fixture()
-      valid_attrs = %{name: "some name", description: "some description", garden_id: garden.id}
+      species = LibraryFixtures.species_fixture()
+
+      valid_attrs = %{
+        name: "some name",
+        description: "some description",
+        garden_id: garden.id,
+        days_to_maturation: 51,
+        species_id: species.id
+      }
 
       assert {:ok, %Seed{} = seed} = Gardens.create_seed(valid_attrs)
       assert seed.name == "some name"
@@ -207,7 +216,7 @@ defmodule VisualGarden.GardensTest do
 
     test "create_plant/1 with valid data creates a plant" do
       product = product_fixture()
-      valid_attrs = %{product_id: product.id, name: "my plant", qty: 1}
+      valid_attrs = %{product_id: product.id, name: "my plant", qty: 1, row: 3, column: 4}
 
       assert {:ok, %Plant{} = plant} = Gardens.create_plant(valid_attrs)
     end

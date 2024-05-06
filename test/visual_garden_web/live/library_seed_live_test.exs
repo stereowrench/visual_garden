@@ -24,6 +24,7 @@ defmodule VisualGardenWeb.LibrarySeedLiveTest do
     end
 
     test "saves new library_seed", %{conn: conn} do
+      species = species_fixture()
       {:ok, index_live, _html} = live(conn, ~p"/library_seeds")
 
       assert index_live |> element("a", "New Library seed") |> render_click() =~
@@ -37,7 +38,7 @@ defmodule VisualGardenWeb.LibrarySeedLiveTest do
 
       assert index_live
              |> form("#library_seed-form", library_seed: @create_attrs)
-             |> render_submit()
+             |> render_submit(%{library_seed: %{species_id: species.id}})
 
       assert_patch(index_live, ~p"/library_seeds")
 

@@ -1,10 +1,11 @@
 defmodule VisualGardenWeb.SeedLiveTest do
+  alias VisualGarden.LibraryFixtures
   use VisualGardenWeb.ConnCase
 
   import Phoenix.LiveViewTest
   import VisualGarden.GardensFixtures
 
-  @create_attrs %{name: "some name", description: "some description"}
+  @create_attrs %{name: "some name", description: "some description", days_to_maturation: 30}
   @update_attrs %{name: "some updated name", description: "some updated description"}
   @invalid_attrs %{name: nil, description: nil}
 
@@ -25,6 +26,7 @@ defmodule VisualGardenWeb.SeedLiveTest do
     end
 
     test "saves new seed", %{conn: conn, garden: garden} do
+      species = LibraryFixtures.species_fixture()
       {:ok, index_live, _html} = live(conn, ~p"/gardens/#{garden.id}/seeds")
 
       assert index_live |> element("a", "New Seed") |> render_click() =~
@@ -38,7 +40,7 @@ defmodule VisualGardenWeb.SeedLiveTest do
 
       assert index_live
              |> form("#seed-form", seed: @create_attrs)
-             |> render_submit()
+             |> render_submit(%{seed: %{species_id: species.id}})
 
       assert_patch(index_live, ~p"/gardens/#{garden.id}/seeds")
 

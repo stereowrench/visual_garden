@@ -43,7 +43,7 @@ defmodule VisualGarden.Gardens.Plant do
         |> delete_change(:product_id)
 
       _ ->
-        if get_field(cs, :product) == nil do
+        if get_change(cs, :product) == nil do
           validate_required(cs, :product_id)
         else
           cs
