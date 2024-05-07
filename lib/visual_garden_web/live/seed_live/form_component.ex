@@ -22,6 +22,13 @@ defmodule VisualGardenWeb.SeedLive.FormComponent do
         phx-submit="save"
       >
         <.input field={@form[:name]} type="text" label="Name" />
+        <.input
+          field={@form[:type]}
+          type="select"
+          label="Type"
+          prompt="Choose a value"
+          options={Ecto.Enum.values(VisualGarden.Library.LibrarySeed, :type)}
+        />
         <.input field={@form[:description]} type="text" label="Description" />
         <.input field={@form[:days_to_maturation]} type="number" label="Days to maturation" />
         <.live_select

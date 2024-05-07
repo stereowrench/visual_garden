@@ -21,11 +21,12 @@ defmodule VisualGardenWeb.PlannerLive.Show do
      |> assign(:garden, garden)}
   end
 
-  def add_params(socket, %{"bed_id" => bid, "square" => sq, "start_time" => start_time}) do
+  def add_params(socket, %{"bed_id" => bid, "square" => sq, "start_date" => start_date}) do
     socket
     |> assign(:bed, Gardens.get_product!(bid))
     |> assign(:square, sq)
-    |> assign(:start_time, Date.from_iso8601!(start_time))
+    |> assign(:start_date, Date.from_iso8601!(start_date))
+    |> dbg
 
     # |> assign(:seeds, )
   end

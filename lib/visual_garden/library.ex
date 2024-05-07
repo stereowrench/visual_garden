@@ -4,6 +4,7 @@ defmodule VisualGarden.Library do
   """
 
   import Ecto.Query, warn: false
+  alias VisualGarden.Gardens.PlannerEntry
   alias VisualGarden.Library.Species
   alias VisualGarden.Repo
 
@@ -452,5 +453,9 @@ defmodule VisualGarden.Library do
   """
   def change_library_seed(%LibrarySeed{} = library_seed, attrs \\ %{}) do
     LibrarySeed.changeset(library_seed, attrs)
+  end
+
+  def change_planner_entry(%PlannerEntry{} = entry, attrs \\ %{}) do
+    PlannerEntry.changeset(entry, attrs)
   end
 end
