@@ -34,11 +34,10 @@ defmodule VisualGarden.Planner do
         {species.id, %{species: species, schedule: schedules_map[schedule_id]}}
       end)
       |> Enum.into(%{})
-      |> IO.inspect()
 
-      IO.inspect(seeds)
     for seed <- seeds do
       %{species: species, schedule: schedule} = species_map[seed.species_id]
+
       {sched_start, sched_end} =
         unwrwap_dates(
           schedule.start_month,
@@ -50,26 +49,19 @@ defmodule VisualGarden.Planner do
 
       days = seed.days_to_maturation
 
-      # normal if not seed
-      # if seed we also have a nursery range
-
-      # %{
-      #   sow_method: ,
-      # }
-
-      # a = sched_start + days, b = sched_end + days
-      a = sched_start + days
-      b = sched_end + days
+      a = Timex.shift(sched_start, days: days)
+      b = Timex.shift(sched_end, days: days)
       a = clamp_date(start_date, end_date, a)
       b = clamp_date(start_date, end_date, b)
 
       if Timex.diff(b, a, :days) < 14 do
         []
       else
-        sow_start = a - days
-        sow_end = b - days
+        sow_start = Timex.shift(a, days: -days)
+        sow_end = Timex.shift(b, days: -days)
 
         direct = %{
+          type: seed.type,
           sow_start: sow_start,
           sow_end: sow_end,
           days: days,
@@ -77,17 +69,30 @@ defmodule VisualGarden.Planner do
           species: species
         }
 
-        c = sow_start - schedule.nursery_lead_weeks_max
-        d = sow_start - schedule.nursery_lead_weeks_min
+        if schedule.nursery_lead_weeks_max && schedule.nursery_lead_weeks_min &&
+             seed.type == :seed do
+          c = Timex.shift(sow_start, days: -schedule.nursery_lead_weeks_max)
+          d = Timex.shift(sow_start, days: -schedule.nursery_lead_weeks_min)
 
-        c = clamp_date(start_date, end_date, c)
-        d = clamp_date(start_date, end_date, d)
+          c = clamp_date(start_date, end_date, c)
+          d = clamp_date(start_date, end_date, d)
 
-        if Timex.diff(b, a, :days) < 14 do
-          [direct]
+          if Timex.diff(b, a, :days) < 14 do
+            [direct]
+          else
+            nursery = %{
+              type: "nursery",
+              sow_start: c,
+              sow_end: d,
+              days: days,
+              seed: seed,
+              species: species
+            }
+
+            [direct, nursery]
+          end
         else
-          nursery = %{sow_start: c, sow_end: d, days: days, seed: seed, species: species}
-          [direct, nursery]
+          [direct]
         end
       end
     end
