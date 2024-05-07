@@ -61,16 +61,25 @@ defmodule VisualGarden.LibraryTest do
 
       assert [
                %{
+                 type: :seed,
+                 days: 51,
+                 sow_start: ~D[2024-03-16],
+                 sow_end: ~D[2025-02-01]
+               },
+               %{
+                 type: :seed,
                  days: 51,
                  sow_start: ~D[2025-05-01],
                  sow_end: ~D[2025-06-01]
                },
                %{
+                 type: "nursery",
                  days: 51,
                  sow_start: ~D[2025-04-27],
                  sow_end: ~D[2025-04-29]
                }
-             ] = Planner.get_plantables_from_garden(bed, ~D[2024-05-06], nil, today)
+             ] =
+               Planner.get_plantables_from_garden(bed, ~D[2024-05-06], nil, today)
     end
   end
 end
