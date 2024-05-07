@@ -1,5 +1,4 @@
 defmodule VisualGardenWeb.SpeciesLive.FormComponent do
-  alias VisualGarden.Repo
   use VisualGardenWeb, :live_component
   alias VisualGarden.Library
 
