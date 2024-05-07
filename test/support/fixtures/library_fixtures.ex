@@ -32,13 +32,25 @@ defmodule VisualGarden.LibraryFixtures do
   Generate a schedule.
   """
   def schedule_fixture(attrs \\ %{}) do
-    region = region_fixture()
-    species = species_fixture()
+    region =
+      if attrs[:region_id] do
+        nil
+      else
+        region_fixture()
+      end
+
+    species =
+      if attrs[:species_id] do
+        nil
+      else
+        species_fixture()
+      end
+
     {:ok, schedule} =
       attrs
       |> Enum.into(%{
-        region_id: region.id,
-        species_id: species.id,
+        region_id: if(region, do: region.id, else: attrs[:region_id]),
+        species_id: if(species, do: species.id, else: attrs[:species_id]),
         end_day: 42,
         end_month: 42,
         end_month_adjusted: 42,
@@ -55,6 +67,7 @@ defmodule VisualGarden.LibraryFixtures do
   """
   def library_seed_fixture(attrs \\ %{}) do
     species = species_fixture()
+
     {:ok, library_seed} =
       attrs
       |> Enum.into(%{

@@ -20,6 +20,7 @@ defmodule VisualGardenWeb.PlannerLive.FormComponent do
         phx-change="validate"
         phx-submit="save"
       >
+        <%!-- List  --%>
         <.input field={@form[:plant_date]} type="date" label="Name" />
         <:actions>
           <.button phx-disable-with="Saving...">Save planner</.button>

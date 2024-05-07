@@ -8,6 +8,8 @@ defmodule VisualGarden.Library.Schedule do
     field :end_month, :integer
     field :end_day, :integer
     field :end_month_adjusted, :integer
+    field :nursery_lead_weeks_min, :integer
+    field :nursery_lead_weeks_max, :integer
 
     belongs_to :region, VisualGarden.Library.Region
     belongs_to :species, VisualGarden.Library.Species
@@ -24,7 +26,9 @@ defmodule VisualGarden.Library.Schedule do
       :end_month,
       :end_day,
       :region_id,
-      :species_id
+      :species_id,
+      :nursery_lead_weeks_min,
+      :nursery_lead_weeks_max
     ])
     |> validate_required([:start_month, :start_day, :end_month, :end_day, :region_id, :species_id])
     |> add_end_month_adjusted()

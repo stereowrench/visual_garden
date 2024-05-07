@@ -58,7 +58,8 @@ alias VisualGarden.LibraryFixtures
         garden_id: garden.id,
         days_to_maturation: 51,
         species_id: species.id,
-        name: "some name"
+        name: "some name",
+        type: "seed",
       })
       |> VisualGarden.Gardens.create_seed()
 
