@@ -89,8 +89,8 @@ defmodule VisualGarden.Planner do
           if Timex.diff(clamped_end, clamped_start, :days) < 14 do
             [direct]
           else
-            c = Timex.shift(sched_start, days: -schedule.nursery_lead_weeks_max)
-            d = Timex.shift(sched_end, days: -schedule.nursery_lead_weeks_min)
+            c = Timex.shift(clamped_start, days: -schedule.nursery_lead_weeks_max)
+            d = Timex.shift(clamped_end, days: -schedule.nursery_lead_weeks_min)
 
             e = Timex.shift(c, days: days)
             j = Timex.shift(d, days: days)
