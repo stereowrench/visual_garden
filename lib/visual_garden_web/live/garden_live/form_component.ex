@@ -1,4 +1,5 @@
 defmodule VisualGardenWeb.GardenLive.FormComponent do
+  alias VisualGarden.Library
   use VisualGardenWeb, :live_component
 
   alias VisualGarden.Gardens
@@ -26,6 +27,16 @@ defmodule VisualGardenWeb.GardenLive.FormComponent do
             <.highlight matches={@highlights[opt.label]} string={opt.label} />
           </:option>
         </.live_select>
+        <%!-- <.live_select
+          field={@form[:region_id]}
+          label="Region"
+          phx-target={@myself}
+          options={@region_opts}
+        >
+          <:option :let={opt}>
+            <.highlight matches={@highlights_regions[opt.label]} string={opt.label} />
+          </:option>
+        </.live_select> --%>
         <:actions>
           <.button phx-disable-with="Saving...">Save Garden</.button>
         </:actions>
@@ -42,6 +53,8 @@ defmodule VisualGardenWeb.GardenLive.FormComponent do
      socket
      |> assign(assigns)
      |> assign(:tz_opts, tz_opts())
+     |> assign(:region_opts, region_opts())
+     |> assign(:region_opts_stored, region_opts())
      |> assign(:highlights, %{})
      |> assign_form(changeset)}
   end
@@ -52,12 +65,33 @@ defmodule VisualGardenWeb.GardenLive.FormComponent do
     |> Enum.into(%{})
   end
 
+  defp region_opts do
+    Library.list_regions()
+    |> Enum.map(&{&1.name, &1.id})
+    |> Enum.into(%{})
+  end
+
   def highlight(assigns) do
     KeywordHighlighter.highlight(assigns.string, assigns.matches)
   end
 
   @impl true
-  def handle_event("live_select_change", %{"text" => text, "id" => live_select_id}, socket) do
+  def handle_event(
+        "change",
+        params,
+        socket
+      ) do
+        IO.inspect(params)
+    {:noreply, socket}
+  end
+
+  @impl true
+  def handle_event(
+        "live_select_change",
+        %{"text" => text, "id" => live_select_id = "garden_tz_live_select_component"},
+        socket
+      ) do
+    IO.inspect(live_select_id)
     matches = Seqfuzz.matches(tz_opts(), text, &elem(&1, 0), filter: true, sort: true)
 
     opts = Enum.map(matches, fn {m, _} -> m end) |> Enum.take(10)
@@ -74,6 +108,7 @@ defmodule VisualGardenWeb.GardenLive.FormComponent do
     changeset =
       socket.assigns.garden
       |> Gardens.change_garden(garden_params)
+      |> IO.inspect()
       |> Map.put(:action, :validate)
 
     {:noreply, assign_form(socket, changeset)}

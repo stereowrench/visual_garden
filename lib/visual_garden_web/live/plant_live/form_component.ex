@@ -1,4 +1,5 @@
 defmodule VisualGardenWeb.PlantLive.FormComponent do
+  alias VisualGarden.Planner
   alias VisualGarden.Gardens.Plant
   use VisualGardenWeb, :live_component
 
@@ -135,24 +136,10 @@ defmodule VisualGardenWeb.PlantLive.FormComponent do
     end
   end
 
-  defp parse_square(square, bed) do
-    with b when not is_nil(b) <- bed,
-         _ when not is_nil(square) <- square do
-      # i + bed.length * j
-      # is length, j is width
-      {z, ""} = Integer.parse(square)
-      # => i
-      x = rem(z, bed.length)
-      # => j
-      y = trunc(:math.floor(z / bed.length))
-      {x, y}
-    end
-  end
-
   defp add_square(plant_params, bed, square) do
     loc =
       square
-      |> parse_square(bed)
+      |> Planner.parse_square(bed)
 
     case loc do
       {x, y} ->

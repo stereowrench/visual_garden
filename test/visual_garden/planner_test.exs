@@ -75,8 +75,8 @@ defmodule VisualGarden.PlannerTest do
                %{
                  type: "nursery",
                  days: 51,
-                 sow_start: ~D[2025-04-27],
-                 sow_end: ~D[2025-05-30]
+                 nursery_start: ~D[2025-04-27],
+                 nursery_end: ~D[2025-05-30]
                }
              ] =
                Planner.get_plantables_from_garden(bed, ~D[2024-05-06], nil, today)

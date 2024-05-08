@@ -21,7 +21,11 @@ defmodule VisualGardenWeb.PlannerLive.FormComponent do
         phx-submit="save"
       >
         <%!-- List  --%>
-        <.input field={@form[:plant_date]} phx-hook="DateSelect" phx-update="ignore" type="date" label="Name" />
+        <.input field={@form[:start_plant_date]} phx-hook="DateSelect" phx-update="ignore" type="date" label="Earliest Plant" />
+        <.input field={@form[:end_plant_date]} phx-hook="DateSelect" phx-update="ignore" type="date" label="Latest Plant" />
+        <.input field={@form[:days_to_maturity]} type="number" label="Days to Maturity" />
+        <.input field={@form[:days_to_refuse]} type="number" label="Days to Refuse" />
+
         <:actions>
           <.button phx-disable-with="Saving...">Save planner</.button>
         </:actions>

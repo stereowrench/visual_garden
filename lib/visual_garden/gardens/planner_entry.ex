@@ -8,6 +8,8 @@ defmodule VisualGarden.Gardens.PlannerEntry do
     field :days_to_maturity, :integer
     field :days_to_refuse, :integer
     field :common_name, :string
+    field :row, :integer
+    field :column, :integer
     belongs_to :bed, VisualGarden.Gardens.Product
     belongs_to :seed, VisualGarden.Gardens.Seed
 
@@ -24,7 +26,9 @@ defmodule VisualGarden.Gardens.PlannerEntry do
       :days_to_refuse,
       :common_name,
       :seed_id,
-      :bed_id
+      :bed_id,
+      :row,
+      :column
     ])
     |> validate_required([
       :start_plant_date,
@@ -33,7 +37,9 @@ defmodule VisualGarden.Gardens.PlannerEntry do
       :days_to_refuse,
       :common_name,
       :seed_id,
-      :bed_id
+      :bed_id,
+      :row,
+      :column
     ])
   end
 end

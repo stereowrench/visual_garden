@@ -5,7 +5,7 @@
     bed={bed}
     garden={@garden}
     id={"garden_graph-" <> to_string(bed.id)}
-    planner_entries={@planner_entries}
+    planner_entries={@planner_entries[bed.id] || []}
     extent_dates={@extent_dates}
   />
 <% end %>

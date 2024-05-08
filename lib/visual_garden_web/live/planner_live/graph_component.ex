@@ -36,7 +36,7 @@ defmodule VisualGardenWeb.PlannerLive.GraphComponent do
       <%= for entry <- @planner_entries do %>
         <.link patch={~p"/planner/foo"}>
           <rect
-            width={entry.days_to_maturation}
+            width={entry.days}
             height="25"
             y={25 + 25 * (entry.square - 1)}
             style="fill:yellow;"
@@ -49,28 +49,30 @@ defmodule VisualGardenWeb.PlannerLive.GraphComponent do
             text-anchor="middle"
             x={
               40 + x_shift_date(entry.plant_date, @garden.tz, @extent_dates) +
-                entry.days_to_maturation / 2
+                entry.days / 2
             }
             y={25 + 25 * (entry.square - 1) + 25 / 2}
             style="font-size: 11px"
           >
-            <%= entry.crop_name %>
+            <%= entry.schedule.species.common_name %>
           </text>
         </.link>
+      <% end %>
 
-        <%= for {group, spans} <- generate_available_regions(@planner_entries, @extent_dates, @bed) do %>
-          <%= for %{start_date: a, finish_date: b} <- spans do %>
-            <.link patch={~p"/planners/#{@garden.id}/#{@bed.id}/#{group}/new?#{[start_date: Date.to_string(a)]}"}>
-              <rect
-                width={Timex.diff(b, a, :days)}
-                height="25"
-                y={25 + 25 * (group - 1)}
-                class="new-crop-span"
-                x={40 + x_shift_date(a, @garden.tz, @extent_dates)}
-              >
-              </rect>
-            </.link>
-          <% end %>
+      <%= for {group, spans} <- generate_available_regions(@planner_entries, @extent_dates, @bed) do %>
+        <%= for %{start_date: a, finish_date: b} <- spans do %>
+          <.link patch={
+            ~p"/planners/#{@garden.id}/#{@bed.id}/#{group}/new?#{[start_date: Date.to_string(a)]}"
+          }>
+            <rect
+              width={Timex.diff(b, a, :days)}
+              height="25"
+              y={25 + 25 * (group - 1)}
+              class="new-crop-span"
+              x={40 + x_shift_date(a, @garden.tz, @extent_dates)}
+            >
+            </rect>
+          </.link>
         <% end %>
       <% end %>
 
@@ -166,7 +168,7 @@ defmodule VisualGardenWeb.PlannerLive.GraphComponent do
 
     for {group, es} <- grouped, into: %{} do
       plant_dates = Enum.map(es, & &1.plant_date)
-      days = Enum.map(es, & &1.days_to_maturation)
+      days = Enum.map(es, & &1.days)
 
       pairs =
         for {date, days} <- Enum.zip(plant_dates, days), do: [date, Timex.shift(date, days: days)]

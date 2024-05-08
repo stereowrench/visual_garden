@@ -1,9 +1,59 @@
 defmodule VisualGarden.Planner do
   import Ecto.Query, warn: false
+  alias VisualGarden.Gardens.PlannerEntry
   alias VisualGarden.Library.Schedule
   alias VisualGarden.Library
   alias VisualGarden.Gardens
   alias VisualGarden.Repo
+
+  def get_end_date(square, bed, start_date) do
+    {row, column} = parse_square(square, bed)
+
+    mapped =
+      Repo.all(
+        from pe in PlannerEntry,
+          where: pe.row == ^row and pe.column == ^column and pe.bed_id == ^bed.id
+      )
+      |> Enum.map(fn
+        %{start_plant_date: spd, end_plant_date: epd, days_to_refuse: dtr} ->
+          if Timex.between?(start_date, spd, Timex.shift(epd, days: dtr)) do
+            :error
+          else
+            if Timex.before?(Timex.shift(epd, days: dtr), start_date) do
+              []
+            else
+              spd
+            end
+          end
+      end)
+      |> List.flatten()
+
+    if mapped == [] do
+      nil
+    else
+      if Enum.any?(mapped, &(&1 == :error)) do
+        :error
+      else
+        mapped
+        |> Enum.sort(DateTime)
+        |> Enum.take(1)
+      end
+    end
+  end
+
+  def parse_square(square, bed) do
+    with b when not is_nil(b) <- bed,
+         _ when not is_nil(square) <- square do
+      # i + bed.length * j
+      # is length, j is width
+      {z, ""} = Integer.parse(square)
+      # => i
+      x = rem(z, bed.length)
+      # => j
+      y = trunc(:math.floor(z / bed.length))
+      {x, y}
+    end
+  end
 
   def get_plantables_from_garden(bed, start_date, end_date \\ nil, today \\ nil) do
     # get seeds in garden from bed.garden_id
@@ -24,7 +74,7 @@ defmodule VisualGarden.Planner do
     schedule_ids = Enum.map(species, fn {_, id} -> id end)
 
     schedules_map =
-      Repo.all(from s in Schedule, where: s.id in ^schedule_ids)
+      Repo.all(from s in Schedule, where: s.id in ^schedule_ids, preload: [:species])
       |> Enum.map(&{&1.id, &1})
       |> Enum.into(%{})
 
@@ -96,14 +146,22 @@ defmodule VisualGarden.Planner do
             j = Timex.shift(d, days: days)
             e = clamp_date(start_date, end_date, e)
             j = clamp_date(start_date, end_date, j)
-            sow_start = Timex.shift(e, days: -days)
-            sow_end = Timex.shift(j, days: -days)
+            nursery_start = Timex.shift(e, days: -days)
+            nursery_end = Timex.shift(j, days: -days)
+
+            ss = Timex.shift(nursery_start, days: schedule.nursery_lead_weeks_min)
+            sow_start = clamp_date(start_date, end_date, ss)
+
+            se = Timex.shift(nursery_start, days: schedule.nursery_lead_weeks_max)
+            sow_end = clamp_date(start_date, end_date, se)
 
             if Timex.diff(d, c, :days) < 14 do
               [direct]
             else
               nursery = %{
                 type: "nursery",
+                nursery_start: nursery_start,
+                nursery_end: nursery_end,
                 sow_start: sow_start,
                 sow_end: sow_end,
                 days: days,
@@ -166,5 +224,13 @@ defmodule VisualGarden.Planner do
     else
       {s, e}
     end
+  end
+
+  def list_planner_entries(garden_id) do
+    beds = Gardens.list_beds(garden_id)
+    bed_ids = beds |> Enum.map(& &1.id)
+
+    Repo.all(from pe in PlannerEntry, where: pe.bed_id in ^bed_ids)
+    |> Enum.group_by(& &1.bed_id)
   end
 end
