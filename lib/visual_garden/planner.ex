@@ -81,19 +81,26 @@ defmodule VisualGarden.Planner do
 
           if schedule.nursery_lead_weeks_max && schedule.nursery_lead_weeks_min &&
                seed.type == :seed do
-            c = Timex.shift(sow_start, days: -schedule.nursery_lead_weeks_max)
-            d = Timex.shift(sow_start, days: -schedule.nursery_lead_weeks_min)
+            c = Timex.shift(sched_start, days: -schedule.nursery_lead_weeks_max)
+            d = Timex.shift(sched_end, days: -schedule.nursery_lead_weeks_min)
 
             c = clamp_date(start_date, end_date, c)
             d = clamp_date(start_date, end_date, d)
 
-            if Timex.diff(b, a, :days) < 14 do
+            e = Timex.shift(c, days: days)
+            j = Timex.shift(d, days: days)
+            e = clamp_date(start_date, end_date, e)
+            j = clamp_date(start_date, end_date, j)
+            sow_start = Timex.shift(e, days: -days)
+            sow_end = Timex.shift(j, days: -days)
+
+            if Timex.diff(d, c, :days) < 14 do
               [direct]
             else
               nursery = %{
                 type: "nursery",
-                sow_start: c,
-                sow_end: d,
+                nursery_start: sow_start,
+                nursery_end: sow_end,
                 days: days,
                 seed: seed,
                 species: species

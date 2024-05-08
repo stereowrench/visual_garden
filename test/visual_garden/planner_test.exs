@@ -1,4 +1,4 @@
-defmodule VisualGarden.LibraryTest do
+defmodule VisualGarden.PlannerTest do
   alias VisualGarden.LibraryFixtures
   alias VisualGarden.GardensFixtures
   use VisualGarden.DataCase
@@ -38,9 +38,9 @@ defmodule VisualGarden.LibraryTest do
           name: "a new schedule",
           region_id: region.id,
           species_id: species.id,
-          start_month: 3,
+          start_month: 7,
           start_day: 1,
-          end_month: 2,
+          end_month: 1,
           end_day: 1
         })
 
@@ -63,8 +63,8 @@ defmodule VisualGarden.LibraryTest do
                %{
                  type: :seed,
                  days: 51,
-                 sow_start: ~D[2024-03-16],
-                 sow_end: ~D[2025-02-01]
+                 sow_start: ~D[2024-07-01],
+                 sow_end: ~D[2025-01-01]
                },
                %{
                  type: :seed,
@@ -76,7 +76,7 @@ defmodule VisualGarden.LibraryTest do
                  type: "nursery",
                  days: 51,
                  sow_start: ~D[2025-04-27],
-                 sow_end: ~D[2025-04-29]
+                 sow_end: ~D[2025-05-30]
                }
              ] =
                Planner.get_plantables_from_garden(bed, ~D[2024-05-06], nil, today)
