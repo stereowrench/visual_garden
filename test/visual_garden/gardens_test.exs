@@ -22,7 +22,8 @@ defmodule VisualGarden.GardensTest do
     end
 
     test "create_garden/1 with valid data creates a garden" do
-      valid_attrs = %{name: "My Other Garden", tz: "America/Chicago"}
+      region = LibraryFixtures.region_fixture()
+      valid_attrs = %{name: "My Other Garden", tz: "America/Chicago", region_id: region.id}
 
       assert {:ok, %Garden{} = garden} = Gardens.create_garden(valid_attrs)
     end
@@ -136,6 +137,7 @@ defmodule VisualGarden.GardensTest do
       species = LibraryFixtures.species_fixture()
 
       valid_attrs = %{
+        type: "seed",
         name: "some name",
         description: "some description",
         garden_id: garden.id,
@@ -187,11 +189,13 @@ defmodule VisualGarden.GardensTest do
     @invalid_attrs %{qty: 0}
 
     test "list_plants/1 returns all plants" do
-      plant = plant_fixture()
+      region = LibraryFixtures.region_fixture(%{name: "foo bar"})
+      garden = garden_fixture(%{}, region)
+      plant = plant_fixture(%{}, garden)
       product = Gardens.get_product!(plant.product_id)
       garden = Gardens.get_garden!(product.garden_id)
       product2 = product_fixture(%{}, garden)
-      plant2 = plant_fixture(%{product_id: product2.id})
+      plant2 = plant_fixture(%{product_id: product2.id}, garden)
 
       assert Gardens.list_plants(product.garden_id) == [
                Repo.preload(plant, [:seed, :product]),
@@ -200,7 +204,9 @@ defmodule VisualGarden.GardensTest do
     end
 
     test "list_plants/2 returns all plants in product" do
-      plant = plant_fixture()
+      region = LibraryFixtures.region_fixture(%{name: "foo bar"})
+      garden = garden_fixture(%{}, region)
+      plant = plant_fixture(%{}, garden)
       product = Gardens.get_product!(plant.product_id)
       plant2 = plant_fixture(%{garden_id: product.garden_id})
 
@@ -324,7 +330,8 @@ defmodule VisualGarden.GardensTest do
     }
 
     test "list_event_logs/0 returns all event_logs" do
-      product = product_fixture()
+      region = LibraryFixtures.region_fixture(%{name: "ell"})
+      product = product_fixture(%{}, garden_fixture(%{name: "event logs"}, region))
       event_log = event_log_fixture("water", %{"product_id" => product.id})
 
       assert Gardens.list_event_logs(product.id) == [

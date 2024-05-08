@@ -5,7 +5,7 @@
   <:subtitle>This is a plant record from your database.</:subtitle>
   <:actions>
     <.link
-      patch={~p"/gardens/#{@garden.id}/products/#{@product.id}/plants/#{@plant}/show/edit"}
+      patch={~p"/gardens/#{@garden.id}/beds/#{@product.id}/plants/#{@plant}/show/edit"}
       phx-click={JS.push_focus()}
     >
       <.button>Edit plant</.button>
@@ -25,7 +25,7 @@
   :if={@live_action == :edit}
   id="plant-modal"
   show
-  on_cancel={JS.patch(~p"/gardens/#{@garden.id}/products/#{@product.id}/plants/#{@plant}")}
+  on_cancel={JS.patch(~p"/gardens/#{@garden.id}/beds/#{@product.id}/plants/#{@plant}")}
 >
   <.live_component
     module={VisualGardenWeb.PlantLive.FormComponent}
@@ -34,6 +34,6 @@
     action={@live_action}
     garden={@garden}
     plant={@plant}
-    patch={~p"/gardens/#{@garden.id}/products/#{@product.id}/plants/#{@plant}"}
+    patch={~p"/gardens/#{@garden.id}/beds/#{@product.id}/plants/#{@plant}"}
   />
 </.modal>

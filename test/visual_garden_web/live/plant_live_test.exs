@@ -25,7 +25,7 @@ defmodule VisualGardenWeb.PlantLiveTest do
     end
 
     test "lists all plants under product", %{conn: conn, garden: garden, product: product} do
-      {:ok, _index_live, html} = live(conn, ~p"/gardens/#{garden.id}/products/#{product.id}/plants")
+      {:ok, _index_live, html} = live(conn, ~p"/gardens/#{garden.id}/beds/#{product.id}/plants")
 
       assert html =~ "Listing Plants"
     end
@@ -62,7 +62,7 @@ defmodule VisualGardenWeb.PlantLiveTest do
       assert index_live |> element("#plants-#{plant.id} a", "Edit") |> render_click() =~
                "Edit Plant"
 
-      assert_patch(index_live, ~p"/gardens/#{garden.id}/products/#{product.id}/plants/#{plant}/edit")
+      assert_patch(index_live, ~p"/gardens/#{garden.id}/beds/#{product.id}/plants/#{plant}/edit")
 
       assert index_live
              |> form("#plant-form", plant: @invalid_attrs)
@@ -90,18 +90,18 @@ defmodule VisualGardenWeb.PlantLiveTest do
     setup [:create_plant]
 
     test "displays plant", %{conn: conn, plant: plant, garden: garden, product: product} do
-      {:ok, _show_live, html} = live(conn, ~p"/gardens/#{garden.id}/products/#{product.id}/plants/#{plant}")
+      {:ok, _show_live, html} = live(conn, ~p"/gardens/#{garden.id}/beds/#{product.id}/plants/#{plant}")
 
       assert html =~ "Show Plant"
     end
 
     test "updates plant within modal", %{conn: conn, plant: plant, garden: garden, product: product} do
-      {:ok, show_live, _html} = live(conn, ~p"/gardens/#{garden.id}/products/#{product.id}/plants/#{plant}")
+      {:ok, show_live, _html} = live(conn, ~p"/gardens/#{garden.id}/beds/#{product.id}/plants/#{plant}")
 
       assert show_live |> element("a", "Edit") |> render_click() =~
                "Edit Plant"
 
-      assert_patch(show_live, ~p"/gardens/#{garden.id}/products/#{product.id}/plants/#{plant}/show/edit")
+      assert_patch(show_live, ~p"/gardens/#{garden.id}/beds/#{product.id}/plants/#{plant}/show/edit")
 
       assert show_live
              |> form("#plant-form", plant: @invalid_attrs)
@@ -111,7 +111,7 @@ defmodule VisualGardenWeb.PlantLiveTest do
              |> form("#plant-form", plant: @update_attrs)
              |> render_submit()
 
-      assert_patch(show_live, ~p"/gardens/#{garden.id}/products/#{product.id}/plants/#{plant}")
+      assert_patch(show_live, ~p"/gardens/#{garden.id}/beds/#{product.id}/plants/#{plant}")
 
       html = render(show_live)
       assert html =~ "Plant updated successfully"

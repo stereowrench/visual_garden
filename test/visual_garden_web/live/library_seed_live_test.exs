@@ -24,7 +24,7 @@ defmodule VisualGardenWeb.LibrarySeedLiveTest do
     end
 
     test "saves new library_seed", %{conn: conn} do
-      species = species_fixture()
+      species = species_fixture(%{name: "new name"})
       {:ok, index_live, _html} = live(conn, ~p"/library_seeds")
 
       assert index_live |> element("a", "New Library seed") |> render_click() =~

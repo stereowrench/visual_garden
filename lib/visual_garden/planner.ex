@@ -99,8 +99,8 @@ defmodule VisualGarden.Planner do
             else
               nursery = %{
                 type: "nursery",
-                nursery_start: sow_start,
-                nursery_end: sow_end,
+                sow_start: sow_start,
+                sow_end: sow_end,
                 days: days,
                 seed: seed,
                 species: species

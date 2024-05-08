@@ -5,12 +5,13 @@ defmodule VisualGardenWeb.SeedLiveTest do
   import Phoenix.LiveViewTest
   import VisualGarden.GardensFixtures
 
-  @create_attrs %{name: "some name", description: "some description", days_to_maturation: 30}
-  @update_attrs %{name: "some updated name", description: "some updated description"}
+  @create_attrs %{name: "some name 3", description: "some description", days_to_maturation: 30, type: "seed"}
+  @update_attrs %{name: "some updated name 4", description: "some updated description"}
   @invalid_attrs %{name: nil, description: nil}
 
   defp create_seed(_) do
-    garden = garden_fixture(%{name: "My Garden"})
+    region = LibraryFixtures.region_fixture()
+    garden = garden_fixture(%{name: "My Garden"}, region)
     seed = seed_fixture(%{garden_id: garden.id, name: "My seed", description: "foo bar"})
     %{garden: garden, seed: seed}
   end
@@ -26,7 +27,7 @@ defmodule VisualGardenWeb.SeedLiveTest do
     end
 
     test "saves new seed", %{conn: conn, garden: garden} do
-      species = LibraryFixtures.species_fixture()
+      species = LibraryFixtures.species_fixture(%{name: "seed live"})
       {:ok, index_live, _html} = live(conn, ~p"/gardens/#{garden.id}/seeds")
 
       assert index_live |> element("a", "New Seed") |> render_click() =~

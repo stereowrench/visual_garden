@@ -14,7 +14,7 @@
   rows={@streams.plants}
   row_click={
     fn {_id, plant} ->
-      JS.navigate(~p"/gardens/#{@garden.id}/products#{plant.product_id}/plants/#{plant}")
+      JS.navigate(~p"/gardens/#{@garden.id}/beds#{plant.product_id}/plants/#{plant}")
     end
   }
 >
@@ -23,11 +23,11 @@
   <:col :let={{_id, plant}} label="Bed"><%= plant.product.name %></:col>
   <:action :let={{_id, plant}}>
     <div class="sr-only">
-      <.link navigate={~p"/gardens/#{@garden.id}/products/#{plant.product_id}/plants/#{plant}"}>
+      <.link navigate={~p"/gardens/#{@garden.id}/beds/#{plant.product_id}/plants/#{plant}"}>
         Show
       </.link>
     </div>
-    <.link patch={~p"/gardens/#{@garden.id}/products/#{plant.product_id}/plants/#{plant}/edit"}>
+    <.link patch={~p"/gardens/#{@garden.id}/beds/#{plant.product_id}/plants/#{plant}/edit"}>
       Edit
     </.link>
   </:action>
@@ -50,7 +50,7 @@
       unless @product do
         ~p"/gardens/#{@garden.id}/plants"
       else
-        ~p"/gardens/#{@garden.id}/products/#{@product.id}/plants"
+        ~p"/gardens/#{@garden.id}/beds/#{@product.id}/plants"
       end
     )
   }
@@ -68,7 +68,7 @@
       unless @product do
         ~p"/gardens/#{@garden.id}/plants"
       else
-        ~p"/gardens/#{@garden.id}/products/#{@product.id}/plants"
+        ~p"/gardens/#{@garden.id}/beds/#{@product.id}/plants"
       end
     }
   />

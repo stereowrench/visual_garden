@@ -3,17 +3,23 @@ defmodule VisualGarden.GardensFixtures do
   This module defines test helpers for creating
   entities via the `VisualGarden.Gardens` context.
   """
-alias VisualGarden.LibraryFixtures
+  alias VisualGarden.LibraryFixtures
 
   @doc """
   Generate a garden.
   """
-  def garden_fixture(attrs \\ %{}) do
+  def garden_fixture(attrs \\ %{}, region \\ nil) do
+    region =
+      if region,
+        do: region,
+        else: LibraryFixtures.region_fixture(%{name: "garden region"})
+
     {:ok, garden} =
       attrs
       |> Enum.into(%{
         name: "My Garden",
-        tz: "America/Chicago"
+        tz: "America/Chicago",
+        region_id: region.id
       })
       |> VisualGarden.Gardens.create_garden()
 
@@ -44,6 +50,7 @@ alias VisualGarden.LibraryFixtures
   """
   def seed_fixture(attrs \\ %{}, garden \\ nil) do
     species = LibraryFixtures.species_fixture()
+
     garden =
       if garden == nil do
         garden_fixture()
@@ -59,7 +66,7 @@ alias VisualGarden.LibraryFixtures
         days_to_maturation: 51,
         species_id: species.id,
         name: "some name",
-        type: "seed",
+        type: "seed"
       })
       |> VisualGarden.Gardens.create_seed()
 
@@ -72,7 +79,7 @@ alias VisualGarden.LibraryFixtures
   def plant_fixture(attrs \\ %{}, garden \\ nil) do
     garden =
       if garden == nil do
-        garden_fixture()
+        garden_fixture(%{name: "plant garden"})
       else
         garden
       end
@@ -113,13 +120,14 @@ alias VisualGarden.LibraryFixtures
   """
   def event_log_fixture(type, attrs \\ %{}) do
     product = product_fixture()
+
     attrs =
       attrs
       |> Enum.into(%{
         "product_id" => product.id,
         "event_time" => DateTime.utc_now(),
         "event_type" => type,
-        "humidity" =>  42,
+        "humidity" => 42,
         "mow_depth_in" => "120.5",
         "mowed" => true,
         "till_depth_in" => "120.5",

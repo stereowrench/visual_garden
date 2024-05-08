@@ -1,4 +1,5 @@
 defmodule VisualGardenWeb.GardenLiveTest do
+  alias VisualGarden.LibraryFixtures
   use VisualGardenWeb.ConnCase
 
   import Phoenix.LiveViewTest
@@ -34,9 +35,11 @@ defmodule VisualGardenWeb.GardenLiveTest do
              |> form("#garden-form", garden: @invalid_attrs)
              |> render_change() =~ "can&#39;t be blank"
 
+      region = LibraryFixtures.region_fixture()
+
       assert index_live
              |> form("#garden-form", garden: @create_attrs)
-             |> render_submit(%{garden: %{tz: "America/Chicago"}})
+             |> render_submit(%{garden: %{tz: "America/Chicago", region_id: region.id}})
 
       assert_patch(index_live, ~p"/gardens")
 
@@ -105,5 +108,4 @@ defmodule VisualGardenWeb.GardenLiveTest do
       assert html =~ "Garden updated successfully"
     end
   end
-
 end

@@ -103,7 +103,7 @@ defmodule VisualGardenWeb.EventLogLive.Show do
     <.link
       class="underline"
       navigate={
-        ~p"/gardens/#{@event.product.garden_id}/products/#{@event.product.id}/plants/#{@event.plant.id}"
+        ~p"/gardens/#{@event.product.garden_id}/beds/#{@event.product.id}/plants/#{@event.plant.id}"
       }
     >
       <%= @event.plant.name %>.
