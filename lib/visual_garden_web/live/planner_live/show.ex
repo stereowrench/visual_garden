@@ -26,7 +26,6 @@ defmodule VisualGardenWeb.PlannerLive.Show do
     |> assign(:bed, Gardens.get_product!(bid))
     |> assign(:square, sq)
     |> assign(:start_date, Date.from_iso8601!(start_date))
-    |> dbg
 
     # |> assign(:seeds, )
   end

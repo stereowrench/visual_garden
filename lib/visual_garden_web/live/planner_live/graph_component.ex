@@ -87,7 +87,6 @@ defmodule VisualGardenWeb.PlannerLive.GraphComponent do
 
   @impl true
   def update(assigns, socket) do
-    IO.inspect(assigns.bed)
     {:ok, assign(socket, assigns)}
   end
 

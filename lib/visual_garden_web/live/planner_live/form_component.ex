@@ -21,7 +21,7 @@ defmodule VisualGardenWeb.PlannerLive.FormComponent do
         phx-submit="save"
       >
         <%!-- List  --%>
-        <.input field={@form[:plant_date]} type="date" label="Name" />
+        <.input field={@form[:plant_date]} phx-hook="DateSelect" phx-update="ignore" type="date" label="Name" />
         <:actions>
           <.button phx-disable-with="Saving...">Save planner</.button>
         </:actions>
@@ -44,7 +44,7 @@ defmodule VisualGardenWeb.PlannerLive.FormComponent do
   end
 
   @impl true
-  def handle_event("validate", %{"planner" => planner_params}, socket) do
+  def handle_event("validate", %{"planner_entry" => planner_params}, socket) do
     changeset =
       %PlannerEntry{}
       |> Library.change_planner_entry(planner_params)
