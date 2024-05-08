@@ -64,28 +64,33 @@ defmodule VisualGarden.Planner do
         a = clamp_date(start_date, end_date, a)
         b = clamp_date(start_date, end_date, b)
 
-        if Timex.diff(b, a, :days) < 14 do
-          []
-        else
-          sow_start = Timex.shift(a, days: -days)
-          sow_end = Timex.shift(b, days: -days)
+        direct =
+          if Timex.diff(b, a, :days) < 14 do
+            []
+          else
+            sow_start = Timex.shift(a, days: -days)
+            sow_end = Timex.shift(b, days: -days)
 
-          direct = %{
-            type: seed.type,
-            sow_start: sow_start,
-            sow_end: sow_end,
-            days: days,
-            seed: seed,
-            species: species
-          }
+            direct = %{
+              type: seed.type,
+              sow_start: sow_start,
+              sow_end: sow_end,
+              days: days,
+              seed: seed,
+              species: species
+            }
+          end
 
-          if schedule.nursery_lead_weeks_max && schedule.nursery_lead_weeks_min &&
-               seed.type == :seed do
+        if schedule.nursery_lead_weeks_max && schedule.nursery_lead_weeks_min &&
+             seed.type == :seed do
+          clamped_start = clamp_date(start_date, end_date, sched_start)
+          clamped_end = clamp_date(start_date, end_date, sched_end)
+
+          if Timex.diff(clamped_end, clamped_start, :days) < 14 do
+            [direct]
+          else
             c = Timex.shift(sched_start, days: -schedule.nursery_lead_weeks_max)
             d = Timex.shift(sched_end, days: -schedule.nursery_lead_weeks_min)
-
-            c = clamp_date(start_date, end_date, c)
-            d = clamp_date(start_date, end_date, d)
 
             e = Timex.shift(c, days: days)
             j = Timex.shift(d, days: days)
@@ -108,9 +113,9 @@ defmodule VisualGarden.Planner do
 
               [direct, nursery]
             end
-          else
-            [direct]
           end
+        else
+          [direct]
         end
       end
     end
