@@ -75,10 +75,12 @@ defmodule VisualGardenWeb.GardenLive.FormComponent do
     KeywordHighlighter.highlight(assigns.string, assigns.matches)
   end
 
+  def handle_event("change", params, socket) do
+  end
+
   @impl true
   def handle_event(
         "change",
-        params,
         socket
       ) do
         IO.inspect(params)
