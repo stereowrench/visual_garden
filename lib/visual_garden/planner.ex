@@ -61,12 +61,17 @@ defmodule VisualGarden.Planner do
     # get days of maturation for each seed
     seeds = Gardens.list_seeds(bed.garden_id)
     garden = Gardens.get_garden!(bed.garden_id)
+    region_id = garden.region_id
+    tz = garden.tz
+    get_plantables(seeds, region_id, tz, start_date, end_date, today)
+  end
 
+  defp get_plantables(seeds, region_id, tz, start_date, end_date, today) do
     today =
       if today do
         today
       else
-        Timex.now(garden.tz) |> DateTime.to_date()
+        Timex.now(tz) |> DateTime.to_date()
       end
 
     start_date =
@@ -76,7 +81,7 @@ defmodule VisualGarden.Planner do
         start_date
       end
 
-    species = Library.list_species_with_schedule(garden.region_id)
+    species = Library.list_species_with_schedule(region_id)
 
     schedule_ids = Enum.map(species, fn {_, id} -> id end)
 
@@ -100,6 +105,8 @@ defmodule VisualGarden.Planner do
       species
       |> Enum.map(fn {sp, _} -> sp end)
       |> Enum.group_by(& &1.id)
+      |> Enum.map(fn {a, b} -> {a, Enum.uniq(b)} end)
+      |> Enum.into(%{})
 
     for seed <- seeds do
       species = species_map[seed.species_id]
@@ -128,13 +135,14 @@ defmodule VisualGarden.Planner do
             sow_start = Timex.shift(a, days: -days)
             sow_end = Timex.shift(b, days: -days)
 
-            direct = %{
+            %{
               type: seed.type,
               sow_start: sow_start,
               sow_end: sow_end,
               days: days,
               seed: seed,
-              species: species
+              species: species,
+              schedule: schedule
             }
           end
 
@@ -173,7 +181,8 @@ defmodule VisualGarden.Planner do
                 sow_end: sow_end,
                 days: days,
                 seed: seed,
-                species: species
+                species: species,
+                schedule: schedule
               }
 
               [direct, nursery]
