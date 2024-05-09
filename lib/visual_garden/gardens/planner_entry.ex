@@ -3,8 +3,8 @@ defmodule VisualGarden.Gardens.PlannerEntry do
   import Ecto.Changeset
 
   schema "planner_entries" do
-    field :start_plant_date, :utc_datetime
-    field :end_plant_date, :utc_datetime
+    field :start_plant_date, :date
+    field :end_plant_date, :date
     field :days_to_maturity, :integer
     field :days_to_refuse, :integer
     field :common_name, :string

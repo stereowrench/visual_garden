@@ -29,6 +29,7 @@ defmodule VisualGardenWeb.PlannerLive.Show do
 
   def add_params(socket, %{"bed_id" => bid, "square" => sq, "start_date" => start_date}) do
     bed = Gardens.get_product!(bid)
+    start_date = if start_date, do: Date.from_iso8601!(start_date)
     start_date = start_date || Date.utc_today()
 
     plantables =
@@ -38,12 +39,11 @@ defmodule VisualGardenWeb.PlannerLive.Show do
         Planner.get_end_date(sq, bed, start_date),
         Date.utc_today()
       )
-      |> IO.inspect()
 
     socket
     |> assign(:bed, Gardens.get_product!(bid))
     |> assign(:square, sq)
-    |> assign(:start_date, Date.from_iso8601!(start_date))
+    |> assign(:start_date, start_date)
     |> assign(:plantables, plantables)
   end
 

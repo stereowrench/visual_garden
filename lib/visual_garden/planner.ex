@@ -104,7 +104,7 @@ defmodule VisualGarden.Planner do
     for seed <- seeds do
       species = species_map[seed.species_id]
 
-      for schedule <- schedules_map[seed.species_id] do
+      for schedule <- schedules_map[seed.species_id] || [] do
         {sched_start, sched_end} =
           unwrwap_dates(
             schedule.start_month,

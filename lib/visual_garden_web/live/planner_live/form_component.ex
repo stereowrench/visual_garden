@@ -36,6 +36,9 @@ defmodule VisualGardenWeb.PlannerLive.FormComponent do
 
   @impl true
   def update(assigns, socket) do
+    # garden
+    # bed
+    # extent_dates
     changeset = Gardens.change_planner_entry(%PlannerEntry{})
     {square, ""} = Integer.parse(assigns.square)
 
