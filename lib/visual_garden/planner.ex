@@ -69,6 +69,13 @@ defmodule VisualGarden.Planner do
         Timex.now(garden.tz) |> DateTime.to_date()
       end
 
+    start_date =
+      if Timex.before?(start_date, today) do
+        today
+      else
+        start_date
+      end
+
     species = Library.list_species_with_schedule(garden.region_id)
 
     schedule_ids = Enum.map(species, fn {_, id} -> id end)
@@ -126,8 +133,8 @@ defmodule VisualGarden.Planner do
               sow_start: sow_start,
               sow_end: sow_end,
               days: days,
-              seed: seed,
-              species: species
+              # seed: seed,
+              # species: species
             }
           end
 
@@ -139,8 +146,8 @@ defmodule VisualGarden.Planner do
           if Timex.diff(clamped_end, clamped_start, :days) < 14 do
             [direct]
           else
-            c = Timex.shift(clamped_start, days: -schedule.nursery_lead_weeks_max)
-            d = Timex.shift(clamped_end, days: -schedule.nursery_lead_weeks_min)
+            c = Timex.shift(clamped_start, weeks: -schedule.nursery_lead_weeks_max)
+            d = Timex.shift(clamped_end, weeks: -schedule.nursery_lead_weeks_min)
 
             e = Timex.shift(c, days: days)
             j = Timex.shift(d, days: days)
@@ -149,10 +156,10 @@ defmodule VisualGarden.Planner do
             nursery_start = Timex.shift(e, days: -days)
             nursery_end = Timex.shift(j, days: -days)
 
-            ss = Timex.shift(nursery_start, days: schedule.nursery_lead_weeks_min)
+            ss = Timex.shift(nursery_start, weeks: schedule.nursery_lead_weeks_min)
             sow_start = clamp_date(start_date, end_date, ss)
 
-            se = Timex.shift(nursery_start, days: schedule.nursery_lead_weeks_max)
+            se = Timex.shift(nursery_start, weeks: schedule.nursery_lead_weeks_max)
             sow_end = clamp_date(start_date, end_date, se)
 
             if Timex.diff(d, c, :days) < 14 do
@@ -165,8 +172,8 @@ defmodule VisualGarden.Planner do
                 sow_start: sow_start,
                 sow_end: sow_end,
                 days: days,
-                seed: seed,
-                species: species
+                # seed: seed,
+                # species: species
               }
 
               [direct, nursery]

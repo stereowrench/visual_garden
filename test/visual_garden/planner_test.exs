@@ -75,8 +75,8 @@ defmodule VisualGarden.PlannerTest do
                %{
                  type: "nursery",
                  days: 51,
-                 nursery_start: ~D[2025-04-27],
-                 nursery_end: ~D[2025-05-30]
+                 nursery_start: ~D[2025-04-03],
+                 nursery_end: ~D[2025-05-18]
                }
              ] =
                Planner.get_plantables_from_garden(bed, ~D[2024-05-06], nil, today)
@@ -89,7 +89,10 @@ defmodule VisualGarden.PlannerTest do
       species = LibraryFixtures.species_fixture(%{name: "bar"})
 
       seed =
-        GardensFixtures.seed_fixture(%{name: "my seed please", species_id: species.id}, garden)
+        GardensFixtures.seed_fixture(
+          %{name: "my seed please", species_id: species.id, days_to_maturation: 10},
+          garden
+        )
 
       schedule =
         LibraryFixtures.schedule_fixture(%{
@@ -98,16 +101,24 @@ defmodule VisualGarden.PlannerTest do
           species_id: species.id,
           start_month: 6,
           start_day: 6,
-          end_month: 7,
+          end_month: 6,
           end_day: 30,
           nursery_lead_weeks_max: 4,
-          nursery_lead_weeks_min: 2
+          nursery_lead_weeks_min: 1
         })
 
       today = ~D[2024-06-06]
 
       assert [
-               %{type: "nursery", days: 51, sow_start: ~D[2024-06-02], sow_end: ~D[2024-06-05]}
+               %{days: 10, sow_end: ~D[2024-06-30], sow_start: ~D[2024-06-06], type: :seed},
+               %{
+                 type: "nursery",
+                 days: 10,
+                 sow_start: ~D[2024-06-06],
+                 sow_end: ~D[2024-06-24],
+                 nursery_end: ~D[2024-06-23],
+                 nursery_start: ~D[2024-05-27]
+               }
              ] =
                Planner.get_plantables_from_garden(bed, ~D[2024-05-06], ~D[2024-07-26], today)
     end
