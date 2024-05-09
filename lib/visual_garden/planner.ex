@@ -133,8 +133,8 @@ defmodule VisualGarden.Planner do
               sow_start: sow_start,
               sow_end: sow_end,
               days: days,
-              # seed: seed,
-              # species: species
+              seed: seed,
+              species: species
             }
           end
 
@@ -172,8 +172,8 @@ defmodule VisualGarden.Planner do
                 sow_start: sow_start,
                 sow_end: sow_end,
                 days: days,
-                # seed: seed,
-                # species: species
+                seed: seed,
+                species: species
               }
 
               [direct, nursery]
