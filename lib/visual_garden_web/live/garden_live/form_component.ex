@@ -22,21 +22,28 @@ defmodule VisualGardenWeb.GardenLive.FormComponent do
         phx-submit="save"
       >
         <.input field={@form[:name]} label="Name" />
-        <.live_select field={@form[:tz]} label="Timezone" phx-target={@myself} options={@tz_opts}>
+        <.live_select
+          field={@form[:tz]}
+          value_mapper={&to_string(&1)}
+          label="Timezone"
+          phx-target={@myself}
+          options={@tz_opts}
+        >
           <:option :let={opt}>
             <.highlight matches={@highlights[opt.label]} string={opt.label} />
           </:option>
         </.live_select>
-        <%!-- <.live_select
+        <.live_select
           field={@form[:region_id]}
           label="Region"
           phx-target={@myself}
           options={@region_opts}
+          value_mapper={&to_string(&1)}
         >
           <:option :let={opt}>
             <.highlight matches={@highlights_regions[opt.label]} string={opt.label} />
           </:option>
-        </.live_select> --%>
+        </.live_select>
         <:actions>
           <.button phx-disable-with="Saving...">Save Garden</.button>
         </:actions>
@@ -56,18 +63,19 @@ defmodule VisualGardenWeb.GardenLive.FormComponent do
      |> assign(:region_opts, region_opts())
      |> assign(:region_opts_stored, region_opts())
      |> assign(:highlights, %{})
+     |> assign(:highlights_regions, %{})
      |> assign_form(changeset)}
   end
 
   defp tz_opts do
     Tzdata.zone_list()
-    |> Enum.map(&{&1, &1})
+    |> Enum.map(&{&1, to_string(&1)})
     |> Enum.into(%{})
   end
 
   defp region_opts do
     Library.list_regions()
-    |> Enum.map(&{&1.name, &1.id})
+    |> Enum.map(&{&1.name, to_string(&1.id)})
     |> Enum.into(%{})
   end
 
@@ -76,14 +84,6 @@ defmodule VisualGardenWeb.GardenLive.FormComponent do
   end
 
   def handle_event("change", params, socket) do
-  end
-
-  @impl true
-  def handle_event(
-        "change",
-        socket
-      ) do
-        IO.inspect(params)
     {:noreply, socket}
   end
 
@@ -93,7 +93,6 @@ defmodule VisualGardenWeb.GardenLive.FormComponent do
         %{"text" => text, "id" => live_select_id = "garden_tz_live_select_component"},
         socket
       ) do
-    IO.inspect(live_select_id)
     matches = Seqfuzz.matches(tz_opts(), text, &elem(&1, 0), filter: true, sort: true)
 
     opts = Enum.map(matches, fn {m, _} -> m end) |> Enum.take(10)
@@ -102,7 +101,39 @@ defmodule VisualGardenWeb.GardenLive.FormComponent do
       Enum.map(matches, fn {{a, _}, c} -> {a, c.matches} end) |> Enum.take(10) |> Enum.into(%{})
 
     send_update(LiveSelect.Component, id: live_select_id, options: opts)
-    {:noreply, assign(socket, :highlights, highlights)}
+
+    changes = Map.merge(%{"tz" => ""}, socket.assigns.changes)
+    socket = assign(socket, :changes, changes)
+
+    # We have to clear the form value for live_select to work.
+    changeset =
+      socket.assigns.garden
+      |> Gardens.change_garden(changes)
+      |> Map.put(:action, :validate)
+
+    {:noreply, assign(socket, :highlights, highlights) |> assign_form(changeset)}
+  end
+
+  @impl true
+  def handle_event(
+        "live_select_change",
+        %{"text" => text, "id" => live_select_id = "garden_region_id_live_select_component"},
+        socket
+      ) do
+    matches =
+      Seqfuzz.matches(socket.assigns.region_opts_stored, text, &elem(&1, 0),
+        filter: true,
+        sort: true
+      )
+
+    opts = Enum.map(matches, fn {m, _} -> m end) |> Enum.take(10)
+
+    highlights =
+      Enum.map(matches, fn {{a, _}, c} -> {a, c.matches} end) |> Enum.take(10) |> Enum.into(%{})
+
+    send_update(LiveSelect.Component, id: live_select_id, options: opts)
+
+    {:noreply, assign(socket, :highlights_regions, highlights)}
   end
 
   @impl true
@@ -110,10 +141,9 @@ defmodule VisualGardenWeb.GardenLive.FormComponent do
     changeset =
       socket.assigns.garden
       |> Gardens.change_garden(garden_params)
-      |> IO.inspect()
       |> Map.put(:action, :validate)
 
-    {:noreply, assign_form(socket, changeset)}
+    {:noreply, socket |> assign_form(changeset) |> assign(:changes, garden_params)}
   end
 
   def handle_event("save", %{"garden" => garden_params}, socket) do
