@@ -6,6 +6,17 @@ defmodule VisualGarden.Planner do
   alias VisualGarden.Gardens
   alias VisualGarden.Repo
 
+  def create_planner_entry(attrs \\ %{}) do
+    %PlannerEntry{}
+    |> PlannerEntry.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  def change_planner_entry(%PlannerEntry{} = entry, attrs \\ %{}) do
+    entry
+    |> PlannerEntry.changeset(attrs)
+  end
+
   def get_end_date(square, bed, start_date) do
     {row, column} = parse_square(square, bed)
 
@@ -65,6 +76,48 @@ defmodule VisualGarden.Planner do
     tz = garden.tz
     get_plantables(seeds, region_id, tz, start_date, end_date, today)
   end
+
+  # def get_plantables_from_garden_ignore_schedule(bed, start_date, end_date \\ nil, today \\ nil) do
+  #   seeds = Gardens.list_seeds(bed.garden_id)
+  #   garden = Gardens.get_garden!(bed.garden_id)
+  #   region_id = garden.region_id
+  #   tz = garden.tz
+
+  #   today =
+  #     if today do
+  #       today
+  #     else
+  #       Timex.now(tz) |> DateTime.to_date()
+  #     end
+
+  #   start_date =
+  #     if Timex.before?(start_date, today) do
+  #       today
+  #     else
+  #       start_date
+  #     end
+
+  #   for seed <- seeds do
+  #     nursery =
+  #       if schedule.nursery_lead_weeks_max && schedule.nursery_lead_weeks_min &&
+  #            seed.type == :seed do
+  #       else
+  #         %{}
+  #       end
+
+  #     non_nursery = %{
+  #       type: seed.type,
+  #       sow_start: sow_start,
+  #       sow_end: sow_end,
+  #       days: days,
+  #       seed: seed,
+  #       species: species,
+  #     }
+
+  #     [nursery, non_nursery]
+  #   end
+  #   |> List.flatten()
+  # end
 
   defp get_plantables(seeds, region_id, tz, start_date, end_date, today) do
     today =

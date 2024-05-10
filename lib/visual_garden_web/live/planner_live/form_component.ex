@@ -1,4 +1,5 @@
 defmodule VisualGardenWeb.PlannerLive.FormComponent do
+  alias VisualGarden.Planner
   alias VisualGarden.Gardens.PlannerEntry
   alias VisualGarden.Gardens
   use VisualGardenWeb, :live_component
@@ -60,8 +61,22 @@ defmodule VisualGardenWeb.PlannerLive.FormComponent do
             min={@form[:start_plant_date].value || @planner_map[:sow_start]}
             max={@planner_map[:sow_end]}
           />
-          <.input field={@form[:days_to_maturity]} type="number" label="Days to Maturity" />
-          <.input field={@form[:days_to_refuse]} type="number" label="Days to Refuse" />
+          <.input field={@form[:days_to_maturity]} type="hidden" value={@planner_map[:days]} />
+          <.input field={@form[:seed_id]} type="hidden" value={@seed_id} />
+          <.input field={@form[:bed_id]} type="hidden" value={@bed.id} />
+          <.input field={@form[:row]} type="hidden" value={@row} />
+          <.input field={@form[:column]} type="hidden" value={@column} />
+          <.input field={@form[:common_name]} type="hidden" value={@species_selected} />
+          <%= if @form[:end_plant_date].value not in ["", nil] do %>
+            <.input
+              type="date"
+              name="refuse_date"
+              label="Refuse date"
+              min={get_start_refuse_date(@form[:end_plant_date].value, @planner_map[:days])}
+              max={@end_refuse_date}
+              value={@refuse_date}
+            />
+          <% end %>
         <% end %>
         <:actions>
           <.button phx-disable-with="Saving...">Save planner</.button>
@@ -71,8 +86,15 @@ defmodule VisualGardenWeb.PlannerLive.FormComponent do
     """
   end
 
+  def get_start_refuse_date(epd, days) do
+    epd
+    |> Timex.shift(days: days)
+  end
+
   @impl true
   def update(assigns, socket) do
+    end_date = Planner.get_end_date(assigns.square, assigns.bed, assigns.start_date)
+
     plantables_parsed =
       assigns.plantables
       |> Enum.group_by(& &1.schedule.species.common_name)
@@ -80,7 +102,7 @@ defmodule VisualGardenWeb.PlannerLive.FormComponent do
     # garden
     # bed
     # extent_dates
-    changeset = Gardens.change_planner_entry(%PlannerEntry{})
+    changeset = Planner.change_planner_entry(%PlannerEntry{})
     {square, ""} = Integer.parse(assigns.square)
 
     species =
@@ -92,14 +114,17 @@ defmodule VisualGardenWeb.PlannerLive.FormComponent do
      socket
      |> assign(assigns)
      |> assign(:row, trunc((square - 1) / assigns.bed.length))
+     |> assign(:column, rem(square - 1, assigns.bed.length))
      |> assign(:species_form, %{"species" => "species", "type" => "type"})
      |> assign(:species, species)
      |> assign(:species_selected, "")
      |> assign(:type_selected, "")
      |> assign(:plantable_selected, "")
      |> assign(:planner_map, %{})
+     |> assign(:seed_id, nil)
+     |> assign(:refuse_date, nil)
+     |> assign(:end_refuse_date, end_date)
      |> assign(:plantables_parsed, plantables_parsed)
-     |> assign(:column, rem(square - 1, assigns.bed.length))
      |> assign_form(changeset)}
   end
 
@@ -174,13 +199,28 @@ defmodule VisualGardenWeb.PlannerLive.FormComponent do
         {plantable, socket.assigns.plantable_map[plantable]}
       end
 
+    seed_id =
+      if plantable_selected != "" do
+        plantable_data.seed.id
+      else
+        nil
+      end
+
     socket =
       socket
       |> assign(:plantable_selected, plantable_selected)
+      |> assign(:seed_id, seed_id)
       |> assign(:planner_map, plantable_data)
 
     socket =
       if planner_params = params["planner_entry"] do
+        planner_params =
+          if params["refuse_date"] && planner_params["end_plant_date"] not in [nil, ""] do
+            add_params(planner_params, params, socket)
+          else
+            planner_params
+          end
+
         changeset =
           %PlannerEntry{}
           |> Library.change_planner_entry(planner_params)
@@ -194,17 +234,39 @@ defmodule VisualGardenWeb.PlannerLive.FormComponent do
     {:noreply, socket}
   end
 
-  def handle_event("validate", %{"species" => species} = params, socket) do
+  def handle_event("save", %{"planner_entry" => planner_params} = params, socket) do
+    save_planner(socket, socket.assigns.action, planner_params, params)
   end
 
-  def handle_event("save", %{"planner" => planner_params}, socket) do
-    save_planner(socket, socket.assigns.action, planner_params)
+  defp add_params(planner_params, params, socket) do
+    with {:ok, plant_date} <- Date.from_iso8601(planner_params["end_plant_date"]),
+         {:ok, refuse_date} <- Date.from_iso8601(params["refuse_date"]) do
+      Map.merge(
+        %{"days_to_refuse" => Timex.diff(refuse_date, plant_date, :days)},
+        planner_params
+      )
+    else
+      _ -> planner_params
+    end
   end
 
-  defp save_planner(socket, :edit, planner_params) do
+  defp save_planner(socket, :edit, planner_params, params) do
   end
 
-  defp save_planner(socket, :new, planner_params) do
+  defp save_planner(socket, :new, planner_params, params) do
+    case planner_params |> add_params(params, socket) |> Planner.create_planner_entry() do
+      {:ok, planner_entry} ->
+        notify_parent({:saved, planner_entry})
+
+        {:noreply,
+         socket
+         |> put_notification(Normal.new(:info, "Planner entry created successfully"))
+         |> push_patch(to: socket.assigns.patch)}
+
+      {:error, %Ecto.Changeset{} = changeset} ->
+        dbg(changeset)
+        {:noreply, assign_form(socket, changeset)}
+    end
   end
 
   defp assign_form(socket, %Ecto.Changeset{} = changeset) do

@@ -12,19 +12,24 @@ defmodule VisualGardenWeb.PlannerLive.Show do
   def handle_params(%{"garden_id" => id} = params, _, socket) do
     garden = Gardens.get_garden!(id)
 
-    entries = Planner.list_planner_entries(garden.id)
-
     {:noreply,
      socket
      |> add_params(params)
      |> assign(:page_title, page_title(socket.assigns.live_action))
-     |> assign(
-       :planner_entries,
-       entries
-     )
+     |> assign(:garden, garden)
+     |> add_entries()
      |> assign(:beds, Gardens.list_beds(id))
-     |> assign(:extent_dates, extent_dates(garden.tz))
-     |> assign(:garden, garden)}
+     |> assign(:extent_dates, extent_dates(garden.tz))}
+  end
+
+  defp add_entries(socket) do
+    entries = Planner.list_planner_entries(socket.assigns.garden.id)
+
+    socket
+    |> assign(
+      :planner_entries,
+      entries
+    )
   end
 
   def add_params(socket, %{"bed_id" => bid, "square" => sq, "start_date" => start_date}) do
@@ -65,4 +70,8 @@ defmodule VisualGardenWeb.PlannerLive.Show do
   defp page_title(:show), do: "Show Planner"
   defp page_title(:new), do: "New Planner"
   defp page_title(:edit), do: "Edit Planner"
+
+  def handle_info({VisualGardenWeb.PlannerLive.FormComponent, {:saved, _plant}}, socket) do
+    {:noreply, socket}
+  end
 end

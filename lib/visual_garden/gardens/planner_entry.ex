@@ -12,6 +12,7 @@ defmodule VisualGarden.Gardens.PlannerEntry do
     field :column, :integer
     belongs_to :bed, VisualGarden.Gardens.Product
     belongs_to :seed, VisualGarden.Gardens.Seed
+    has_one :nursery_entry, VisualGarden.Gardens.NurseryEntry
 
     timestamps(type: :utc_datetime)
   end
