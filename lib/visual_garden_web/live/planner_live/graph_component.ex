@@ -36,10 +36,29 @@ defmodule VisualGardenWeb.PlannerLive.GraphComponent do
       <%= for entry <- @planner_entries do %>
         <.link patch={~p"/planner/foo"} class="crop-span">
           <rect
-            width={entry.days_to_maturity}
+            width={Timex.diff(entry.end_plant_date, entry.start_plant_date, :days)}
             height="25"
+            class="crop-span-end"
             y={25 + 25 * (bed_square(entry, @bed) - 1)}
             x={40 + x_shift_date(entry.start_plant_date, @garden.tz, @extent_dates)}
+          >
+          </rect>
+          <rect
+            width={
+              entry.days_to_maturity - Timex.diff(entry.end_plant_date, entry.start_plant_date, :days)
+            }
+            height="25"
+            y={25 + 25 * (bed_square(entry, @bed) - 1)}
+            x={
+              40 +
+                x_shift_date(
+                  Timex.shift(entry.start_plant_date,
+                    days: Timex.diff(entry.end_plant_date, entry.start_plant_date, :days)
+                  ),
+                  @garden.tz,
+                  @extent_dates
+                )
+            }
           >
           </rect>
           <rect
@@ -199,7 +218,6 @@ defmodule VisualGardenWeb.PlannerLive.GraphComponent do
       new_list =
         [Date.new!(DateTime.utc_now().year, 1, 1)] ++
           pairs ++ [Timex.shift(DateTime.utc_now(), years: 2)]
-
 
       chunks = Enum.chunk_every(new_list, 2)
 
