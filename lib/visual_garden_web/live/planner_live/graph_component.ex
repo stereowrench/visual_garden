@@ -34,27 +34,41 @@ defmodule VisualGardenWeb.PlannerLive.GraphComponent do
       <% end %>
 
       <%= for entry <- @planner_entries do %>
-        <.link patch={~p"/planner/foo"}>
+        <.link patch={~p"/planner/foo"} class="crop-span">
           <rect
-            width={entry.days}
+            width={entry.days_to_maturity}
             height="25"
-            y={25 + 25 * (entry.square - 1)}
-            style="fill:yellow;"
-            class="crop-span"
-            x={40 + x_shift_date(entry.plant_date, @garden.tz, @extent_dates)}
+            y={25 + 25 * (bed_square(entry, @bed) - 1)}
+            x={40 + x_shift_date(entry.start_plant_date, @garden.tz, @extent_dates)}
+          >
+          </rect>
+          <rect
+            width={Timex.diff(entry.end_plant_date, entry.start_plant_date, :days)}
+            height="25"
+            y={25 + 25 * (bed_square(entry, @bed) - 1)}
+            class="crop-span-end"
+            x={
+              40 +
+                x_shift_date(
+                  Timex.shift(entry.start_plant_date, days: entry.days_to_maturity),
+                  @garden.tz,
+                  @extent_dates
+                )
+            }
           >
           </rect>
           <text
             dominant-baseline="central"
             text-anchor="middle"
             x={
-              40 + x_shift_date(entry.plant_date, @garden.tz, @extent_dates) +
-                entry.days / 2
+              40 + x_shift_date(entry.start_plant_date, @garden.tz, @extent_dates) +
+                entry.days_to_maturity / 2 +
+                +Timex.diff(entry.end_plant_date, entry.start_plant_date, :days) / 2
             }
-            y={25 + 25 * (entry.square - 1) + 25 / 2}
+            y={25 + 25 * (bed_square(entry, @bed) - 1) + 25 / 2}
             style="font-size: 11px"
           >
-            <%= entry.schedule.species.common_name %>
+            <%= entry.common_name %>
           </text>
         </.link>
       <% end %>
@@ -149,12 +163,16 @@ defmodule VisualGardenWeb.PlannerLive.GraphComponent do
     end
   end
 
+  defp bed_square(entry, bed) do
+    entry.row * bed.width + entry.column
+  end
+
   defp generate_available_regions(entries, extent_dates, bed) do
     {sd, ed} = extent_dates
 
     grouped =
       entries
-      |> Enum.group_by(& &1.square)
+      |> Enum.group_by(&bed_square(&1, bed))
 
     grouped =
       Enum.map(1..(bed.width * bed.length), fn
@@ -167,17 +185,21 @@ defmodule VisualGardenWeb.PlannerLive.GraphComponent do
       |> Enum.into(%{})
 
     for {group, es} <- grouped, into: %{} do
-      plant_dates = Enum.map(es, & &1.plant_date)
-      days = Enum.map(es, & &1.days)
+      es = Enum.sort_by(es, & &1.start_plant_date, Date)
+      plant_dates = Enum.map(es, & &1.start_plant_date)
+      end_dates = Enum.map(es, & &1.end_plant_date)
+      days = Enum.map(es, & &1.days_to_maturity)
 
       pairs =
-        for {date, days} <- Enum.zip(plant_dates, days), do: [date, Timex.shift(date, days: days)]
+        for {pdate, {edate, days}} <- Enum.zip(plant_dates, Enum.zip(end_dates, days)),
+            do: [pdate, Timex.shift(edate, days: days)]
 
       pairs = List.flatten(pairs)
 
       new_list =
         [Date.new!(DateTime.utc_now().year, 1, 1)] ++
           pairs ++ [Timex.shift(DateTime.utc_now(), years: 2)]
+
 
       chunks = Enum.chunk_every(new_list, 2)
 
