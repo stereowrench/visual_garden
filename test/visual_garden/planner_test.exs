@@ -115,7 +115,7 @@ defmodule VisualGarden.PlannerTest do
                  type: "nursery",
                  days: 10,
                  sow_start: ~D[2024-06-06],
-                 sow_end: ~D[2024-06-24],
+                 sow_end: ~D[2024-07-21],
                  nursery_end: ~D[2024-06-23],
                  nursery_start: ~D[2024-05-27]
                }

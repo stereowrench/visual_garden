@@ -21,14 +21,31 @@ defmodule VisualGardenWeb.PlannerLive.FormComponent do
         phx-submit="save"
       >
         <.input
-          field="Plantable"
           name="species"
           type="select"
           label="Select Species"
           options={@species}
-          value=""
+          value={@species_selected}
         />
         <%= unless @species_selected == "" do %>
+          <.input
+            name="type"
+            type="select"
+            label="Select type"
+            options={@seed_type_options}
+            value={@type_selected}
+          />
+        <% end %>
+        <%= unless @type_selected == "" do %>
+          <.input
+            name="plantable"
+            type="select"
+            label="Select plantable"
+            options={@plantable_options}
+            value={@plantable_selected}
+          />
+        <% end %>
+        <%= unless @species_selected == "" or @type_selected == "" or @plantable_selected == "" do %>
           <.input
             field={@form[:start_plant_date]}
             phx-update="ignore"
@@ -68,28 +85,108 @@ defmodule VisualGardenWeb.PlannerLive.FormComponent do
      socket
      |> assign(assigns)
      |> assign(:row, trunc((square - 1) / assigns.bed.length))
+     |> assign(:species_form, %{"species" => "species", "type" => "type"})
      |> assign(:species, species)
      |> assign(:species_selected, "")
+     |> assign(:type_selected, "")
+     |> assign(:plantable_selected, "")
      |> assign(:plantables_parsed, plantables_parsed)
      |> assign(:column, rem(square - 1, assigns.bed.length))
      |> assign_form(changeset)}
   end
 
   @impl true
-  def handle_event("validate", %{"planner_entry" => planner_params}, socket) do
-    changeset =
-      %PlannerEntry{}
-      |> Library.change_planner_entry(planner_params)
-      |> Map.put(:action, :validate)
+  def handle_event("validate", params, socket) do
+    sp_assigns =
+      if species = params["species"] do
+        species_sel = socket.assigns.plantables_parsed[species]
 
-    {:noreply, socket |> assign_form(changeset)}
+        seed_types =
+          species_sel
+          |> Enum.group_by(&"#{&1.type} -- #{&1.seed.name}")
+
+        seed_type_options = Map.keys(seed_types)
+
+        type = params["type"] || ""
+
+        {plantable_options, plantable_map} =
+          if type != "" do
+            processed_types =
+              seed_types[type]
+              |> Enum.sort_by(& &1.sow_start)
+              |> Enum.with_index()
+              |> Enum.map(fn
+                {e = %{sow_start: ss, sow_end: se, seed: seed, days: days}, idx} ->
+                  ssf = Timex.format!(ss, "{relative}", :relative)
+                  sef = Timex.format!(se, "{relative}", :relative)
+                  str = "#{seed.name} (#{ssf} - #{sef}) #{days} days"
+                  {idx, str, e}
+              end)
+
+            plantable_options =
+              processed_types
+              |> Enum.map(fn
+                {idx, str, _} ->
+                  {str, idx}
+              end)
+
+            plantable_map =
+              processed_types
+              |> Enum.map(fn
+                {idx, _, e} -> {to_string(idx), e}
+              end)
+              |> Enum.into(%{})
+
+            {plantable_options, plantable_map}
+          else
+            {"", %{}}
+          end
+
+        %{
+          species_selected: species,
+          plantable_map: plantable_map,
+          plantable_options: ["Select a plantable": ""] ++ plantable_options,
+          type_selected: type,
+          seed_type_options: ["Select a type": ""] ++ seed_type_options,
+          seed_types: seed_types
+        }
+      else
+        %{}
+      end
+
+    socket = assign(socket, sp_assigns)
+
+    plantable = params["plantable"] || ""
+
+    {plantable_selected, plantable_data} =
+      if plantable == "" do
+        {"", %{}}
+      else
+        {plantable, socket.assigns.plantable_map[plantable]}
+      end
+
+    socket =
+      socket
+      |> assign(:plantable_selected, plantable_selected)
+
+    IO.inspect(plantable_data)
+
+    socket =
+      if planner_params = params["planner_entry"] do
+        changeset =
+          %PlannerEntry{}
+          |> Library.change_planner_entry(planner_params)
+          |> Map.put(:action, :validate)
+
+        assign_form(socket, changeset)
+      else
+        socket
+      end
+
+    {:noreply, socket}
   end
 
-  def handle_event("validate", %{"species" => species}, socket) do
-    socket.assigns.plantables_parsed[species]
-    |> IO.inspect()
-
-    {:noreply, socket |> assign(:species_selected, species)}
+  def handle_event("validate", %{"species" => species} = params, socket) do
   end
 
   def handle_event("save", %{"planner" => planner_params}, socket) do

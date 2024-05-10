@@ -167,7 +167,7 @@ defmodule VisualGarden.Planner do
             ss = Timex.shift(nursery_start, weeks: schedule.nursery_lead_weeks_min)
             sow_start = clamp_date(start_date, end_date, ss)
 
-            se = Timex.shift(nursery_start, weeks: schedule.nursery_lead_weeks_max)
+            se = Timex.shift(nursery_end, weeks: schedule.nursery_lead_weeks_max)
             sow_end = clamp_date(start_date, end_date, se)
 
             if Timex.diff(d, c, :days) < 14 do

@@ -37,6 +37,9 @@ defmodule VisualGardenWeb.ScheduleLive.FormComponent do
         <.input field={@form[:start_day]} type="number" label="Start day" />
         <.input field={@form[:end_month]} type="number" label="End month" />
         <.input field={@form[:end_day]} type="number" label="End day" />
+
+        <.input field={@form[:nursery_lead_weeks_max]} type="number" label="Earliest nursery (weeks)" />
+        <.input field={@form[:nursery_lead_weeks_min]} type="number" label="Latest nursery (weeks)" />
         <:actions>
           <.button phx-disable-with="Saving...">Save Schedule</.button>
         </:actions>
