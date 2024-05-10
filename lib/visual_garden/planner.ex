@@ -135,6 +135,9 @@ defmodule VisualGarden.Planner do
             sow_start = Timex.shift(a, days: -days)
             sow_end = Timex.shift(b, days: -days)
 
+            sow_start = clamp_date(start_date, end_date, sow_start)
+            sow_end = clamp_date(start_date, end_date, sow_end)
+
             %{
               type: seed.type,
               sow_start: sow_start,

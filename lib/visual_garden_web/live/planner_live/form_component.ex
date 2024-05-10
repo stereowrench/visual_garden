@@ -48,11 +48,18 @@ defmodule VisualGardenWeb.PlannerLive.FormComponent do
         <%= unless @species_selected == "" or @type_selected == "" or @plantable_selected == "" do %>
           <.input
             field={@form[:start_plant_date]}
-            phx-update="ignore"
             type="date"
             label="Earliest Plant"
+            min={@planner_map[:sow_start]}
+            max={@form[:end_plant_date].value || @planner_map[:sow_end]}
           />
-          <.input field={@form[:end_plant_date]} phx-update="ignore" type="date" label="Latest Plant" />
+          <.input
+            field={@form[:end_plant_date]}
+            type="date"
+            label="Latest Plant"
+            min={@form[:start_plant_date].value || @planner_map[:sow_start]}
+            max={@planner_map[:sow_end]}
+          />
           <.input field={@form[:days_to_maturity]} type="number" label="Days to Maturity" />
           <.input field={@form[:days_to_refuse]} type="number" label="Days to Refuse" />
         <% end %>
@@ -90,6 +97,7 @@ defmodule VisualGardenWeb.PlannerLive.FormComponent do
      |> assign(:species_selected, "")
      |> assign(:type_selected, "")
      |> assign(:plantable_selected, "")
+     |> assign(:planner_map, %{})
      |> assign(:plantables_parsed, plantables_parsed)
      |> assign(:column, rem(square - 1, assigns.bed.length))
      |> assign_form(changeset)}
@@ -114,6 +122,7 @@ defmodule VisualGardenWeb.PlannerLive.FormComponent do
             processed_types =
               seed_types[type]
               |> Enum.sort_by(& &1.sow_start)
+              |> Enum.reverse()
               |> Enum.with_index()
               |> Enum.map(fn
                 {e = %{sow_start: ss, sow_end: se, seed: seed, days: days}, idx} ->
@@ -168,8 +177,7 @@ defmodule VisualGardenWeb.PlannerLive.FormComponent do
     socket =
       socket
       |> assign(:plantable_selected, plantable_selected)
-
-    IO.inspect(plantable_data)
+      |> assign(:planner_map, plantable_data)
 
     socket =
       if planner_params = params["planner_entry"] do
