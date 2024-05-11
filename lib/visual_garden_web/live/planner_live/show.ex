@@ -71,6 +71,7 @@ defmodule VisualGardenWeb.PlannerLive.Show do
   defp page_title(:new), do: "New Planner"
   defp page_title(:edit), do: "Edit Planner"
 
+  @impl true
   def handle_info({VisualGardenWeb.PlannerLive.FormComponent, {:saved, _plant}}, socket) do
     {:noreply, socket}
   end

@@ -1,7 +1,6 @@
 defmodule VisualGardenWeb.PlannerLive.FormComponent do
   alias VisualGarden.Planner
   alias VisualGarden.Gardens.PlannerEntry
-  alias VisualGarden.Gardens
   use VisualGardenWeb, :live_component
 
   alias VisualGarden.Library
@@ -238,7 +237,7 @@ defmodule VisualGardenWeb.PlannerLive.FormComponent do
     save_planner(socket, socket.assigns.action, planner_params, params)
   end
 
-  defp add_params(planner_params, params, socket) do
+  defp add_params(planner_params, params, _socket) do
     with {:ok, plant_date} <- Date.from_iso8601(planner_params["end_plant_date"]),
          {:ok, refuse_date} <- Date.from_iso8601(params["refuse_date"]) do
       Map.merge(
@@ -250,7 +249,7 @@ defmodule VisualGardenWeb.PlannerLive.FormComponent do
     end
   end
 
-  defp save_planner(socket, :edit, planner_params, params) do
+  defp save_planner(_socket, :edit, _planner_params, _params) do
   end
 
   defp save_planner(socket, :new, planner_params, params) do

@@ -55,10 +55,6 @@ defmodule VisualGardenWeb.SpeciesLive.FormComponent do
     save_species(socket, socket.assigns.action, species_params)
   end
 
-  defp value_mapper(struct) do
-    %{label: html_escape(struct.name) |> safe_to_string(), value: struct.id}
-  end
-
   defp save_species(socket, :edit, species_params) do
     case Library.update_species(socket.assigns.species, species_params) do
       {:ok, species} ->

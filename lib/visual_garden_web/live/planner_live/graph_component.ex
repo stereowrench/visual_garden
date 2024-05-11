@@ -129,7 +129,7 @@ defmodule VisualGardenWeb.PlannerLive.GraphComponent do
     Timex.diff(end_d, start_d, :months)
   end
 
-  def generate_months(tz, extent_dates) do
+  def generate_months(_tz, extent_dates) do
     days = {start_d, _} = extent_dates
 
     for mo <- 1..months_in_extent(days) do
@@ -150,7 +150,7 @@ defmodule VisualGardenWeb.PlannerLive.GraphComponent do
     end
   end
 
-  def x_shift(mo, tz, extent_dates) do
+  def x_shift(mo, _tz, extent_dates) do
     {start_d, _end_d} = extent_dates
 
     beg = start_d
@@ -164,7 +164,7 @@ defmodule VisualGardenWeb.PlannerLive.GraphComponent do
     Timex.diff(en, beg, :days)
   end
 
-  def x_shift_date(date, tz, extent_dates) do
+  def x_shift_date(date, _tz, extent_dates) do
     {start_d, _} = extent_dates
     Timex.diff(date, start_d, :days)
   end
