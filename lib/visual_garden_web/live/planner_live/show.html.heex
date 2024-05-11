@@ -20,7 +20,9 @@
     module={VisualGardenWeb.PlannerLive.FormComponent}
     id={"planner-#{@bed.id}"}
     bed={@bed}
+    garden={@garden}
     start_date={@start_date}
+    planner_entry={@planner_entry}
     square={@square}
     plantables={@plantables}
     patch={~p"/planners/#{@garden.id}"}

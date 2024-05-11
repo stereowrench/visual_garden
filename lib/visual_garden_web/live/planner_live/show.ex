@@ -49,7 +49,17 @@ defmodule VisualGardenWeb.PlannerLive.Show do
     |> assign(:bed, Gardens.get_product!(bid))
     |> assign(:square, sq)
     |> assign(:start_date, start_date)
+    |> assign(:planner_entry, nil)
     |> assign(:plantables, plantables)
+  end
+
+  def add_params(socket, %{"bed_id" => bid, "square" => sq, "entry" => planner_entry_id}) do
+    socket
+    |> assign(:bed, Gardens.get_product!(bid))
+    |> assign(:square, sq)
+    |> assign(:planner_entry, Planner.get_planner_entry!(planner_entry_id))
+    |> assign(:start_date, nil)
+    |> assign(:plantables, [])
   end
 
   def add_params(socket, _) do
@@ -74,5 +84,17 @@ defmodule VisualGardenWeb.PlannerLive.Show do
   @impl true
   def handle_info({VisualGardenWeb.PlannerLive.FormComponent, {:saved, _plant}}, socket) do
     {:noreply, socket}
+  end
+
+  @impl true
+  def handle_event("delete", %{"id" => planner_id}, socket) do
+    planner = Planner.get_planner_entry!(planner_id)
+    Planner.delete_planner_entry(planner)
+
+    {:noreply,
+     socket
+     |> add_entries()
+     |> put_notification(Normal.new(:info, "Successfully deleted planner entry"))
+     |> push_patch(to: ~p"/planners/#{socket.assigns.garden.id}")}
   end
 end

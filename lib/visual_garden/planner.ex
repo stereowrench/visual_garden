@@ -17,7 +17,22 @@ defmodule VisualGarden.Planner do
     |> PlannerEntry.changeset(attrs)
   end
 
+  def delete_planner_entry(%PlannerEntry{} = planner) do
+    Repo.delete(planner)
+  end
+
+  def get_planner_entry!(id) do
+    Repo.get!(PlannerEntry, id)
+  end
+
   def get_end_date(square, bed, start_date) do
+    start_date =
+      if start_date do
+        start_date
+      else
+        Date.utc_today()
+      end
+
     {row, column} = parse_square(square, bed)
 
     mapped =

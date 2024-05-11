@@ -114,7 +114,7 @@ defmodule VisualGardenWeb.Router do
       live "/planners", PlannerLive.Index, :index
       live "/planners/:garden_id", PlannerLive.Show, :show
       live "/planners/:garden_id/:bed_id/:square/new", PlannerLive.Show, :new
-      live "/planners/:garden_id/:bed_id/:square/edit", PlannerLive.Show, :edit
+      live "/planners/:garden_id/:bed_id/:square/:entry/edit", PlannerLive.Show, :edit
 
       live "/library_seeds", LibrarySeedLive.Index, :index
       live "/library_seeds/new", LibrarySeedLive.Index, :new

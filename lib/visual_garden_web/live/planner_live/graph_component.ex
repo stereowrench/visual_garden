@@ -34,7 +34,10 @@ defmodule VisualGardenWeb.PlannerLive.GraphComponent do
       <% end %>
 
       <%= for entry <- @planner_entries do %>
-        <.link patch={~p"/planner/foo"} class="crop-span">
+        <.link
+          patch={~p"/planners/#{@garden.id}/#{@bed.id}/#{bed_square(entry, @bed)}/#{entry.id}/edit"}
+          class="crop-span"
+        >
           <rect
             width={Timex.diff(entry.end_plant_date, entry.start_plant_date, :days)}
             height="25"

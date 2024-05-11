@@ -12,75 +12,77 @@ defmodule VisualGardenWeb.PlannerLive.FormComponent do
       <.header>
         Planner Entry
       </.header>
-
-      <.simple_form
-        for={@form}
-        id="planner-form"
-        phx-target={@myself}
-        phx-change="validate"
-        phx-submit="save"
-      >
-        <.input
-          name="species"
-          type="select"
-          label="Select Species"
-          options={@species}
-          value={@species_selected}
-        />
-        <%= unless @species_selected == "" do %>
+      <%= if @action == :new do %>
+        <.simple_form
+          for={@form}
+          id="planner-form"
+          phx-target={@myself}
+          phx-change="validate"
+          phx-submit="save"
+        >
           <.input
-            name="type"
+            name="species"
             type="select"
-            label="Select type"
-            options={@seed_type_options}
-            value={@type_selected}
+            label="Select Species"
+            options={@species}
+            value={@species_selected}
           />
-        <% end %>
-        <%= unless @type_selected == "" do %>
-          <.input
-            name="plantable"
-            type="select"
-            label="Select plantable"
-            options={@plantable_options}
-            value={@plantable_selected}
-          />
-        <% end %>
-        <%= unless @species_selected == "" or @type_selected == "" or @plantable_selected == "" do %>
-          <.input
-            field={@form[:start_plant_date]}
-            type="date"
-            label="Earliest Plant"
-            min={@planner_map[:sow_start]}
-            max={@form[:end_plant_date].value || @planner_map[:sow_end]}
-          />
-          <.input
-            field={@form[:end_plant_date]}
-            type="date"
-            label="Latest Plant"
-            min={@form[:start_plant_date].value || @planner_map[:sow_start]}
-            max={@planner_map[:sow_end]}
-          />
-          <.input field={@form[:days_to_maturity]} type="hidden" value={@planner_map[:days]} />
-          <.input field={@form[:seed_id]} type="hidden" value={@seed_id} />
-          <.input field={@form[:bed_id]} type="hidden" value={@bed.id} />
-          <.input field={@form[:row]} type="hidden" value={@row} />
-          <.input field={@form[:column]} type="hidden" value={@column} />
-          <.input field={@form[:common_name]} type="hidden" value={@species_selected} />
-          <%= if @form[:end_plant_date].value not in ["", nil] do %>
+          <%= unless @species_selected == "" do %>
             <.input
-              type="date"
-              name="refuse_date"
-              label="Refuse date"
-              min={get_start_refuse_date(@form[:end_plant_date].value, @planner_map[:days])}
-              max={@end_refuse_date}
-              value={@refuse_date}
+              name="type"
+              type="select"
+              label="Select type"
+              options={@seed_type_options}
+              value={@type_selected}
             />
           <% end %>
-        <% end %>
-        <:actions>
-          <.button phx-disable-with="Saving...">Save planner</.button>
-        </:actions>
-      </.simple_form>
+          <%= unless @type_selected == "" do %>
+            <.input
+              name="plantable"
+              type="select"
+              label="Select plantable"
+              options={@plantable_options}
+              value={@plantable_selected}
+            />
+          <% end %>
+          <%= unless @species_selected == "" or @type_selected == "" or @plantable_selected == "" do %>
+            <.input
+              field={@form[:start_plant_date]}
+              type="date"
+              label="Earliest Plant"
+              min={@planner_map[:sow_start]}
+              max={@form[:end_plant_date].value || @planner_map[:sow_end]}
+            />
+            <.input
+              field={@form[:end_plant_date]}
+              type="date"
+              label="Latest Plant"
+              min={@form[:start_plant_date].value || @planner_map[:sow_start]}
+              max={@planner_map[:sow_end]}
+            />
+            <.input field={@form[:days_to_maturity]} type="hidden" value={@planner_map[:days]} />
+            <.input field={@form[:seed_id]} type="hidden" value={@seed_id} />
+            <.input field={@form[:bed_id]} type="hidden" value={@bed.id} />
+            <.input field={@form[:row]} type="hidden" value={@row} />
+            <.input field={@form[:column]} type="hidden" value={@column} />
+            <.input field={@form[:common_name]} type="hidden" value={@species_selected} />
+            <%= if @form[:end_plant_date].value not in ["", nil] do %>
+              <.input
+                type="date"
+                name="refuse_date"
+                label="Refuse date"
+                min={get_start_refuse_date(@form[:end_plant_date].value, @planner_map[:days])}
+                max={@end_refuse_date}
+                value={@refuse_date}
+              />
+            <% end %>
+          <% end %>
+        </.simple_form>
+      <% else %>
+        <.link phx-click={JS.push("delete", value: %{id: @planner_entry.id})} data-confirm="Are you sure?">
+          Delete
+        </.link>
+      <% end %>
     </div>
     """
   end
@@ -92,7 +94,7 @@ defmodule VisualGardenWeb.PlannerLive.FormComponent do
 
   @impl true
   def update(assigns, socket) do
-    end_date = Planner.get_end_date(assigns.square, assigns.bed, assigns.start_date)
+    end_date = Planner.get_end_date(assigns.square, assigns.bed, assigns[:start_date])
 
     plantables_parsed =
       assigns.plantables
