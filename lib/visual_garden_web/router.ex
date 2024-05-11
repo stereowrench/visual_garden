@@ -122,6 +122,13 @@ defmodule VisualGardenWeb.Router do
 
       live "/library_seeds/:id", LibrarySeedLive.Show, :show
       live "/library_seeds/:id/show/edit", LibrarySeedLive.Show, :edit
+
+      live "/gardens/:garden_id/nursery_entries", NurseryEntryLive.Index, :index
+      live "/gardens/:garden_id/nursery_entries/new", NurseryEntryLive.Index, :new
+      live "/gardens/:garden_id/nursery_entries/:id/edit", NurseryEntryLive.Index, :edit
+
+      live "/gardens/:garden_id/nursery_entries/:id", NurseryEntryLive.Show, :show
+      live "/gardens/:garden_id/nursery_entries/:id/show/edit", NurseryEntryLive.Show, :edit
     end
   end
 

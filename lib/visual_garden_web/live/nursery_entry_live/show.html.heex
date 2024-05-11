@@ -1,0 +1,26 @@
+<.header>
+  Nursery entry <%= @nursery_entry.id %>
+  <:subtitle>This is a nursery_entry record from your database.</:subtitle>
+  <:actions>
+    <.link patch={~p"/nursery_entries/#{@nursery_entry}/show/edit"} phx-click={JS.push_focus()}>
+      <.button>Edit nursery_entry</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.list>
+  <:item title="Sow date"><%= @nursery_entry.sow_date %></:item>
+</.list>
+
+<.back navigate={~p"/nursery_entries"}>Back to nursery_entries</.back>
+
+<.modal :if={@live_action == :edit} id="nursery_entry-modal" show on_cancel={JS.patch(~p"/nursery_entries/#{@nursery_entry}")}>
+  <.live_component
+    module={VisualGardenWeb.NurseryEntryLive.FormComponent}
+    id={@nursery_entry.id}
+    title={@page_title}
+    action={@live_action}
+    nursery_entry={@nursery_entry}
+    patch={~p"/nursery_entries/#{@nursery_entry}"}
+  />
+</.modal>

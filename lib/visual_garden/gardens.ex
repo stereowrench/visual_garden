@@ -4,7 +4,6 @@ defmodule VisualGarden.Gardens do
   """
 
   import Ecto.Query, warn: false
-  alias VisualGarden.Gardens.PlannerEntry
   alias VisualGarden.Repo
 
   alias VisualGarden.Gardens.Garden
@@ -674,4 +673,100 @@ defmodule VisualGarden.Gardens do
   # def change_event_log(%EventLog{event_type: "water"} = event_log, attrs \\ %{}) do
   #   EventLog.changeset(event_log, attrs)
   # end
+
+  alias VisualGarden.Gardens.NurseryEntry
+
+  @doc """
+  Returns the list of nursery_entries.
+
+  ## Examples
+
+      iex> list_nursery_entries()
+      [%NurseryEntry{}, ...]
+
+  """
+  def list_nursery_entries(garden_id) do
+    Repo.all(from ne in NurseryEntry, where: ne.garden_id == ^garden_id)
+  end
+
+  @doc """
+  Gets a single nursery_entry.
+
+  Raises `Ecto.NoResultsError` if the Nursery entry does not exist.
+
+  ## Examples
+
+      iex> get_nursery_entry!(123)
+      %NurseryEntry{}
+
+      iex> get_nursery_entry!(456)
+      ** (Ecto.NoResultsError)
+
+  """
+  def get_nursery_entry!(id), do: Repo.get!(NurseryEntry, id)
+
+  @doc """
+  Creates a nursery_entry.
+
+  ## Examples
+
+      iex> create_nursery_entry(%{field: value})
+      {:ok, %NurseryEntry{}}
+
+      iex> create_nursery_entry(%{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def create_nursery_entry(attrs \\ %{}) do
+    %NurseryEntry{}
+    |> NurseryEntry.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @doc """
+  Updates a nursery_entry.
+
+  ## Examples
+
+      iex> update_nursery_entry(nursery_entry, %{field: new_value})
+      {:ok, %NurseryEntry{}}
+
+      iex> update_nursery_entry(nursery_entry, %{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def update_nursery_entry(%NurseryEntry{} = nursery_entry, attrs) do
+    nursery_entry
+    |> NurseryEntry.changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
+  Deletes a nursery_entry.
+
+  ## Examples
+
+      iex> delete_nursery_entry(nursery_entry)
+      {:ok, %NurseryEntry{}}
+
+      iex> delete_nursery_entry(nursery_entry)
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def delete_nursery_entry(%NurseryEntry{} = nursery_entry) do
+    Repo.delete(nursery_entry)
+  end
+
+  @doc """
+  Returns an `%Ecto.Changeset{}` for tracking nursery_entry changes.
+
+  ## Examples
+
+      iex> change_nursery_entry(nursery_entry)
+      %Ecto.Changeset{data: %NurseryEntry{}}
+
+  """
+  def change_nursery_entry(%NurseryEntry{} = nursery_entry, attrs \\ %{}) do
+    NurseryEntry.changeset(nursery_entry, attrs)
+  end
 end

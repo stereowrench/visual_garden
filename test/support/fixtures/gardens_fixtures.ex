@@ -140,4 +140,18 @@ defmodule VisualGarden.GardensFixtures do
 
     event_log
   end
+
+  @doc """
+  Generate a nursery_entry.
+  """
+  def nursery_entry_fixture(attrs \\ %{}) do
+    {:ok, nursery_entry} =
+      attrs
+      |> Enum.into(%{
+        sow_date: ~D[2024-05-10]
+      })
+      |> VisualGarden.Gardens.create_nursery_entry()
+
+    nursery_entry
+  end
 end

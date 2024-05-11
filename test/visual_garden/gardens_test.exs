@@ -455,4 +455,58 @@ defmodule VisualGarden.GardensTest do
       assert %Ecto.Changeset{} = Gardens.change_event_log(event_log, %{"event_type" => "till"})
     end
   end
+
+  describe "nursery_entries" do
+    alias VisualGarden.Gardens.NurseryEntry
+
+    import VisualGarden.GardensFixtures
+
+    @invalid_attrs %{sow_date: nil}
+
+    test "list_nursery_entries/0 returns all nursery_entries" do
+      nursery_entry = nursery_entry_fixture()
+      assert Gardens.list_nursery_entries() == [nursery_entry]
+    end
+
+    test "get_nursery_entry!/1 returns the nursery_entry with given id" do
+      nursery_entry = nursery_entry_fixture()
+      assert Gardens.get_nursery_entry!(nursery_entry.id) == nursery_entry
+    end
+
+    test "create_nursery_entry/1 with valid data creates a nursery_entry" do
+      valid_attrs = %{sow_date: ~D[2024-05-10]}
+
+      assert {:ok, %NurseryEntry{} = nursery_entry} = Gardens.create_nursery_entry(valid_attrs)
+      assert nursery_entry.sow_date == ~D[2024-05-10]
+    end
+
+    test "create_nursery_entry/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = Gardens.create_nursery_entry(@invalid_attrs)
+    end
+
+    test "update_nursery_entry/2 with valid data updates the nursery_entry" do
+      nursery_entry = nursery_entry_fixture()
+      update_attrs = %{sow_date: ~D[2024-05-11]}
+
+      assert {:ok, %NurseryEntry{} = nursery_entry} = Gardens.update_nursery_entry(nursery_entry, update_attrs)
+      assert nursery_entry.sow_date == ~D[2024-05-11]
+    end
+
+    test "update_nursery_entry/2 with invalid data returns error changeset" do
+      nursery_entry = nursery_entry_fixture()
+      assert {:error, %Ecto.Changeset{}} = Gardens.update_nursery_entry(nursery_entry, @invalid_attrs)
+      assert nursery_entry == Gardens.get_nursery_entry!(nursery_entry.id)
+    end
+
+    test "delete_nursery_entry/1 deletes the nursery_entry" do
+      nursery_entry = nursery_entry_fixture()
+      assert {:ok, %NurseryEntry{}} = Gardens.delete_nursery_entry(nursery_entry)
+      assert_raise Ecto.NoResultsError, fn -> Gardens.get_nursery_entry!(nursery_entry.id) end
+    end
+
+    test "change_nursery_entry/1 returns a nursery_entry changeset" do
+      nursery_entry = nursery_entry_fixture()
+      assert %Ecto.Changeset{} = Gardens.change_nursery_entry(nursery_entry)
+    end
+  end
 end

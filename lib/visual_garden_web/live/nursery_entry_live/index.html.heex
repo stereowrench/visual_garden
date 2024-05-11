@@ -1,0 +1,46 @@
+<.header>
+  Listing Nursery entries
+  <:actions>
+    <.link patch={~p"/nursery_entries/new"}>
+      <.button>New Nursery entry</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.table
+  id="nursery_entries"
+  rows={@streams.nursery_entries}
+  row_click={fn {_id, nursery_entry} -> JS.navigate(~p"/nursery_entries/#{nursery_entry}") end}
+>
+  <:col :let={{_id, nursery_entry}} label="Sow date"><%= nursery_entry.sow_date %></:col>
+  <:action :let={{_id, nursery_entry}}>
+    <div class="sr-only">
+      <.link navigate={~p"/nursery_entries/#{nursery_entry}"}>Show</.link>
+    </div>
+    <.link patch={~p"/nursery_entries/#{nursery_entry}/edit"}>Edit</.link>
+  </:action>
+  <:action :let={{id, nursery_entry}}>
+    <.link
+      phx-click={JS.push("delete", value: %{id: nursery_entry.id}) |> hide("##{id}")}
+      data-confirm="Are you sure?"
+    >
+      Delete
+    </.link>
+  </:action>
+</.table>
+
+<.modal
+  :if={@live_action in [:new, :edit]}
+  id="nursery_entry-modal"
+  show
+  on_cancel={JS.patch(~p"/gardens/#{@garden.id}/nursery_entries")}
+>
+  <.live_component
+    module={VisualGardenWeb.NurseryEntryLive.FormComponent}
+    id={@nursery_entry.id || :new}
+    title={@page_title}
+    action={@live_action}
+    nursery_entry={@nursery_entry}
+    patch={~p"/gardens/#{@garden.id}/nursery_entries"}
+  />
+</.modal>

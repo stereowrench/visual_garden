@@ -83,7 +83,7 @@ defmodule VisualGardenWeb.GardenLive.FormComponent do
     KeywordHighlighter.highlight(assigns.string, assigns.matches)
   end
 
-  def handle_event("change", params, socket) do
+  def handle_event("change", _params, socket) do
     {:noreply, socket}
   end
 
