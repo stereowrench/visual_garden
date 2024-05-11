@@ -6,7 +6,7 @@ defmodule VisualGarden.Repo.Migrations.CreateNurseryEntries do
       add :sow_date, :date
       add :planner_entry_id, references(:planner_entries, on_delete: :nothing)
       add :seed_id, references(:seeds, on_delete: :nothing)
-      add :garden_id, references(:garden, on_delete: :nothing)
+      add :garden_id, references(:gardens, on_delete: :nothing)
 
       timestamps(type: :utc_datetime)
     end
