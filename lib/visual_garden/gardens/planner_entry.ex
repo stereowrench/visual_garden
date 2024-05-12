@@ -13,6 +13,7 @@ defmodule VisualGarden.Gardens.PlannerEntry do
     belongs_to :bed, VisualGarden.Gardens.Product
     belongs_to :seed, VisualGarden.Gardens.Seed
     has_one :nursery_entry, VisualGarden.Gardens.NurseryEntry
+    belongs_to :plant, Gardens.Plant
 
     timestamps(type: :utc_datetime)
   end
@@ -29,7 +30,8 @@ defmodule VisualGarden.Gardens.PlannerEntry do
       :seed_id,
       :bed_id,
       :row,
-      :column
+      :column,
+      :plant_id
     ])
     |> validate_required([
       :start_plant_date,
