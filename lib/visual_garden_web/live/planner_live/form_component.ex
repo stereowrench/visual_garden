@@ -77,9 +77,15 @@ defmodule VisualGardenWeb.PlannerLive.FormComponent do
               />
             <% end %>
           <% end %>
+          <:actions>
+            <.button phx-disable-with="Saving...">Save Nursery entry</.button>
+          </:actions>
         </.simple_form>
       <% else %>
-        <.link phx-click={JS.push("delete", value: %{id: @planner_entry.id})} data-confirm="Are you sure?">
+        <.link
+          phx-click={JS.push("delete", value: %{id: @planner_entry.id})}
+          data-confirm="Are you sure?"
+        >
           Delete
         </.link>
       <% end %>
