@@ -3,7 +3,7 @@ defmodule VisualGarden.Library.LibrarySeed do
   import Ecto.Changeset
 
   schema "library_seeds" do
-    field :type, Ecto.Enum, values: [:seed, :set, :slip]
+    field :type, Ecto.Enum, values: [:seed, :set, :slip, :transplant]
     field :days_to_maturation, :integer
     field :manufacturer, :string
     belongs_to :species, VisualGarden.Library.Species
