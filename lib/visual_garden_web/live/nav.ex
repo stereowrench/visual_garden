@@ -46,7 +46,7 @@ defmodule VisualGardenWeb.Nav do
           :gardens
 
         {sv, _} when sv in [PlannerLive.Show, PlannerLive.Index] ->
-          :planer
+          :planner
 
         {_, _} ->
           nil
