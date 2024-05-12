@@ -4,7 +4,7 @@ defmodule VisualGardenWeb.LibrarySeedLiveTest do
   import Phoenix.LiveViewTest
   import VisualGarden.LibraryFixtures
 
-  @create_attrs %{type: :transplant, days_to_maturation: 42, manufacturer: "some manufacturer"}
+  @create_attrs %{type: :slip, days_to_maturation: 42, manufacturer: "some manufacturer"}
   @update_attrs %{type: :seed, days_to_maturation: 43, manufacturer: "some updated manufacturer"}
   @invalid_attrs %{type: nil, days_to_maturation: nil, manufacturer: nil}
 

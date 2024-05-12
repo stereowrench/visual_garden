@@ -1,7 +1,7 @@
 <.header>
   Listing Nursery entries
   <:actions>
-    <.link patch={~p"/nursery_entries/new"}>
+    <.link patch={~p"/gardens/#{@garden.id}/nursery_entries/new"}>
       <.button>New Nursery entry</.button>
     </.link>
   </:actions>
@@ -10,14 +10,14 @@
 <.table
   id="nursery_entries"
   rows={@streams.nursery_entries}
-  row_click={fn {_id, nursery_entry} -> JS.navigate(~p"/nursery_entries/#{nursery_entry}") end}
+  row_click={fn {_id, nursery_entry} -> JS.navigate(~p"/gardens/#{@garden.id}/nursery_entries/#{nursery_entry}") end}
 >
   <:col :let={{_id, nursery_entry}} label="Sow date"><%= nursery_entry.sow_date %></:col>
   <:action :let={{_id, nursery_entry}}>
     <div class="sr-only">
-      <.link navigate={~p"/nursery_entries/#{nursery_entry}"}>Show</.link>
+      <.link navigate={~p"/gardens/#{@garden.id}/nursery_entries/#{nursery_entry}"}>Show</.link>
     </div>
-    <.link patch={~p"/nursery_entries/#{nursery_entry}/edit"}>Edit</.link>
+    <.link patch={~p"/gardens/#{@garden.id}/nursery_entries/#{nursery_entry}/edit"}>Edit</.link>
   </:action>
   <:action :let={{id, nursery_entry}}>
     <.link
@@ -40,6 +40,7 @@
     id={@nursery_entry.id || :new}
     title={@page_title}
     action={@live_action}
+    garden={@garden}
     nursery_entry={@nursery_entry}
     patch={~p"/gardens/#{@garden.id}/nursery_entries"}
   />

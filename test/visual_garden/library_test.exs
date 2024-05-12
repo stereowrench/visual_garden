@@ -217,14 +217,14 @@ defmodule VisualGarden.LibraryTest do
       species = species_fixture()
 
       valid_attrs = %{
-        type: :transplant,
+        type: :slip,
         days_to_maturation: 42,
         manufacturer: "some manufacturer",
         species_id: species.id
       }
 
       assert {:ok, %LibrarySeed{} = library_seed} = Library.create_library_seed(valid_attrs)
-      assert library_seed.type == :transplant
+      assert library_seed.type == :slip
       assert library_seed.days_to_maturation == 42
       assert library_seed.manufacturer == "some manufacturer"
     end

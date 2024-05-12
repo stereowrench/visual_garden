@@ -464,8 +464,9 @@ defmodule VisualGarden.GardensTest do
     @invalid_attrs %{sow_date: nil}
 
     test "list_nursery_entries/0 returns all nursery_entries" do
-      nursery_entry = nursery_entry_fixture()
-      assert Gardens.list_nursery_entries() == [nursery_entry]
+      garden = garden_fixture()
+      nursery_entry = nursery_entry_fixture(garden)
+      assert Gardens.list_nursery_entries(garden.id) == [nursery_entry]
     end
 
     test "get_nursery_entry!/1 returns the nursery_entry with given id" do
@@ -474,7 +475,8 @@ defmodule VisualGarden.GardensTest do
     end
 
     test "create_nursery_entry/1 with valid data creates a nursery_entry" do
-      valid_attrs = %{sow_date: ~D[2024-05-10]}
+      garden = garden_fixture()
+      valid_attrs = %{sow_date: ~D[2024-05-10], garden_id: garden.id}
 
       assert {:ok, %NurseryEntry{} = nursery_entry} = Gardens.create_nursery_entry(valid_attrs)
       assert nursery_entry.sow_date == ~D[2024-05-10]
@@ -488,13 +490,18 @@ defmodule VisualGarden.GardensTest do
       nursery_entry = nursery_entry_fixture()
       update_attrs = %{sow_date: ~D[2024-05-11]}
 
-      assert {:ok, %NurseryEntry{} = nursery_entry} = Gardens.update_nursery_entry(nursery_entry, update_attrs)
+      assert {:ok, %NurseryEntry{} = nursery_entry} =
+               Gardens.update_nursery_entry(nursery_entry, update_attrs)
+
       assert nursery_entry.sow_date == ~D[2024-05-11]
     end
 
     test "update_nursery_entry/2 with invalid data returns error changeset" do
       nursery_entry = nursery_entry_fixture()
-      assert {:error, %Ecto.Changeset{}} = Gardens.update_nursery_entry(nursery_entry, @invalid_attrs)
+
+      assert {:error, %Ecto.Changeset{}} =
+               Gardens.update_nursery_entry(nursery_entry, @invalid_attrs)
+
       assert nursery_entry == Gardens.get_nursery_entry!(nursery_entry.id)
     end
 

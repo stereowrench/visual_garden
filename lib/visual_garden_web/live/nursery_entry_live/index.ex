@@ -12,8 +12,9 @@ defmodule VisualGardenWeb.NurseryEntryLive.Index do
      socket
      |> stream(
        :nursery_entries,
-       Gardens.list_nursery_entries(garden_id) |> assign(:garden, garden)
-     )}
+       Gardens.list_nursery_entries(garden_id)
+     )
+     |> assign(:garden, garden)}
   end
 
   @impl true

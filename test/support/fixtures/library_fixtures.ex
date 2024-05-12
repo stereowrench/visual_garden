@@ -73,7 +73,7 @@ defmodule VisualGarden.LibraryFixtures do
       |> Enum.into(%{
         days_to_maturation: 42,
         manufacturer: "some manufacturer",
-        type: :transplant,
+        type: :seed,
         species_id: species.id
       })
       |> VisualGarden.Library.create_library_seed()

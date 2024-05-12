@@ -40,6 +40,9 @@ defmodule VisualGardenWeb.NurseryEntryLive.FormComponent do
 
   @impl true
   def handle_event("validate", %{"nursery_entry" => nursery_entry_params}, socket) do
+    nursery_entry_params =
+      Map.merge(nursery_entry_params, %{"garden_id" => socket.assigns.garden.id})
+
     changeset =
       socket.assigns.nursery_entry
       |> Gardens.change_nursery_entry(nursery_entry_params)
@@ -49,6 +52,9 @@ defmodule VisualGardenWeb.NurseryEntryLive.FormComponent do
   end
 
   def handle_event("save", %{"nursery_entry" => nursery_entry_params}, socket) do
+    nursery_entry_params =
+      Map.merge(nursery_entry_params, %{"garden_id" => socket.assigns.garden.id})
+
     save_nursery_entry(socket, socket.assigns.action, nursery_entry_params)
   end
 
@@ -59,7 +65,7 @@ defmodule VisualGardenWeb.NurseryEntryLive.FormComponent do
 
         {:noreply,
          socket
-         |> put_flash(:info, "Nursery entry updated successfully")
+         |> put_notification(Normal.new(:info, "Nursery entry updated successfully"))
          |> push_patch(to: socket.assigns.patch)}
 
       {:error, %Ecto.Changeset{} = changeset} ->
@@ -74,7 +80,7 @@ defmodule VisualGardenWeb.NurseryEntryLive.FormComponent do
 
         {:noreply,
          socket
-         |> put_flash(:info, "Nursery entry created successfully")
+         |> put_notification(Normal.new(:info, "Nursery entry created successfully"))
          |> push_patch(to: socket.assigns.patch)}
 
       {:error, %Ecto.Changeset{} = changeset} ->
