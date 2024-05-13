@@ -317,7 +317,23 @@ defmodule VisualGarden.Planner do
     beds = Gardens.list_beds(garden_id)
     bed_ids = beds |> Enum.map(& &1.id)
 
-    Repo.all(from pe in PlannerEntry, where: pe.bed_id in ^bed_ids)
+    Repo.all(from pe in PlannerEntry, where: pe.bed_id in ^bed_ids, preload: [:nursery_entry])
     |> Enum.group_by(& &1.bed_id)
+  end
+
+  # TODO scope to user's gardens
+  def get_todo_items() do
+    gardens = Gardens.list_gardens()
+
+    for garden <- gardens do
+      entries = list_planner_entries(garden.id)
+
+      to_plant =
+        entries
+        |> Enum.map()
+
+      # TODO to plant:
+      # If
+    end
   end
 end

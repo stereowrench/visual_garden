@@ -5,6 +5,8 @@ defmodule VisualGarden.Gardens.PlannerEntry do
   schema "planner_entries" do
     field :start_plant_date, :date
     field :end_plant_date, :date
+    field :nursery_start, :date
+    field :nursery_end, :date
     field :days_to_maturity, :integer
     field :days_to_refuse, :integer
     field :common_name, :string

@@ -242,6 +242,15 @@ defmodule VisualGardenWeb.PlannerLive.FormComponent do
   end
 
   def handle_event("save", %{"planner_entry" => planner_params} = params, socket) do
+    planner_params =
+      with pm when not is_nil(pm) <- socket.assigns.planner_map,
+           ns when not is_nil(ns) <- pm[:nursery_start],
+           ne when not is_nil(ne) <- pm[:nursery_end] do
+        Map.merge(%{"nursery_start" => ns, "nursery_end" => ne}, planner_params)
+      else
+        _ -> planner_params
+      end
+
     save_planner(socket, socket.assigns.action, planner_params, params)
   end
 
