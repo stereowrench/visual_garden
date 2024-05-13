@@ -30,7 +30,7 @@ defmodule VisualGardenWeb.GardenLive.FormComponent do
           options={@tz_opts}
         >
           <:option :let={opt}>
-            <.highlight matches={@highlights[opt.label]} string={opt.label} />
+            <.highlight matches={opt.matches} string={opt.label} />
           </:option>
         </.live_select>
         <.live_select
@@ -41,7 +41,7 @@ defmodule VisualGardenWeb.GardenLive.FormComponent do
           value_mapper={&to_string(&1)}
         >
           <:option :let={opt}>
-            <.highlight matches={@highlights_regions[opt.label]} string={opt.label} />
+            <.highlight matches={opt.matches} string={opt.label} />
           </:option>
         </.live_select>
         <:actions>
@@ -62,21 +62,17 @@ defmodule VisualGardenWeb.GardenLive.FormComponent do
      |> assign(:tz_opts, tz_opts())
      |> assign(:region_opts, region_opts())
      |> assign(:region_opts_stored, region_opts())
-     |> assign(:highlights, %{})
-     |> assign(:highlights_regions, %{})
      |> assign_form(changeset)}
   end
 
   defp tz_opts do
     Tzdata.zone_list()
-    |> Enum.map(&{&1, to_string(&1)})
-    |> Enum.into(%{})
+    |> Enum.map(fn a -> %{label: a, value: to_string(a), matches: []} end)
   end
 
   defp region_opts do
     Library.list_regions()
-    |> Enum.map(&{&1.name, to_string(&1.id)})
-    |> Enum.into(%{})
+    |> Enum.map(fn a -> %{label: a.name, value: to_string(a.id), matches: []} end)
   end
 
   def highlight(assigns) do
@@ -93,25 +89,17 @@ defmodule VisualGardenWeb.GardenLive.FormComponent do
         %{"text" => text, "id" => live_select_id = "garden_tz_live_select_component"},
         socket
       ) do
-    matches = Seqfuzz.matches(tz_opts(), text, &elem(&1, 0), filter: true, sort: true)
+    matches = Seqfuzz.matches(tz_opts(), text, & &1.label, filter: true, sort: true)
 
-    opts = Enum.map(matches, fn {m, _} -> m end) |> Enum.take(10)
-
-    highlights =
-      Enum.map(matches, fn {{a, _}, c} -> {a, c.matches} end) |> Enum.take(10) |> Enum.into(%{})
+    opts =
+      Enum.map(matches, fn {map, c} ->
+        %{label: map.label, value: map.value, matches: c.matches}
+      end)
+      |> Enum.take(10)
 
     send_update(LiveSelect.Component, id: live_select_id, options: opts)
 
-    changes = Map.merge(%{"tz" => ""}, socket.assigns.changes)
-    socket = assign(socket, :changes, changes)
-
-    # We have to clear the form value for live_select to work.
-    changeset =
-      socket.assigns.garden
-      |> Gardens.change_garden(changes)
-      |> Map.put(:action, :validate)
-
-    {:noreply, assign(socket, :highlights, highlights) |> assign_form(changeset)}
+    {:noreply, socket}
   end
 
   @impl true
@@ -121,19 +109,20 @@ defmodule VisualGardenWeb.GardenLive.FormComponent do
         socket
       ) do
     matches =
-      Seqfuzz.matches(socket.assigns.region_opts_stored, text, &elem(&1, 0),
+      Seqfuzz.matches(socket.assigns.region_opts_stored, text, & &1.label,
         filter: true,
         sort: true
       )
 
-    opts = Enum.map(matches, fn {m, _} -> m end) |> Enum.take(10)
-
-    highlights =
-      Enum.map(matches, fn {{a, _}, c} -> {a, c.matches} end) |> Enum.take(10) |> Enum.into(%{})
+    opts =
+      Enum.map(matches, fn {map, c} ->
+        %{label: map.label, value: map.value, matches: c.matches}
+      end)
+      |> Enum.take(10)
 
     send_update(LiveSelect.Component, id: live_select_id, options: opts)
 
-    {:noreply, assign(socket, :highlights_regions, highlights)}
+    {:noreply, socket}
   end
 
   @impl true
