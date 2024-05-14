@@ -154,7 +154,7 @@ button:after {
   top: -10px; /* Position above button */
   left: 50%;
   transform: translateX(-50%) rotate(-45deg); /* Center and rotate text */
-  color: #FF0000; /* Red text */
+  color: #ff0000; /* Red text */
   font-weight: bold;
   font-size: 14px; /* Adjust font size as needed */
   text-shadow: -1px -1px 0 #fff, 1px 1px 0 #000; /* Bold text effect */
@@ -164,4 +164,51 @@ button:after {
 
 button:hover:after {
   opacity: 1; /* Show text on hover */
+}
+
+/* Tables */
+table {
+  /* Target the table element with Tailwind's utility class */
+  @apply border border-solid border-black; /* Bold black outline */
+  font-weight: bold; /* Bold text for headers and content */
+  margin: 0 auto; /* Center table horizontally */
+}
+
+table th,
+table td {
+  /* Target both headers and content cells */
+  @apply px-4 py-2; /* Padding for cells */
+  text-align: inherit; /* Inherit text alignment from parent (table) */
+}
+
+table tr:nth-child(even) {
+  /* Style even rows (alternate rows) */
+  @apply bg-yellow-200; /* Light yellow background */
+}
+
+table tr:nth-child(odd) th {
+  /* Style odd row headers */
+  @apply bg-blue-800 text-white; /* Dark blue background with white text */
+}
+
+table tr:nth-child(odd) td {
+  /* Style odd row content cells */
+  @apply bg-white text-black; /* White background with black text */
+}
+
+table th,
+table td {
+  text-shadow: -1px -1px 1px rgba(0, 0, 0, 0.3),
+    1px 1px 1px rgba(255, 255, 255, 0.3); /* Subdued  bold text with inner and outer glow */
+}
+
+table tr:hover {
+  /* Hover effect for rows */
+  @apply bg-gray-200 cursor-pointer; /* Light gray background on hover with pointer cursor */
+}
+
+table tr:hover th,
+table tr:hover td {
+  /* Optional: Hover effect with text color change */
+  @apply text-blue-800; /* Change text color to dark blue on hover */
 }
