@@ -104,7 +104,7 @@ defmodule VisualGardenWeb.PlannerLive.FormComponent do
 
     plantables_parsed =
       assigns.plantables
-      |> Enum.group_by(& &1.schedule.species.common_name)
+      |> Enum.group_by(& &1.common_name)
 
     # garden
     # bed

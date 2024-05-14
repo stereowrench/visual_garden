@@ -124,6 +124,36 @@ defmodule VisualGarden.Library do
   			GENUS
   )
     as region_id2,
+    LAG(SPECIES."common_name", 0) OVER (
+  		PARTITION BY
+  			SPECIES."name",
+  			GENUS
+  		ORDER BY
+  			"name" DESC,
+  			GENUS DESC,
+  			VARIANT DESC,
+  			CULTIVAR DESC
+  	) AS n0,
+  	LAG(SPECIES."common_name", 1) OVER (
+  		PARTITION BY
+  			SPECIES."name",
+  			GENUS
+  		ORDER BY
+  			"name" DESC,
+  			GENUS DESC,
+  			VARIANT DESC,
+  			CULTIVAR DESC
+  	) AS n1,
+  	LAG(SPECIES."common_name", 2) OVER (
+  		PARTITION BY
+  			SPECIES."name",
+  			GENUS
+  		ORDER BY
+  			"name" DESC,
+  			GENUS DESC,
+  			VARIANT DESC,
+  			CULTIVAR DESC
+  	) AS n2,
   	LAG(SCHEDULES.ID, 0) OVER (
   		PARTITION BY
   			SPECIES."name",
@@ -133,7 +163,7 @@ defmodule VisualGarden.Library do
   			GENUS DESC,
   			VARIANT DESC,
   			CULTIVAR DESC
-  	) AS L0,
+  	) AS l0,
   	LAG(SCHEDULES.ID, 1) OVER (
   		PARTITION BY
   			SPECIES."name",
@@ -143,7 +173,7 @@ defmodule VisualGarden.Library do
   			GENUS DESC,
   			VARIANT DESC,
   			CULTIVAR DESC
-  	) AS L1,
+  	) AS l1,
   	LAG(SCHEDULES.ID, 2) OVER (
   		PARTITION BY
   			SPECIES."name",
@@ -153,7 +183,7 @@ defmodule VisualGarden.Library do
   			GENUS DESC,
   			VARIANT DESC,
   			CULTIVAR DESC
-  	) AS L2
+  	) AS l2
   FROM
   	SPECIES
   	LEFT JOIN SCHEDULES ON SPECIES.ID = SCHEDULES.SPECIES_ID
@@ -163,7 +193,7 @@ defmodule VisualGarden.Library do
     |> with_cte("squery", as: fragment(@species_cte))
     |> join(:inner, [s], q in "squery", on: s.id == q.species_id)
     |> where([s, q], coalesce(q.region_id0, q.region_id1) |> coalesce(q.region_id2) == ^region_id)
-    |> select([s, q], {s, coalesce(q.l0, q.l1) |> coalesce(q.l2)})
+    |> select([s, q], {s, coalesce(q.n0, q.n1) |> coalesce(q.n2), coalesce(q.l0, q.l1) |> coalesce(q.l2)})
     |> Repo.all()
   end
 

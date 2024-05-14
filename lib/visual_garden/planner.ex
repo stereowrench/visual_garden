@@ -151,7 +151,7 @@ defmodule VisualGarden.Planner do
 
     species = Library.list_species_with_schedule(region_id)
 
-    schedule_ids = Enum.map(species, fn {_, id} -> id end)
+    schedule_ids = Enum.map(species, fn {_, _common_name, id} -> id end)
 
     schedules_map =
       Repo.all(from s in Schedule, where: s.id in ^schedule_ids, preload: [:species])
@@ -160,7 +160,7 @@ defmodule VisualGarden.Planner do
 
     schedules_map =
       species
-      |> Enum.map(fn {species, schedule_id} ->
+      |> Enum.map(fn {species, _common_name, schedule_id} ->
         {species.id, schedules_map[schedule_id]}
       end)
       |> Enum.group_by(fn {sp_id, _schedule_id} -> sp_id end)
@@ -171,9 +171,14 @@ defmodule VisualGarden.Planner do
 
     species_map =
       species
-      |> Enum.map(fn {sp, _} -> sp end)
+      |> Enum.map(fn {sp, _common_name, _} -> sp end)
       |> Enum.group_by(& &1.id)
       |> Enum.map(fn {a, b} -> {a, Enum.uniq(b)} end)
+      |> Enum.into(%{})
+
+    species_name_map =
+      species
+      |> Enum.map(fn {sp, common_name, _} -> {sp.id, common_name} end)
       |> Enum.into(%{})
 
     for seed <- seeds do
@@ -213,7 +218,8 @@ defmodule VisualGarden.Planner do
               days: days,
               seed: seed,
               species: species,
-              schedule: schedule
+              schedule: schedule,
+              common_name: species_name_map[seed.species_id]
             }
           end
 
@@ -253,7 +259,8 @@ defmodule VisualGarden.Planner do
                 days: days,
                 seed: seed,
                 species: species,
-                schedule: schedule
+                schedule: schedule,
+                common_name: species_name_map[seed.species_id]
               }
 
               [direct, nursery]
