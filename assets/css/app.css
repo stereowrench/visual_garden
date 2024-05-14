@@ -3,7 +3,7 @@
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
 @import "../../deps/petal_components/assets/default.css";
-@import '../node_modules/flatpickr/dist/flatpickr.min.css';
+@import "../node_modules/flatpickr/dist/flatpickr.min.css";
 
 /* This file is for your main application CSS */
 
@@ -72,7 +72,7 @@
 }
 
 .crop-span-end {
-  fill: rgba(89, 107, 247, 0.549)
+  fill: rgba(89, 107, 247, 0.549);
 }
 
 .crop-span:hover {
@@ -89,4 +89,80 @@
 
 .new-crop-span:hover {
   fill: gray;
+}
+
+/* Basic body styles */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+  background-image: radial-gradient(
+      circle closest-side,
+      rgba(0, 0, 0, 0.1) 1px,
+      transparent 1px
+    ),
+    radial-gradient(circle closest-side, rgb(0, 0, 0, 0.2) 1px, transparent 1px);
+  background-size: 20px 20px;
+  background-position: fixed; /* Keep background fixed for scrolling */
+}
+
+/* Apply primary colors to text */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+a {
+  color: #000 !important; /* black */
+  text-shadow: -1px -1px 0 #fff, 1px 1px 0 #000; /* Simulate bold effect with outlines */
+}
+
+/* Link styles with a pop of color */
+a {
+  text-decoration: none;
+}
+
+a:hover {
+  color: #ff0000 !important; /* red */
+  text-shadow: none;
+}
+
+/* Highlights with a bold outline */
+.highlight {
+  border: 3px solid black;
+  padding: 5px;
+  margin: 10px;
+}
+button {
+  display: inline-block;
+  padding: 10px 20px;
+  border: 2px solid #000; /* Black outline */
+  border-radius: 4px;
+  font-weight: bold;
+  cursor: pointer;
+  background-color: #ddd; /* Light gray background */
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.2); /* Subtle inner shadow */
+  text-align: center; /* Center text for comic book panel effect */
+  transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
+  position: relative; /* Needed for after pseudo-element */
+}
+
+button:after {
+  content: "POW!"; /* Sample text, replace as needed */
+  position: absolute;
+  top: -10px; /* Position above button */
+  left: 50%;
+  transform: translateX(-50%) rotate(-45deg); /* Center and rotate text */
+  color: #FF0000; /* Red text */
+  font-weight: bold;
+  font-size: 14px; /* Adjust font size as needed */
+  text-shadow: -1px -1px 0 #fff, 1px 1px 0 #000; /* Bold text effect */
+  opacity: 0; /* Initially hidden */
+  transition: opacity 0.2s ease-in-out;
+}
+
+button:hover:after {
+  opacity: 1; /* Show text on hover */
 }
