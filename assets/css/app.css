@@ -3,7 +3,6 @@
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
 @import "../../deps/petal_components/assets/default.css";
-@import "../node_modules/flatpickr/dist/flatpickr.min.css";
 
 /* This file is for your main application CSS */
 

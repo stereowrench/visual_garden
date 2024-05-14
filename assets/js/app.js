@@ -23,7 +23,6 @@ import { LiveSocket } from "phoenix_live_view";
 import topbar from "../vendor/topbar";
 import FlashyHooks from "flashy";
 import live_select from "live_select";
-import flatpickr from "flatpickr";
 
 let csrfToken = document
   .querySelector("meta[name='csrf-token']")
@@ -168,12 +167,6 @@ Hooks.Sidebar = {
     listeners(document.getElementById("close-sidebar"));
   },
 };
-
-Hooks.DateSelect = {
-  mounted() {
-    flatpickr(this.el, {})
-  }
-}
 
 let liveSocket = new LiveSocket("/live", Socket, {
   longPollFallbackMs: 2500,
