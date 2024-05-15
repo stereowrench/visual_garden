@@ -21,6 +21,10 @@ defmodule VisualGarden.Library do
     Repo.all(Species)
   end
 
+  def list_species_with_common_names do
+
+  end
+
   @doc """
   Gets a single species.
 
@@ -134,7 +138,7 @@ defmodule VisualGarden.Library do
         VARIANT ASC
   )
     as region_id2,
-    LAG(SPECIES."common_name", 0) OVER (
+    first_value(SPECIES."common_name") OVER (
   		PARTITION BY
   			SPECIES."name",
   			GENUS,
@@ -146,7 +150,7 @@ defmodule VisualGarden.Library do
   			VARIANT ASC,
   			CULTIVAR ASC
   	) AS n0,
-  	LAG(SPECIES."common_name", 1) OVER (
+  	first_value(SPECIES."common_name") OVER (
   		PARTITION BY
   			SPECIES."name",
   			GENUS,
@@ -157,7 +161,7 @@ defmodule VisualGarden.Library do
   			VARIANT ASC,
   			CULTIVAR ASC
   	) AS n1,
-  	LAG(SPECIES."common_name", 2) OVER (
+  	first_value(SPECIES."common_name") OVER (
   		PARTITION BY
   			SPECIES."name",
   			GENUS
@@ -167,7 +171,7 @@ defmodule VisualGarden.Library do
   			VARIANT ASC,
   			CULTIVAR ASC
   	) AS n2,
-  	LAG(SCHEDULES.ID, 0) OVER (
+  	first_value(SCHEDULES.ID) OVER (
   		PARTITION BY
   			SPECIES."name",
   			GENUS,
@@ -179,7 +183,7 @@ defmodule VisualGarden.Library do
   			VARIANT ASC,
   			CULTIVAR ASC
   	) AS l0,
-  	LAG(SCHEDULES.ID, 1) OVER (
+  	first_value(SCHEDULES.ID) OVER (
   		PARTITION BY
   			SPECIES."name",
   			GENUS,
@@ -190,7 +194,7 @@ defmodule VisualGarden.Library do
   			VARIANT ASC,
   			CULTIVAR ASC
   	) AS l1,
-  	LAG(SCHEDULES.ID, 2) OVER (
+  	first_value(SCHEDULES.ID) OVER (
   		PARTITION BY
   			SPECIES."name",
   			GENUS
