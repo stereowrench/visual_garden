@@ -95,7 +95,6 @@ defmodule VisualGardenWeb.PlannerLive.FormComponent do
 
   def get_start_refuse_date(epd, days) do
     epd
-    |> Timex.shift(days: days)
   end
 
   @impl true
@@ -110,7 +109,7 @@ defmodule VisualGardenWeb.PlannerLive.FormComponent do
     # bed
     # extent_dates
     changeset = Planner.change_planner_entry(%PlannerEntry{})
-    {square, ""} = Integer.parse(assigns.square)
+    {row, column} = Planner.parse_square(assigns.square, assigns.bed)
 
     species =
       ["Choose a species": nil] ++
@@ -120,8 +119,8 @@ defmodule VisualGardenWeb.PlannerLive.FormComponent do
     {:ok,
      socket
      |> assign(assigns)
-     |> assign(:row, trunc((square - 1) / assigns.bed.length))
-     |> assign(:column, rem(square - 1, assigns.bed.length))
+     |> assign(:row, row)
+     |> assign(:column, column)
      |> assign(:species_form, %{"species" => "species", "type" => "type"})
      |> assign(:species, species)
      |> assign(:species_selected, "")

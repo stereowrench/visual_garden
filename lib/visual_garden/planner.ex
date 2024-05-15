@@ -61,8 +61,9 @@ defmodule VisualGarden.Planner do
         :error
       else
         mapped
-        |> Enum.sort(DateTime)
+        |> Enum.sort(Date)
         |> Enum.take(1)
+        |> hd()
       end
     end
   end
@@ -74,10 +75,12 @@ defmodule VisualGarden.Planner do
       # is length, j is width
       {z, ""} = Integer.parse(square)
       # => i
-      x = rem(z, bed.length)
+      x = rem(z, bed.width)
       # => j
-      y = trunc(:math.floor(z / bed.length))
+      y = trunc(:math.floor(z / bed.width))
       {x, y}
+    else
+      _ -> :error
     end
   end
 
@@ -231,23 +234,31 @@ defmodule VisualGarden.Planner do
           if Timex.diff(clamped_end, clamped_start, :days) < 14 do
             [direct]
           else
-            c = Timex.shift(clamped_start, weeks: -schedule.nursery_lead_weeks_max)
-            d = Timex.shift(clamped_end, weeks: -schedule.nursery_lead_weeks_min)
+            # the latest nursery date is sow_end - days to maturation, clamped to start/end
+            # the first nursery date is sow_start - 7 * lead_weeks_max, clamped to start/end
+            # sow_end doesn't change
+            # sow_start becomes clamped nursery start + 7 * lead_weeks_min, clamped to start/end
+            sow_start = Timex.shift(a, days: -days)
+            sow_end = Timex.shift(b, days: -days)
 
-            e = Timex.shift(c, days: days)
-            j = Timex.shift(d, days: days)
-            e = clamp_date(start_date, end_date, e)
-            j = clamp_date(start_date, end_date, j)
-            nursery_start = Timex.shift(e, days: -days)
-            nursery_end = Timex.shift(j, days: -days)
+            nursery_end =
+              clamp_date(start_date, end_date, Timex.shift(sow_end, days: -days))
 
-            ss = Timex.shift(nursery_start, weeks: schedule.nursery_lead_weeks_min)
-            sow_start = clamp_date(start_date, end_date, ss)
+            nursery_start =
+              clamp_date(
+                start_date,
+                end_date,
+                Timex.shift(sow_start, weeks: -schedule.nursery_lead_weeks_max)
+              )
 
-            se = Timex.shift(nursery_end, weeks: schedule.nursery_lead_weeks_max)
-            sow_end = clamp_date(start_date, end_date, se)
+            sow_start =
+              clamp_date(
+                start_date,
+                end_date,
+                Timex.shift(nursery_start, weeks: schedule.nursery_lead_weeks_min)
+              )
 
-            if Timex.diff(d, c, :days) < 14 do
+            if Timex.diff(nursery_end, nursery_start, :days) < 1 do
               [direct]
             else
               nursery = %{

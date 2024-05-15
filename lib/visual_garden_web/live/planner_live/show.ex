@@ -44,6 +44,7 @@ defmodule VisualGardenWeb.PlannerLive.Show do
         Planner.get_end_date(sq, bed, start_date),
         Date.utc_today()
       )
+      |> dbg()
 
     socket
     |> assign(:bed, Gardens.get_product!(bid))
