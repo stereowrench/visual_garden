@@ -121,10 +121,10 @@ defmodule VisualGarden.Library do
   			GENUS,
         VARIANT
       ORDER BY
-        "name" ASC,
-        GENUS ASC,
-        VARIANT ASC,
-        CULTIVAR ASC
+        "name" DESC,
+        GENUS DESC,
+        VARIANT DESC,
+        CULTIVAR DESC
   )
     as region_id1,
     first_value(schedules.region_id)
@@ -133,9 +133,9 @@ defmodule VisualGarden.Library do
   			SPECIES."name",
   			GENUS
       ORDER BY
-        "name" ASC,
-        GENUS ASC,
-        VARIANT ASC
+        "name" DESC,
+        GENUS DESC,
+        VARIANT DESC
   )
     as region_id2,
     first_value(SPECIES."common_name") OVER (
@@ -145,10 +145,10 @@ defmodule VisualGarden.Library do
         VARIANT,
         CULTIVAR
   		ORDER BY
-  			"name" ASC,
-  			GENUS ASC,
-  			VARIANT ASC,
-  			CULTIVAR ASC
+  			"name" DESC,
+  			GENUS DESC,
+  			VARIANT DESC,
+  			CULTIVAR DESC
   	) AS n0,
   	first_value(SPECIES."common_name") OVER (
   		PARTITION BY
@@ -156,20 +156,20 @@ defmodule VisualGarden.Library do
   			GENUS,
         VARIANT
   		ORDER BY
-  			"name" ASC,
-  			GENUS ASC,
-  			VARIANT ASC,
-  			CULTIVAR ASC
+  			"name" DESC,
+  			GENUS DESC,
+  			VARIANT DESC,
+  			CULTIVAR DESC
   	) AS n1,
   	first_value(SPECIES."common_name") OVER (
   		PARTITION BY
   			SPECIES."name",
   			GENUS
   		ORDER BY
-  			"name" ASC,
-  			GENUS ASC,
-  			VARIANT ASC,
-  			CULTIVAR ASC
+  			"name" DESC,
+  			GENUS DESC,
+  			VARIANT DESC,
+  			CULTIVAR DESC
   	) AS n2,
   	first_value(SCHEDULES.ID) OVER (
   		PARTITION BY
@@ -178,10 +178,10 @@ defmodule VisualGarden.Library do
         VARIANT,
         CULTIVAR
   		ORDER BY
-  			"name" ASC,
-  			GENUS ASC,
-  			VARIANT ASC,
-  			CULTIVAR ASC
+  			"name" DESC,
+  			GENUS DESC,
+  			VARIANT DESC,
+  			CULTIVAR DESC
   	) AS l0,
   	first_value(SCHEDULES.ID) OVER (
   		PARTITION BY
@@ -189,20 +189,20 @@ defmodule VisualGarden.Library do
   			GENUS,
         VARIANT
   		ORDER BY
-  			"name" ASC,
-  			GENUS ASC,
-  			VARIANT ASC,
-  			CULTIVAR ASC
+  			"name" DESC,
+  			GENUS DESC,
+  			VARIANT DESC,
+  			CULTIVAR DESC
   	) AS l1,
   	first_value(SCHEDULES.ID) OVER (
   		PARTITION BY
   			SPECIES."name",
   			GENUS
   		ORDER BY
-  			"name" ASC,
-  			GENUS ASC,
-  			VARIANT ASC,
-  			CULTIVAR ASC
+  			"name" DESC,
+  			GENUS DESC,
+  			VARIANT DESC,
+  			CULTIVAR DESC
   	) AS l2
   FROM
   	SPECIES
