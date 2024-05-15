@@ -42,11 +42,23 @@ defmodule VisualGardenWeb.DisplayHelpers do
     """
   end
 
+  def species_display_string(species, name) do
+    species
+    |> Map.put(:common_name, name)
+    |> species_display_string()
+  end
+
   @spec species_display_string_simple(%Species{}) :: String.t()
   def species_display_string_simple(species) do
     assigns = species_assigns(species)
     """
     #{assigns.genus} #{assigns.name}#{assigns.var_str}#{assigns.cultivar_str}#{assigns.common_str}
     """
+  end
+
+  def species_display_string_simple(species, name) do
+    species
+    |> Map.put(:common_name, name)
+    |> species_display_string_simple()
   end
 end

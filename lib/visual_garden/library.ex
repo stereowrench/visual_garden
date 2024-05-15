@@ -21,8 +21,51 @@ defmodule VisualGarden.Library do
     Repo.all(Species)
   end
 
+  @common_name_cte """
+  SELECT
+  	species.id as species_id,
+    first_value(SPECIES."common_name") OVER (
+  		PARTITION BY
+  			SPECIES."name",
+  			GENUS,
+        VARIANT,
+        CULTIVAR
+  		ORDER BY
+  			"name" DESC,
+  			GENUS DESC,
+  			VARIANT DESC,
+  			CULTIVAR DESC
+  	) AS n0,
+  	first_value(SPECIES."common_name") OVER (
+  		PARTITION BY
+  			SPECIES."name",
+  			GENUS,
+        VARIANT
+  		ORDER BY
+  			"name" DESC,
+  			GENUS DESC,
+  			VARIANT DESC,
+  			CULTIVAR DESC
+  	) AS n1,
+  	first_value(SPECIES."common_name") OVER (
+  		PARTITION BY
+  			SPECIES."name",
+  			GENUS
+  		ORDER BY
+  			"name" DESC,
+  			GENUS DESC,
+  			VARIANT DESC,
+  			CULTIVAR DESC
+  	) AS n2
+  FROM
+  	SPECIES
+  """
   def list_species_with_common_names do
-
+    Species
+    |> with_cte("squery", as: fragment(@common_name_cte))
+    |> join(:inner, [s], q in "squery", on: s.id == q.species_id)
+    |> select([s, q], {s, coalesce(q.n0, q.n1) |> coalesce(q.n2)})
+    |> Repo.all()
   end
 
   @doc """

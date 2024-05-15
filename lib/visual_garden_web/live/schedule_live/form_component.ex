@@ -2,6 +2,8 @@ defmodule VisualGardenWeb.ScheduleLive.FormComponent do
   use VisualGardenWeb, :live_component
   alias VisualGarden.Library
 
+  alias VisualGardenWeb.KeywordHighlighter
+
   @impl true
   def render(assigns) do
     ~H"""
@@ -30,7 +32,7 @@ defmodule VisualGardenWeb.ScheduleLive.FormComponent do
           options={@species}
         >
           <:option :let={opt}>
-            <%= opt.label %>
+            <.highlight matches={opt.matches} string={opt.label} />
           </:option>
         </.live_select>
         <.input field={@form[:start_month]} type="number" label="Start month" />
@@ -46,6 +48,10 @@ defmodule VisualGardenWeb.ScheduleLive.FormComponent do
       </.simple_form>
     </div>
     """
+  end
+
+  def highlight(assigns) do
+    KeywordHighlighter.highlight(assigns.string, assigns.matches)
   end
 
   @impl true
@@ -64,10 +70,11 @@ defmodule VisualGardenWeb.ScheduleLive.FormComponent do
      )
      |> assign(
        :species,
-       Library.list_species()
-       |> Enum.map(fn species ->
+       Library.list_species_with_common_names()
+       |> Enum.map(fn {species, name} ->
          %{
-           label: species_display_string_simple(species),
+           label: species_display_string_simple(species, name),
+           matches: [],
            value: species.id
          }
        end)
@@ -76,10 +83,16 @@ defmodule VisualGardenWeb.ScheduleLive.FormComponent do
   end
 
   @impl true
-  def handle_event("live_select_change", %{"text" => _text, "id" => _live_select_id}, socket) do
-    # genera = Library.list_genera()
-    # IO.inspect(live_select_id)
-    # send_update(LiveSelect.Component, id: live_select_id, options: genera)
+  def handle_event("live_select_change", %{"text" => text, "id" => live_select_id}, socket) do
+    matches = Seqfuzz.matches(socket.assigns.species, text, & &1.label, filter: true, sort: true)
+
+    opts =
+      Enum.map(matches, fn {map, c} ->
+        %{label: map.label, value: map.value, matches: c.matches}
+      end)
+      |> Enum.take(10)
+
+    send_update(LiveSelect.Component, id: live_select_id, options: opts)
 
     {:noreply, socket}
   end
