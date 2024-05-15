@@ -1,5 +1,15 @@
 /* Roy baby brr */
 /* Basic body styles */
+@tailwind base;
+@layer base {
+  .comic-text {
+    /* Reusable class for comic book style text */
+    @apply text-black font-sans uppercase tracking-widest; /* Black text, sans-serif font, uppercase, wide letter spacing */
+    text-shadow: -1px -1px 1px rgba(0, 0, 0, 0.3),
+      1px 1px 1px rgba(255, 255, 255, 0.3); /* Subdued bold text with inner and outer glow */
+  }
+}
+
 body {
   margin: 0;
   padding: 0;
@@ -61,8 +71,8 @@ button:after {
   content: "POW!"; /* Sample text, replace as needed */
   position: absolute;
   top: -10px; /* Position above button */
-  left: 50%;
-  transform: translateX(-50%) rotate(-45deg); /* Center and rotate text */
+  right: 100%;
+  transform: translateX(50%) rotate(-45deg); /* Center and rotate text */
   color: #ff0000; /* Red text */
   font-weight: bold;
   font-size: 14px; /* Adjust font size as needed */
@@ -120,4 +130,16 @@ table tr:hover th,
 table tr:hover td {
   /* Optional: Hover effect with text color change */
   @apply text-blue-800; /* Change text color to dark blue on hover */
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+span,
+p,
+a {
+  @apply comic-text;
 }
