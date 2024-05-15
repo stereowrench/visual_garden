@@ -110,79 +110,95 @@ defmodule VisualGarden.Library do
   SELECT
   	species.id as species_id,
     schedules.region_id as region_id0,
-    LAG(schedules.region_id, 1)
+    first_value(schedules.region_id)
   OVER (
   		PARTITION BY
   			SPECIES."name",
-  			GENUS
+  			GENUS,
+        VARIANT
+      ORDER BY
+        "name" ASC,
+        GENUS ASC,
+        VARIANT ASC,
+        CULTIVAR ASC
   )
     as region_id1,
-    LAG(schedules.region_id, 2)
+    first_value(schedules.region_id)
   OVER (
   		PARTITION BY
   			SPECIES."name",
   			GENUS
+      ORDER BY
+        "name" ASC,
+        GENUS ASC,
+        VARIANT ASC
   )
     as region_id2,
     LAG(SPECIES."common_name", 0) OVER (
   		PARTITION BY
   			SPECIES."name",
-  			GENUS
+  			GENUS,
+        VARIANT,
+        CULTIVAR
   		ORDER BY
-  			"name" DESC,
-  			GENUS DESC,
-  			VARIANT DESC,
-  			CULTIVAR DESC
+  			"name" ASC,
+  			GENUS ASC,
+  			VARIANT ASC,
+  			CULTIVAR ASC
   	) AS n0,
   	LAG(SPECIES."common_name", 1) OVER (
   		PARTITION BY
   			SPECIES."name",
-  			GENUS
+  			GENUS,
+        VARIANT
   		ORDER BY
-  			"name" DESC,
-  			GENUS DESC,
-  			VARIANT DESC,
-  			CULTIVAR DESC
+  			"name" ASC,
+  			GENUS ASC,
+  			VARIANT ASC,
+  			CULTIVAR ASC
   	) AS n1,
   	LAG(SPECIES."common_name", 2) OVER (
   		PARTITION BY
   			SPECIES."name",
   			GENUS
   		ORDER BY
-  			"name" DESC,
-  			GENUS DESC,
-  			VARIANT DESC,
-  			CULTIVAR DESC
+  			"name" ASC,
+  			GENUS ASC,
+  			VARIANT ASC,
+  			CULTIVAR ASC
   	) AS n2,
   	LAG(SCHEDULES.ID, 0) OVER (
   		PARTITION BY
   			SPECIES."name",
-  			GENUS
+  			GENUS,
+        VARIANT,
+        CULTIVAR
   		ORDER BY
-  			"name" DESC,
-  			GENUS DESC,
-  			VARIANT DESC,
-  			CULTIVAR DESC
+  			"name" ASC,
+  			GENUS ASC,
+  			VARIANT ASC,
+  			CULTIVAR ASC
   	) AS l0,
   	LAG(SCHEDULES.ID, 1) OVER (
   		PARTITION BY
   			SPECIES."name",
-  			GENUS
+  			GENUS,
+        VARIANT
   		ORDER BY
-  			"name" DESC,
-  			GENUS DESC,
-  			VARIANT DESC,
-  			CULTIVAR DESC
+  			"name" ASC,
+  			GENUS ASC,
+  			VARIANT ASC,
+  			CULTIVAR ASC
   	) AS l1,
   	LAG(SCHEDULES.ID, 2) OVER (
   		PARTITION BY
   			SPECIES."name",
   			GENUS
   		ORDER BY
-  			"name" DESC,
-  			GENUS DESC,
-  			VARIANT DESC,
-  			CULTIVAR DESC
+  			"name" ASC,
+  			GENUS ASC,
+  			VARIANT ASC,
+  			CULTIVAR ASC
   	) AS l2
   FROM
   	SPECIES
