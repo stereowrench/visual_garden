@@ -78,7 +78,7 @@ defmodule VisualGarden.Planner do
       x = rem(z, bed.width)
       # => j
       y = trunc(:math.floor(z / bed.width))
-      {x, y}
+      {y, x}
     else
       _ -> :error
     end
