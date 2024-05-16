@@ -69,14 +69,8 @@ defmodule VisualGarden.PlannerTest do
                %{
                  type: :seed,
                  days: 51,
-                 sow_start: ~D[2025-05-01],
-                 sow_end: ~D[2025-06-01]
-               },
-               %{
-                 type: "nursery",
-                 days: 51,
-                 nursery_start: ~D[2025-04-03],
-                 nursery_end: ~D[2025-05-18]
+                 sow_start: ~D[2024-07-01],
+                 sow_end: ~D[2025-01-01]
                }
              ] =
                Planner.get_plantables_from_garden(bed, ~D[2024-05-06], nil, today)
@@ -114,10 +108,10 @@ defmodule VisualGarden.PlannerTest do
                %{
                  type: "nursery",
                  days: 10,
-                 sow_start: ~D[2024-06-06],
-                 sow_end: ~D[2024-07-21],
-                 nursery_end: ~D[2024-06-23],
-                 nursery_start: ~D[2024-05-27]
+                 sow_start: ~D[2024-06-13],
+                 sow_end: ~D[2024-06-30],
+                 nursery_end: ~D[2024-06-20],
+                 nursery_start: ~D[2024-06-06]
                }
              ] =
                Planner.get_plantables_from_garden(bed, ~D[2024-05-06], ~D[2024-07-26], today)
