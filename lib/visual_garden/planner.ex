@@ -7,6 +7,7 @@ defmodule VisualGarden.Planner do
   alias VisualGarden.Repo
 
   def create_planner_entry(attrs \\ %{}) do
+    # TODO we need to make sure the entry will still fit if there's a competing change.
     %PlannerEntry{}
     |> PlannerEntry.changeset(attrs)
     |> Repo.insert()

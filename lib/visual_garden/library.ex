@@ -101,6 +101,7 @@ defmodule VisualGarden.Library do
 
   """
   def create_species(attrs \\ %{}) do
+    # TODO when species are created we need to make sure the ancestry tree also exists
     %Species{}
     |> Species.changeset(attrs)
     |> Repo.insert()
