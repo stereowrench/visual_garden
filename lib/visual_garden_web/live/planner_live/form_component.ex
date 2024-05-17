@@ -94,7 +94,7 @@ defmodule VisualGardenWeb.PlannerLive.FormComponent do
   end
 
   def get_start_refuse_date(epd, days) do
-    epd
+    Timex.shift(epd, days: days)
   end
 
   @impl true

@@ -109,6 +109,20 @@ defmodule VisualGardenWeb.PlannerLive.GraphComponent do
           >
             <%= entry.common_name %>
           </text>
+
+          <line
+            x1={
+              40 + x_shift_date(entry.end_plant_date, @garden.tz, @extent_dates) +
+                entry.days_to_refuse
+            }
+            x2={
+              40 + x_shift_date(entry.end_plant_date, @garden.tz, @extent_dates) +
+                entry.days_to_refuse
+            }
+            y1={25 + 25 * bed_square(entry, @bed)}
+            y2={2 * 25 + 25 * bed_square(entry, @bed)}
+            stroke="red"
+          />
         </.link>
       <% end %>
 
