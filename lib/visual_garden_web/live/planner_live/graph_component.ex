@@ -28,7 +28,7 @@ defmodule VisualGardenWeb.PlannerLive.GraphComponent do
       <%= for i <- 0..(@bed.length - 1) do %>
         <%= for j <- 0..(@bed.width - 1) do %>
           <text y={13 + 25 + 25 * (i * @bed.width + j)} x="0" style="font-size:11px;">
-            Sq <%= i + 1 %>, <%= j + 1 %>
+            Sq <%= i %>, <%= j %>
           </text>
         <% end %>
       <% end %>
@@ -38,10 +38,15 @@ defmodule VisualGardenWeb.PlannerLive.GraphComponent do
           <.link patch={
             ~p"/planners/#{@garden.id}/#{@bed.id}/#{group - 1}/new?#{[start_date: Date.to_string(a)]}"
           }>
+            <%!-- <text
+             y={25 + 25 * (group)}
+            >
+              <%= VisualGarden.Planner.parse_square(to_string(group), @bed) |> (fn {x, y} -> "#{x}, #{y}" end).() %>
+            </text> --%>
             <rect
               width={Timex.diff(b, a, :days)}
               height="25"
-              y={25 + 25 * (group - 1)}
+              y={25 + 25 * (group)}
               class="new-crop-span"
               x={40 + x_shift_date(a, @garden.tz, @extent_dates)}
             >
@@ -215,7 +220,7 @@ defmodule VisualGardenWeb.PlannerLive.GraphComponent do
       |> Enum.group_by(&bed_square(&1, bed))
 
     grouped =
-      Enum.map(1..(bed.width * bed.length), fn
+      Enum.map(0..(bed.width * bed.length - 1), fn
         square_num ->
           case grouped[square_num] do
             nil -> {square_num, []}
@@ -228,7 +233,8 @@ defmodule VisualGardenWeb.PlannerLive.GraphComponent do
       es = Enum.sort_by(es, & &1.start_plant_date, Date)
       plant_dates = Enum.map(es, & &1.start_plant_date)
       end_dates = Enum.map(es, & &1.end_plant_date)
-      days = Enum.map(es, & &1.days_to_maturity)
+      # TODO fix this
+      days = Enum.map(es, & &1.days_to_refuse)
 
       pairs =
         for {pdate, {edate, days}} <- Enum.zip(plant_dates, Enum.zip(end_dates, days)),
