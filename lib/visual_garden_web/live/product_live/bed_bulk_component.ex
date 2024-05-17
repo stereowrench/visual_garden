@@ -12,7 +12,7 @@ defmodule VisualGardenWeb.ProductLive.BedBulkComponent do
           <%= for {{_label, val}, idx} <- Enum.with_index(Gardens.squares_options(@bed)) do %>
             <label
               class="square-label"
-              style={IO.inspect(["--content: '#{content_for_cell(@plants, val)}'"])}
+              style={["--content: '#{content_for_cell(@plants, val)}'"]}
             >
               <input
                 class="square-check"
