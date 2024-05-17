@@ -34,7 +34,7 @@ defmodule VisualGarden.Planner do
         Date.utc_today()
       end
 
-    {column, row} = parse_square(square, bed)
+    {row, column} = parse_square(square, bed)
 
     mapped =
       Repo.all(

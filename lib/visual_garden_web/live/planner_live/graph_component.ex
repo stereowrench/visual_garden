@@ -36,7 +36,7 @@ defmodule VisualGardenWeb.PlannerLive.GraphComponent do
       <%= for {group, spans} <- generate_available_regions(@planner_entries, @extent_dates, @bed) do %>
         <%= for %{start_date: a, finish_date: b} <- spans do %>
           <.link patch={
-            ~p"/planners/#{@garden.id}/#{@bed.id}/#{group - 1}/new?#{[start_date: Date.to_string(a)]}"
+            ~p"/planners/#{@garden.id}/#{@bed.id}/#{group}/new?#{[start_date: Date.to_string(a)]}"
           }>
             <%!-- <text
              y={25 + 25 * (group)}
