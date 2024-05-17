@@ -2,11 +2,11 @@
 
 .square-grid {
   display: grid;
-  grid-template-rows: repeat(var(--width), 50px);
-  grid-template-columns: repeat(var(--length), 50px);
+  grid-template-rows: repeat(var(--width), 100px);
+  grid-template-columns: repeat(var(--length), 100px);
 }
 
-.square-check[type='radio'] {
+.square-check[type='radio'], .square-check[type='checkbox'] {
   display: none;
 }
 
@@ -26,7 +26,7 @@
 
 .square-label span:before,
 .square-label span:after {
-  content: "";
+  content: var(--content, "");
 }
 
 .square-label span:before {

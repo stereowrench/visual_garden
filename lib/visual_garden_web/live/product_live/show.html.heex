@@ -38,7 +38,7 @@
         }
         class="text-gray-700 block px-4 py-2 text-sm"
       >
-        <.button>Transfer</.button>
+        <.button>Amend</.button>
       </.link>
     </div>
     <div class="relative inline-block text-left">
@@ -55,6 +55,16 @@
         <.button>Edit product</.button>
       </.link>
     </div>
+    <%= if @product.type == :bed do %>
+      <div class="relative inline-block text-left">
+        <.link
+          patch={~p"/gardens/#{@garden.id}/beds/#{@product}/show/bulk_weed"}
+          phx-click={JS.push_focus()}
+        >
+          <.button>Weed</.button>
+        </.link>
+      </div>
+    <% end %>
   </:actions>
 </.header>
 
@@ -107,12 +117,7 @@
   <.back navigate={~p"/gardens/#{@garden.id}/products"}>Back to products</.back>
 <% end %>
 
-<.modal
-  :if={@live_action == :edit}
-  id="product-modal"
-  show
-  on_cancel={modal_cancel(@product)}
->
+<.modal :if={@live_action == :edit} id="product-modal" show on_cancel={modal_cancel(@product)}>
   <.live_component
     module={VisualGardenWeb.ProductLive.FormComponent}
     id={@product.id}
@@ -137,6 +142,22 @@
     product={@product}
     products={@products}
     garden={@garden}
+    title={@page_title}
+  />
+</.modal>
+
+<.modal
+  :if={@live_action in [:bulk_weed]}
+  id="bed-bulk-modal"
+  show
+  on_cancel={modal_cancel(@product)}
+>
+  <.live_component
+    module={VisualGardenWeb.ProductLive.BedBulkComponent}
+    patch={modal_patch(@product)}
+    action={@live_action}
+    id="bulk-modal"
+    bed={@product}
     title={@page_title}
   />
 </.modal>

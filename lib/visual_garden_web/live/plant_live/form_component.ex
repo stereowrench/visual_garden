@@ -268,15 +268,6 @@ defmodule VisualGardenWeb.PlantLive.FormComponent do
   defp notify_parent(msg), do: send(self(), {__MODULE__, msg})
 
   defp squares_options(bed) do
-    for i <- 0..(bed.length - 1) do
-      for j <- 0..(bed.width - 1) do
-        if bed.width > bed.length do
-          {"#{i}, #{j}", i * bed.width + j}
-        else
-          {"#{i}, #{j}", i * bed.length + j}
-        end
-      end
-    end
-    |> List.flatten()
+    Gardens.squares_options(bed)
   end
 end
