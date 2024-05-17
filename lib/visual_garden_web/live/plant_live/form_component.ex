@@ -270,7 +270,11 @@ defmodule VisualGardenWeb.PlantLive.FormComponent do
   defp squares_options(bed) do
     for i <- 0..(bed.length - 1) do
       for j <- 0..(bed.width - 1) do
-        {"#{i}, #{j}", i * bed.width + j}
+        if bed.width > bed.length do
+          {"#{i}, #{j}", i * bed.width + j}
+        else
+          {"#{i}, #{j}", i * bed.length + j}
+        end
       end
     end
     |> List.flatten()

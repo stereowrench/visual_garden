@@ -59,7 +59,7 @@ defmodule VisualGardenWeb.PlannerLive.GraphComponent do
             width={Timex.diff(entry.end_plant_date, entry.start_plant_date, :days)}
             height="25"
             class="crop-span-end"
-            y={25 + 25 * (bed_square(entry, @bed))}
+            y={25 + 25 * bed_square(entry, @bed)}
             x={40 + x_shift_date(entry.start_plant_date, @garden.tz, @extent_dates)}
           >
           </rect>
@@ -68,7 +68,7 @@ defmodule VisualGardenWeb.PlannerLive.GraphComponent do
               entry.days_to_maturity - Timex.diff(entry.end_plant_date, entry.start_plant_date, :days)
             }
             height="25"
-            y={25 + 25 * (bed_square(entry, @bed))}
+            y={25 + 25 * bed_square(entry, @bed)}
             x={
               40 +
                 x_shift_date(
@@ -84,7 +84,7 @@ defmodule VisualGardenWeb.PlannerLive.GraphComponent do
           <rect
             width={Timex.diff(entry.end_plant_date, entry.start_plant_date, :days)}
             height="25"
-            y={25 + 25 * (bed_square(entry, @bed))}
+            y={25 + 25 * bed_square(entry, @bed)}
             class="crop-span-end"
             x={
               40 +
@@ -104,7 +104,7 @@ defmodule VisualGardenWeb.PlannerLive.GraphComponent do
                 entry.days_to_maturity / 2 +
                 +Timex.diff(entry.end_plant_date, entry.start_plant_date, :days) / 2
             }
-            y={25 + 25 * (bed_square(entry, @bed)) + 25 / 2}
+            y={25 + 25 * bed_square(entry, @bed) + 25 / 2}
             style="font-size: 11px"
           >
             <%= entry.common_name %>
@@ -185,8 +185,12 @@ defmodule VisualGardenWeb.PlannerLive.GraphComponent do
     end
   end
 
-  defp bed_square(entry, bed) do
-    entry.row * bed.width + entry.column
+  def bed_square(entry, bed) do
+    if bed.width > bed.length do
+      entry.row * bed.width + entry.column
+    else
+      entry.row * bed.length + entry.column
+    end
   end
 
   defp generate_available_regions(entries, extent_dates, bed) do

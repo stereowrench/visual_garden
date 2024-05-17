@@ -117,4 +117,34 @@ defmodule VisualGarden.PlannerTest do
                Planner.get_plantables_from_garden(bed, ~D[2024-05-06], ~D[2024-07-26], today)
     end
   end
+
+  describe "bed encoding" do
+    test "testing" do
+      for j <- 0..5 do
+        for i <- 0..10 do
+          bed1 = %{length: 6, width: 11}
+
+          assert {^i, ^j} =
+                   Planner.parse_square(
+                     VisualGardenWeb.PlannerLive.GraphComponent.bed_square(
+                       %{row: i, column: j},
+                       bed1
+                     ) |> to_string(),
+                     bed1
+                   )
+
+          bed2 = %{length: 11, width: 6}
+
+          assert {^j, ^i} =
+                   Planner.parse_square(
+                     VisualGardenWeb.PlannerLive.GraphComponent.bed_square(
+                       %{row: j, column: i},
+                       bed2
+                     ) |> to_string(),
+                     bed2
+                   )
+        end
+      end
+    end
+  end
 end

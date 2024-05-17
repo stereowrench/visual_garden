@@ -76,10 +76,17 @@ defmodule VisualGarden.Planner do
       # is length, j is width
       {z, ""} = Integer.parse(square)
       # => i
-      x = rem(z, bed.width)
-      # => j
-      y = trunc(:math.floor(z / bed.width))
-      {y, x}
+      if bed.width > bed.length do
+        x = rem(z, bed.width)
+        # => j
+        y = trunc(:math.floor(z / bed.width))
+        {y, x}
+      else
+        x = rem(z, bed.length)
+        # => j
+        y = trunc(:math.floor(z / bed.length))
+        {y, x}
+      end
     else
       _ -> :error
     end
