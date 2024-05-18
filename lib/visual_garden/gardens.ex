@@ -550,7 +550,7 @@ defmodule VisualGarden.Gardens do
         where:
           (e.product_id == ^product_id and
              e.row == ^row and e.column == ^column) or (is_nil(e.row) and is_nil(e.column)),
-        join: p in Plant,
+        left_join: p in Plant,
         on: e.plant_id == p.id,
         where: (p.row == ^row and p.column == ^column) or (is_nil(p.row) and is_nil(p.column)),
         preload: ^@event_preloads
