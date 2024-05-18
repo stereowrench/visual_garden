@@ -2,20 +2,43 @@ defmodule VisualGardenWeb.ProductLive.Show do
   use VisualGardenWeb, :live_view
 
   alias VisualGarden.Gardens
+  alias VisualGarden.Planner
 
   @impl true
   def mount(%{"id" => id}, _session, socket) do
-    els = Gardens.list_event_logs(id)
-    socket = assign(socket, :events, els)
     {:ok, socket}
   end
 
   @impl true
+  def handle_params(%{"garden_id" => garden_id, "id" => id, "square" => square}, _, socket) do
+    product = Gardens.get_product!(id)
+    {row, column} = Planner.parse_square(square, product)
+
+    els = Gardens.list_event_logs(id, nil, row, column)
+    socket = assign(socket, :events, els)
+
+    {:noreply,
+     socket
+     |> assign(:page_title, page_title(socket.assigns.live_action))
+     |> assign(:product, product)
+     |> assign(:row, row)
+     |> assign(:column, column)
+     |> assign(:products, Gardens.list_products(garden_id))
+     |> assign(:plants, Gardens.list_plants(garden_id, id, row, column))
+     |> assign(:garden, Gardens.get_garden!(garden_id))}
+  end
+
+  @impl true
   def handle_params(%{"garden_id" => garden_id, "id" => id}, _, socket) do
+    els = Gardens.list_event_logs(id)
+    socket = assign(socket, :events, els)
+
     {:noreply,
      socket
      |> assign(:page_title, page_title(socket.assigns.live_action))
      |> assign(:product, Gardens.get_product!(id))
+     |> assign(:row, nil)
+     |> assign(:column, nil)
      |> assign(:products, Gardens.list_products(garden_id))
      |> assign(:plants, Gardens.list_plants(garden_id, id))
      |> assign(:garden, Gardens.get_garden!(garden_id))}
@@ -52,6 +75,7 @@ defmodule VisualGardenWeb.ProductLive.Show do
 
   defp page_title(:show), do: "Show product"
   defp page_title(:edit), do: "Edit product"
+  defp page_title(:show_square), do: "Show square"
   defp page_title(:new_water), do: "Watering"
   defp page_title(:till), do: "Tilling"
   defp page_title(:transfer), do: "Amend"

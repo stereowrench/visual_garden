@@ -11,22 +11,25 @@ defmodule VisualGardenWeb.ProductLive.BedBulkComponent do
         <%= @title %>
         <%!-- <:subtitle></:subtitle> --%>
       </.header>
-      <div class="square-grid" style={["--length: #{@bed.length};", "--width: #{@bed.width}"]}>
-        <%= for {{_label, val}, idx} <- Enum.with_index(Gardens.squares_options(@bed)) do %>
-          <label class="square-label" style={["--content: '#{content_for_cell(@plants, val)}'"]}>
-            <input
-              class="square-check"
-              phx-update="ignore"
-              type="checkbox"
-              disabled={!@allow_empty && !has_plant(@plants, idx)}
-              name="Square"
-              id={"square_picker_#{idx}"}
-              value={val}
-            />
-            <span></span>
-          </label>
-        <% end %>
-      </div>
+      <form phx-target={@myself} phx-change="validate" phx-submit="save">
+        <div class="square-grid" style={["--length: #{@bed.length};", "--width: #{@bed.width}"]}>
+          <%= for {{_label, val}, idx} <- Enum.with_index(Gardens.squares_options(@bed)) do %>
+            <label class="square-label" style={["--content: '#{content_for_cell(@plants, val)}'"]}>
+              <input
+                class="square-check"
+                phx-update="ignore"
+                type="checkbox"
+                disabled={!@allow_empty && !has_plant(@plants, idx)}
+                name="Square[]"
+                id={"square_picker_#{idx}"}
+                value={val}
+              />
+              <span></span>
+            </label>
+          <% end %>
+        </div>
+        <.button phx-disable-with="Saving...">Save Seed</.button>
+      </form>
     </div>
     """
   end
@@ -45,6 +48,20 @@ defmodule VisualGardenWeb.ProductLive.BedBulkComponent do
 
   defp has_plant(plants, idx) do
     (plants[idx] || []) != []
+  end
+
+  @impl true
+  def handle_event("validate", _params, socket) do
+    {:noreply, socket}
+  end
+
+  def handle_event("save", %{"Square" => squares}, socket) do
+    case socket.assigns.action do
+      :bulk_weed ->
+        Gardens.create_event_logs("weed", squares, socket.assigns.bed)
+        # TODO close modal
+        {:noreply, socket}
+    end
   end
 
   @impl true

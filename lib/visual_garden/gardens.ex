@@ -7,6 +7,7 @@ defmodule VisualGarden.Gardens do
   alias VisualGarden.Repo
 
   alias VisualGarden.Gardens.Garden
+  alias VisualGarden.Planner
 
   @doc """
   Returns the list of gardens.
@@ -328,6 +329,16 @@ defmodule VisualGarden.Gardens do
     )
   end
 
+  def list_plants(_garden_id, product_id, row, column) do
+    Repo.all(
+      from p in Plant,
+        where:
+          p.product_id == ^product_id and
+            p.row == ^row and p.column == ^column,
+        preload: [:seed, :product]
+    )
+  end
+
   @doc """
   Gets a single plant.
 
@@ -528,7 +539,17 @@ defmodule VisualGarden.Gardens do
   def list_event_logs(_product_id, plant_id) do
     Repo.all(
       from e in EventLog,
-        where: e.plant_id == ^plant_id,
+        where: e.plant_id == ^plant_id or is_nil(e.plant_id),
+        preload: ^@event_preloads
+    )
+  end
+
+  def list_event_logs(product_id, _plant_id, row, column) do
+    Repo.all(
+      from e in EventLog,
+        where:
+          e.product_id == ^product_id and
+            e.row == ^row and e.column == ^column,
         preload: ^@event_preloads
     )
   end
@@ -605,6 +626,33 @@ defmodule VisualGarden.Gardens do
     %EventLog{}
     |> EventLog.changeset_plant(attrs)
     |> Repo.insert()
+  end
+
+  def create_event_log(type = "weed", attrs) do
+    attrs = Map.merge(%{"event_type" => type}, attrs)
+
+    %EventLog{}
+    |> EventLog.changeset_weed(attrs)
+    |> Repo.insert()
+  end
+
+  def create_event_logs(type = "weed", squares, bed) do
+    Repo.transaction(fn ->
+      time = DateTime.utc_now()
+
+      for square <- squares do
+        {row, column} = Planner.parse_square(square, bed)
+
+        {:ok, _} =
+          create_event_log(type, %{
+            "event_type" => type,
+            "event_time" => time,
+            "row" => row,
+            "column" => column,
+            "product_id" => bed.id
+          })
+      end
+    end)
   end
 
   # def create_event_log(type, attrs \\ %{}) do

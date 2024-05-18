@@ -354,9 +354,9 @@ defmodule VisualGarden.Planner do
     for garden <- gardens do
       entries = list_planner_entries(garden.id)
 
-      to_plant =
-        entries
-        |> Enum.map()
+      # to_plant =
+      #   entries
+      #   |> Enum.map()
 
       # TODO to plant:
       # If

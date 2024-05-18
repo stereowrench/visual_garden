@@ -16,7 +16,8 @@ defmodule VisualGarden.Gardens.EventLog do
         :transfer,
         :harvest,
         :transfer_harvest,
-        :plant
+        :plant,
+        :weed
       ]
 
     field :humidity, :integer
@@ -25,6 +26,9 @@ defmodule VisualGarden.Gardens.EventLog do
     field :till_depth_in, :decimal
     field :transferred_amount, :decimal
     field :trimmed, :boolean, default: false
+
+    field :row, :integer
+    field :column, :integer
 
     field :transfer_units, Ecto.Enum,
       values: [
@@ -45,6 +49,20 @@ defmodule VisualGarden.Gardens.EventLog do
     field :harvest_transfer_to, :id
 
     timestamps(type: :utc_datetime)
+  end
+
+  @doc false
+  def changeset_weed(event_log, attrs) do
+    event_log
+    |> cast(attrs, [
+      :event_type,
+      :event_time,
+      :product_id,
+      :row,
+      :column
+    ])
+    |> validate_required([:event_time, :product_id, :row, :column])
+    |> validate_inclusion(:event_type, [:weed])
   end
 
   @doc false
