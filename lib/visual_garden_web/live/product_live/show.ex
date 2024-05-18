@@ -23,7 +23,6 @@ defmodule VisualGardenWeb.ProductLive.Show do
         Gardens.row_col_to_square(plant.row, plant.column, product)
       end)
 
-
     {:noreply,
      socket
      |> assign(:page_title, page_title(socket.assigns.live_action))
@@ -71,10 +70,14 @@ defmodule VisualGardenWeb.ProductLive.Show do
   end
 
   def selected?(val, row, col, bed) do
-    if val == Gardens.row_col_to_square(row, col, bed) do
-      " selected"
-    else
+    if !row or !col do
       ""
+    else
+      if val == Gardens.row_col_to_square(row, col, bed) do
+        " selected"
+      else
+        ""
+      end
     end
   end
 
