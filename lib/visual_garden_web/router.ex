@@ -59,6 +59,8 @@ defmodule VisualGardenWeb.Router do
 
       # Bulk plant actions
       live "/gardens/:garden_id/beds/:id/show/bulk_weed", ProductLive.Show, :bulk_weed
+      live "/gardens/:garden_id/beds/:id/show/bulk_trim", ProductLive.Show, :bulk_trim
+      live "/gardens/:garden_id/beds/:id/show/bulk_harvest", ProductLive.Show, :bulk_harvest
 
       live "/gardens/:garden_id/products/:id/show/edit", ProductLive.Show, :edit
       live "/gardens/:garden_id/products/:id/show/new_water", ProductLive.Show, :new_water

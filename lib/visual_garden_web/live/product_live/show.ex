@@ -56,6 +56,8 @@ defmodule VisualGardenWeb.ProductLive.Show do
   defp page_title(:till), do: "Tilling"
   defp page_title(:transfer), do: "Amend"
   defp page_title(:bulk_weed), do: "Weed"
+  defp page_title(:bulk_trim), do: "Trim"
+  defp page_title(:bulk_harvest), do: "Harvest"
 
   defp last_watered(events) do
     events

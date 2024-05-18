@@ -10,6 +10,10 @@
   display: none;
 }
 
+.square-check[disabled] + span {
+  background: rgb(255, 144, 144);
+}
+
 .square-label {
   display: inline-block;
   /* padding: 5px 10px; */

@@ -64,6 +64,22 @@
           <.button>Weed</.button>
         </.link>
       </div>
+      <div class="relative inline-block text-left">
+        <.link
+          patch={~p"/gardens/#{@garden.id}/beds/#{@product}/show/bulk_trim"}
+          phx-click={JS.push_focus()}
+        >
+          <.button>Trim</.button>
+        </.link>
+      </div>
+      <div class="relative inline-block text-left">
+        <.link
+          patch={~p"/gardens/#{@garden.id}/beds/#{@product}/show/bulk_harvest"}
+          phx-click={JS.push_focus()}
+        >
+          <.button>Harvest</.button>
+        </.link>
+      </div>
     <% end %>
   </:actions>
 </.header>
@@ -147,7 +163,7 @@
 </.modal>
 
 <.modal
-  :if={@live_action in [:bulk_weed]}
+  :if={@live_action in [:bulk_weed, :bulk_trim, :bulk_harvest]}
   id="bed-bulk-modal"
   show
   on_cancel={modal_cancel(@product)}
