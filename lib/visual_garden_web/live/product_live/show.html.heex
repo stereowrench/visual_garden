@@ -108,7 +108,7 @@
 <%= if @product.type == :bed do %>
   <div class="square-grid" style={["--length: #{@product.length};", "--width: #{@product.width}"]}>
     <%= for {{_label, val}, idx} <- Enum.with_index(Gardens.squares_options(@product)) do %>
-      <label class="square-label" style={["--content: '#{VisualGarden.Gardens.content_for_cell(@grouped_plants, val)}'"]}>
+      <label class={"square-label" <> selected?(val, @row, @column, @product)} style={["--content: '#{VisualGarden.Gardens.content_for_cell(@grouped_plants, val)}'"]}>
         <.link navigate={~p"/gardens/#{@garden.id}/beds/#{@product.id}/#{idx}"}>
           <input
             class="square-check"

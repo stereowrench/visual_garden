@@ -70,6 +70,14 @@ defmodule VisualGardenWeb.ProductLive.Show do
     {:noreply, assign(socket, :product, product)}
   end
 
+  def selected?(val, row, col, bed) do
+    if val == Gardens.row_col_to_square(row, col, bed) do
+      " selected"
+    else
+      ""
+    end
+  end
+
   @names %{
     "water" => "watered",
     "till" => "tilled"

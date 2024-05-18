@@ -45,6 +45,11 @@
   vertical-align: top;
 }
 
+.square-label.selected span:before {
+  @apply border-purple-400;
+  border-width: 3px;
+}
+
 .square-label span:after {
   background: #222021;
   /* width: 30px;
