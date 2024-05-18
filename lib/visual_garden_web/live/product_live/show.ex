@@ -17,12 +17,20 @@ defmodule VisualGardenWeb.ProductLive.Show do
     els = Gardens.list_event_logs(id, nil, row, column)
     socket = assign(socket, :events, els)
 
+    grouped_plants =
+      Gardens.list_plants(garden_id, id)
+      |> Enum.group_by(fn plant ->
+        Gardens.row_col_to_square(plant.row, plant.column, product)
+      end)
+
+
     {:noreply,
      socket
      |> assign(:page_title, page_title(socket.assigns.live_action))
      |> assign(:product, product)
      |> assign(:row, row)
      |> assign(:column, column)
+     |> assign(:grouped_plants, grouped_plants)
      |> assign(:products, Gardens.list_products(garden_id))
      |> assign(:plants, Gardens.list_plants(garden_id, id, row, column))
      |> assign(:garden, Gardens.get_garden!(garden_id))}
@@ -33,12 +41,21 @@ defmodule VisualGardenWeb.ProductLive.Show do
     els = Gardens.list_event_logs(id)
     socket = assign(socket, :events, els)
 
+    product = Gardens.get_product!(id)
+
+    grouped_plants =
+      Gardens.list_plants(garden_id, id)
+      |> Enum.group_by(fn plant ->
+        Gardens.row_col_to_square(plant.row, plant.column, product)
+      end)
+
     {:noreply,
      socket
      |> assign(:page_title, page_title(socket.assigns.live_action))
-     |> assign(:product, Gardens.get_product!(id))
+     |> assign(:product, product)
      |> assign(:row, nil)
      |> assign(:column, nil)
+     |> assign(:grouped_plants, grouped_plants)
      |> assign(:products, Gardens.list_products(garden_id))
      |> assign(:plants, Gardens.list_plants(garden_id, id))
      |> assign(:garden, Gardens.get_garden!(garden_id))}

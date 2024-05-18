@@ -35,15 +35,7 @@ defmodule VisualGardenWeb.ProductLive.BedBulkComponent do
   end
 
   defp content_for_cell(plants, idx) do
-    if p = plants[idx] do
-      if q = hd(p) do
-        q.name
-      else
-        ""
-      end
-    else
-      ""
-    end
+    Gardens.content_for_cell(plants, idx)
   end
 
   defp has_plant(plants, idx) do

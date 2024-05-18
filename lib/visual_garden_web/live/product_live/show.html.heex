@@ -1,87 +1,92 @@
-<.live_component module={VisualGardenWeb.NavBar} id="navbar" garden={@garden} current={if @product.type == :bed, do: "Beds", else: "Media, etc."} />
+<.live_component
+  module={VisualGardenWeb.NavBar}
+  id="navbar"
+  garden={@garden}
+  current={if @product.type == :bed, do: "Beds", else: "Media, etc."}
+/>
 
 <.header>
   <%= @product.name %>
   <:subtitle><%= VisualGarden.Gardens.Product.friendly_type(@product.type) %></:subtitle>
 </.header>
 <%= unless @row do %>
-<.split_menu id="water-menu" button_text="Water" button_action="water">
-  <:item patch={
-    if @product.type == :bed do
-      ~p"/gardens/#{@garden.id}/beds/#{@product}/show/new_water"
-    else
-      ~p"/gardens/#{@garden.id}/products/#{@product}/show/new_water"
-    end
-  }>
-    Water at time
-  </:item>
-</.split_menu>
-<.split_menu id="till-menu" button_text="Till" button_action="till">
-  <:item patch={
-    if @product.type == :bed do
-      ~p"/gardens/#{@garden.id}/beds/#{@product}/show/till"
-    else
-      ~p"/gardens/#{@garden.id}/products/#{@product}/show/till"
-    end
-  }>
-    Till at time
-  </:item>
-</.split_menu>
+  <.split_menu id="water-menu" button_text="Water" button_action="water">
+    <:item patch={
+      if @product.type == :bed do
+        ~p"/gardens/#{@garden.id}/beds/#{@product}/show/new_water"
+      else
+        ~p"/gardens/#{@garden.id}/products/#{@product}/show/new_water"
+      end
+    }>
+      Water at time
+    </:item>
+  </.split_menu>
+  <.split_menu id="till-menu" button_text="Till" button_action="till">
+    <:item patch={
+      if @product.type == :bed do
+        ~p"/gardens/#{@garden.id}/beds/#{@product}/show/till"
+      else
+        ~p"/gardens/#{@garden.id}/products/#{@product}/show/till"
+      end
+    }>
+      Till at time
+    </:item>
+  </.split_menu>
 
-<div class="relative inline-block text-left">
-  <.link
-    patch={
-      if @product.type == :bed do
-        ~p"/gardens/#{@garden.id}/beds/#{@product}/show/transfer"
-      else
-        ~p"/gardens/#{@garden.id}/products/#{@product}/show/transfer"
-      end
-    }
-    class="text-gray-700 block px-4 py-2 text-sm"
-  >
-    <.button>Amend</.button>
-  </.link>
-</div>
-<div class="relative inline-block text-left">
-  <.link
-    patch={
-      if @product.type == :bed do
-        ~p"/gardens/#{@garden.id}/beds/#{@product}/show/edit"
-      else
-        ~p"/gardens/#{@garden.id}/products/#{@product}/show/edit"
-      end
-    }
-    phx-click={JS.push_focus()}
-  >
-    <.button>Edit product</.button>
-  </.link>
-</div>
-<%= if @product.type == :bed do %>
   <div class="relative inline-block text-left">
     <.link
-      patch={~p"/gardens/#{@garden.id}/beds/#{@product}/show/bulk_weed"}
-      phx-click={JS.push_focus()}
+      patch={
+        if @product.type == :bed do
+          ~p"/gardens/#{@garden.id}/beds/#{@product}/show/transfer"
+        else
+          ~p"/gardens/#{@garden.id}/products/#{@product}/show/transfer"
+        end
+      }
+      class="text-gray-700 block px-4 py-2 text-sm"
     >
-      <.button>Weed</.button>
+      <.button>Amend</.button>
     </.link>
   </div>
   <div class="relative inline-block text-left">
     <.link
-      patch={~p"/gardens/#{@garden.id}/beds/#{@product}/show/bulk_trim"}
+      patch={
+        if @product.type == :bed do
+          ~p"/gardens/#{@garden.id}/beds/#{@product}/show/edit"
+        else
+          ~p"/gardens/#{@garden.id}/products/#{@product}/show/edit"
+        end
+      }
       phx-click={JS.push_focus()}
     >
-      <.button>Trim</.button>
+      <.button>Edit product</.button>
     </.link>
   </div>
-  <div class="relative inline-block text-left">
-    <.link
-      patch={~p"/gardens/#{@garden.id}/beds/#{@product}/show/bulk_harvest"}
-      phx-click={JS.push_focus()}
-    >
-      <.button>Harvest</.button>
-    </.link>
-  </div>
-<% end %>
+  <%= if @product.type == :bed do %>
+    <div class="relative inline-block text-left">
+      <.link
+        patch={~p"/gardens/#{@garden.id}/beds/#{@product}/show/bulk_weed"}
+        phx-click={JS.push_focus()}
+      >
+        <.button>Weed</.button>
+      </.link>
+    </div>
+    <div class="relative inline-block text-left">
+      <.link
+        patch={~p"/gardens/#{@garden.id}/beds/#{@product}/show/bulk_trim"}
+        phx-click={JS.push_focus()}
+      >
+        <.button>Trim</.button>
+      </.link>
+    </div>
+    <div class="relative inline-block text-left">
+      <.link
+        patch={~p"/gardens/#{@garden.id}/beds/#{@product}/show/bulk_harvest"}
+        phx-click={JS.push_focus()}
+      >
+        <.button>Harvest</.button>
+      </.link>
+    </div>
+  <% end %>
 <% end %>
 
 <dl class="mx-auto grid grid-cols-1 gap-px bg-gray-900/5 sm:grid-cols-2 lg:grid-cols-4">
@@ -99,6 +104,24 @@
     </dd>
   </div>
 </dl>
+
+<%= if @product.type == :bed do %>
+  <div class="square-grid" style={["--length: #{@product.length};", "--width: #{@product.width}"]}>
+    <%= for {{_label, val}, idx} <- Enum.with_index(Gardens.squares_options(@product)) do %>
+      <label class="square-label" style={["--content: '#{VisualGarden.Gardens.content_for_cell(@grouped_plants, val)}'"]}>
+        <.link navigate={~p"/gardens/#{@garden.id}/beds/#{@product.id}/#{idx}"}>
+          <input
+            class="square-check"
+            phx-update="ignore"
+            type="checkbox"
+            id={"square_picker_#{idx}"}
+          />
+          <span></span>
+        </.link>
+      </label>
+    <% end %>
+  </div>
+<% end %>
 
 <div class="prose">
   <br />
@@ -124,7 +147,11 @@
     </:col>
   </.table>
 
-  <VisualGardenWeb.EventLogLive.Show.render_events events={@events} garden={@garden} bed={@product}/>
+  <VisualGardenWeb.EventLogLive.Show.render_events
+    events={@events}
+    garden={@garden}
+    bed={@product}
+  />
 </div>
 
 <%= if @product.type == :bed do %>

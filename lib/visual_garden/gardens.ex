@@ -838,4 +838,16 @@ defmodule VisualGarden.Gardens do
       row * bed.length + col
     end
   end
+
+  def content_for_cell(plants, idx) do
+    if p = plants[idx] do
+      if q = hd(p) do
+        q.name
+      else
+        ""
+      end
+    else
+      ""
+    end
+  end
 end
