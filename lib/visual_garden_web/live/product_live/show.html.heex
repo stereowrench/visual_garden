@@ -1,4 +1,4 @@
-<.live_component module={VisualGardenWeb.NavBar} id="navbar" garden={@garden} current="Products" />
+<.live_component module={VisualGardenWeb.NavBar} id="navbar" garden={@garden} current={if @product.type == :bed, do: "Beds", else: "Media, etc."} />
 
 <.header>
   <%= @product.name %>
