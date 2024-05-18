@@ -1,5 +1,30 @@
 <%= for bed <- @beds do %>
   <h2>Bed <%= bed.name %></h2>
+
+  <form phx-submit="plant_combo">
+    <div class="square-grid" style={["--length: #{bed.length};", "--width: #{bed.width}"]}>
+      <%= for {{_label, val}, idx} <- Enum.with_index(Gardens.squares_options(bed)) do %>
+        <label
+          class="square-label"
+          style={["--content: '#{content_for_cell(@plants[bed.id], val)}'"]}
+        >
+          <input type="hidden" value={bed.id} name="bed_id" />
+          <input
+            class="square-check"
+            phx-update="ignore"
+            type="checkbox"
+            disabled={!has_plant(@plants[bed.id], idx)}
+            name="Square[]"
+            id={"square_picker_#{idx}"}
+            value={val}
+          />
+          <span></span>
+        </label>
+      <% end %>
+    </div>
+    <.button phx-disable-with="Saving...">Plant bulk</.button>
+  </form>
+
   <.live_component
     module={VisualGardenWeb.PlannerLive.GraphComponent}
     bed={bed}
@@ -11,12 +36,12 @@
 <% end %>
 
 <.modal
-    :if={@live_action in [:new, :edit]}
-    id="planer-modal"
-    show
-    on_cancel={JS.patch(~p"/planners/#{@garden.id}")}
+  :if={@live_action in [:new, :edit]}
+  id="planer-modal"
+  show
+  on_cancel={JS.patch(~p"/planners/#{@garden.id}")}
 >
-<.live_component
+  <.live_component
     module={VisualGardenWeb.PlannerLive.FormComponent}
     id={"planner-#{@bed.id}"}
     bed={@bed}
@@ -27,5 +52,5 @@
     plantables={@plantables}
     patch={~p"/planners/#{@garden.id}"}
     action={@live_action}
-/>
+  />
 </.modal>

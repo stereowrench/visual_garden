@@ -11,6 +11,7 @@ defmodule VisualGardenWeb.PlannerLive.Show do
   @impl true
   def handle_params(%{"garden_id" => id} = params, _, socket) do
     garden = Gardens.get_garden!(id)
+    day = Date.utc_today()
 
     {:noreply,
      socket
@@ -19,7 +20,47 @@ defmodule VisualGardenWeb.PlannerLive.Show do
      |> assign(:garden, garden)
      |> add_entries()
      |> assign(:beds, Gardens.list_beds(id))
+     |> add_current_plants(day)
      |> assign(:extent_dates, extent_dates(garden.tz))}
+  end
+
+  def has_plant(plants, idx) do
+    (plants[idx] || []) == []
+  end
+
+  def content_for_cell(plants, val) do
+    plants[val]
+  end
+
+  defp add_current_plants(socket, today) do
+    plants =
+      for bed <- socket.assigns.beds, into: %{} do
+        plants =
+          for entry <- socket.assigns.planner_entries[bed.id] || [], into: %{} do
+            # if it ends before today, filter it out
+            # if it starts before today and ends after today, include common_name
+            # if it start after today, filter it out
+            start = entry.start_plant_date
+            en = entry.end_plant_date
+            num = VisualGardenWeb.PlannerLive.GraphComponent.bed_square(entry, bed)
+
+            cond do
+              Timex.diff(en, today, :days) <= 0 ->
+                {num, nil}
+
+              Timex.diff(start, today, :days) <= 0 and Timex.diff(en, today, :days) >= 0 ->
+                {num, entry.common_name}
+
+              true ->
+                {num, nil}
+            end
+          end
+
+        {bed.id, plants}
+      end
+
+    socket
+    |> assign(:plants, plants)
   end
 
   defp add_entries(socket) do
@@ -30,6 +71,18 @@ defmodule VisualGardenWeb.PlannerLive.Show do
       :planner_entries,
       entries
     )
+  end
+
+  def add_params(socket, %{"bed_id" => bid, "squares" => sq, "start_date" => start_date}) do
+    bed = Gardens.get_product!(bid)
+    start_date = if start_date, do: Date.from_iso8601!(start_date)
+    start_date = start_date || Date.utc_today()
+
+    for square <- String.split(sq, ",") do
+      Planner.get_end_date(square, bed, start_date)
+    end
+
+    socket
   end
 
   def add_params(socket, %{"bed_id" => bid, "square" => sq, "start_date" => start_date}) do
@@ -44,7 +97,6 @@ defmodule VisualGardenWeb.PlannerLive.Show do
         Planner.get_end_date(sq, bed, start_date),
         Date.utc_today()
       )
-      |> dbg()
 
     socket
     |> assign(:bed, Gardens.get_product!(bid))
@@ -81,10 +133,18 @@ defmodule VisualGardenWeb.PlannerLive.Show do
   defp page_title(:show), do: "Show Planner"
   defp page_title(:new), do: "New Planner"
   defp page_title(:edit), do: "Edit Planner"
+  defp page_title(:new_bulk), do: "New Plans"
 
   @impl true
   def handle_info({VisualGardenWeb.PlannerLive.FormComponent, {:saved, _plant}}, socket) do
     {:noreply, socket}
+  end
+
+  @impl true
+  def handle_event("plant_combo", %{"Square" => squares, "bed_id" => bed_id}, socket) do
+    {:noreply,
+     socket
+     |> push_patch(to: ~p"/planners/#{socket.assigns.garden.id}/#{bed_id}/new?#{[squares: squares]}")}
   end
 
   @impl true
