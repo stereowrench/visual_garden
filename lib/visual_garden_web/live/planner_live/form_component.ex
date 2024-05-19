@@ -12,7 +12,7 @@ defmodule VisualGardenWeb.PlannerLive.FormComponent do
       <.header>
         Planner Entry
       </.header>
-      <%= if @action == :new do %>
+      <%= if @action in [:new, :new_bulk] do %>
         <.simple_form
           for={@form}
           id="planner-form"
@@ -99,7 +99,7 @@ defmodule VisualGardenWeb.PlannerLive.FormComponent do
 
   @impl true
   def update(assigns, socket) do
-    end_date = Planner.get_end_date(assigns.square, assigns.bed, assigns[:start_date])
+    end_date = assigns.end_date
 
     plantables_parsed =
       assigns.plantables
@@ -109,7 +109,13 @@ defmodule VisualGardenWeb.PlannerLive.FormComponent do
     # bed
     # extent_dates
     changeset = Planner.change_planner_entry(%PlannerEntry{})
-    {row, column} = Planner.parse_square(assigns.square, assigns.bed)
+
+    {row, column} =
+      if assigns.square do
+        Planner.parse_square(assigns.square, assigns.bed)
+      else
+        {nil, nil}
+      end
 
     species =
       ["Choose a species": nil] ++
@@ -279,9 +285,58 @@ defmodule VisualGardenWeb.PlannerLive.FormComponent do
          |> push_patch(to: socket.assigns.patch)}
 
       {:error, %Ecto.Changeset{} = changeset} ->
-        dbg(changeset)
         {:noreply, assign_form(socket, changeset)}
     end
+  end
+
+  defp save_planner(socket, :new_bulk, planner_params, params) do
+    res =
+      VisualGarden.Repo.transaction(fn ->
+        for square <- socket.assigns.squares do
+          case planner_params
+               |> add_params(params, socket)
+               |> add_square(square, socket.assigns.bed)
+               |> Planner.create_planner_entry() do
+            {:ok, planner_entry} ->
+              notify_parent({:saved, planner_entry})
+              :ok
+
+            {:error, %Ecto.Changeset{} = changeset} ->
+              IO.inspect(changeset)
+              VisualGarden.Repo.rollback(:error)
+          end
+        end
+        |> Enum.all?(fn x -> x == :ok end)
+        |> case do
+          true -> :ok
+          _ -> {:error, :error}
+        end
+      end)
+
+    case res do
+      {:ok, :ok} ->
+        {:noreply,
+         socket
+         |> put_notification(Normal.new(:success, "Planner entries created successfully"))
+         |> push_patch(to: socket.assigns.patch)}
+
+      {:error, _} ->
+        {:noreply,
+         socket
+         |> put_notification(Normal.new(:danger, "Couldn't create planner entries"))}
+    end
+  end
+
+  defp add_square(params, square, bed) do
+    {row, column} = Planner.parse_square(square, bed)
+
+    Map.merge(
+      params,
+      %{
+        "row" => row,
+        "column" => column
+      }
+    )
   end
 
   defp assign_form(socket, %Ecto.Changeset{} = changeset) do

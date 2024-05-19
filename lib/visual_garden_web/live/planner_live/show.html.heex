@@ -36,7 +36,7 @@
 <% end %>
 
 <.modal
-  :if={@live_action in [:new, :edit]}
+  :if={@live_action in [:new, :edit, :new_bulk]}
   id="planer-modal"
   show
   on_cancel={JS.patch(~p"/planners/#{@garden.id}")}
@@ -47,8 +47,10 @@
     bed={@bed}
     garden={@garden}
     start_date={@start_date}
+    end_date={@end_date}
     planner_entry={@planner_entry}
     square={@square}
+    squares={@squares}
     plantables={@plantables}
     patch={~p"/planners/#{@garden.id}"}
     action={@live_action}

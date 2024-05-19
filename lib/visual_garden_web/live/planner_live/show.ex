@@ -73,21 +73,47 @@ defmodule VisualGardenWeb.PlannerLive.Show do
     )
   end
 
-  def add_params(socket, %{"bed_id" => bid, "squares" => sq, "start_date" => start_date}) do
+  def add_params(socket, %{"bed_id" => bid, "squares" => sq} = params) do
     bed = Gardens.get_product!(bid)
-    start_date = if start_date, do: Date.from_iso8601!(start_date)
+    start_date = if params["start_date"], do: Date.from_iso8601!(params["start_date"])
     start_date = start_date || Date.utc_today()
 
-    for square <- String.split(sq, ",") do
-      Planner.get_end_date(square, bed, start_date)
-    end
+    ed_list =
+      for square <- sq do
+        Planner.get_end_date(square, bed, start_date)
+      end
+      |> Enum.reject(&is_nil(&1))
+      |> Enum.sort(Date)
+      |> Enum.take(1)
+
+    end_date =
+      if ed_list == [] do
+        nil
+      else
+        hd(ed_list)
+      end
+
+    plantables =
+      Planner.get_plantables_from_garden(
+        bed,
+        start_date,
+        end_date,
+        Date.utc_today()
+      )
 
     socket
+    |> assign(:squares, sq)
+    |> assign(:square, nil)
+    |> assign(:end_date, end_date)
+    |> assign(:bed, bed)
+    |> assign(:start_date, start_date)
+    |> assign(:planner_entry, nil)
+    |> assign(:plantables, plantables)
   end
 
-  def add_params(socket, %{"bed_id" => bid, "square" => sq, "start_date" => start_date}) do
+  def add_params(socket, %{"bed_id" => bid, "square" => sq} = params) do
     bed = Gardens.get_product!(bid)
-    start_date = if start_date, do: Date.from_iso8601!(start_date)
+    start_date = if params["start_date"], do: Date.from_iso8601!(params["start_date"])
     start_date = start_date || Date.utc_today()
 
     plantables =
@@ -101,6 +127,8 @@ defmodule VisualGardenWeb.PlannerLive.Show do
     socket
     |> assign(:bed, Gardens.get_product!(bid))
     |> assign(:square, sq)
+    |> assign(:squares, nil)
+    |> assign(:end_date, Planner.get_end_date(sq, bed, start_date))
     |> assign(:start_date, start_date)
     |> assign(:planner_entry, nil)
     |> assign(:plantables, plantables)
@@ -144,7 +172,9 @@ defmodule VisualGardenWeb.PlannerLive.Show do
   def handle_event("plant_combo", %{"Square" => squares, "bed_id" => bed_id}, socket) do
     {:noreply,
      socket
-     |> push_patch(to: ~p"/planners/#{socket.assigns.garden.id}/#{bed_id}/new?#{[squares: squares]}")}
+     |> push_patch(
+       to: ~p"/planners/#{socket.assigns.garden.id}/#{bed_id}/new?#{[squares: squares]}"
+     )}
   end
 
   @impl true
