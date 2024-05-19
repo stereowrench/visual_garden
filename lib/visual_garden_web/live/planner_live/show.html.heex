@@ -1,7 +1,7 @@
 <%= for bed <- @beds do %>
   <h2>Bed <%= bed.name %></h2>
 
-  <form phx-submit="plant_combo">
+  <form phx-submit="plant_combo" phx-change="plant_combo_update">
     <div class="square-grid" style={["--length: #{bed.length};", "--width: #{bed.width}"]}>
       <%= for {{_label, val}, idx} <- Enum.with_index(Gardens.squares_options(bed)) do %>
         <label
@@ -13,7 +13,7 @@
             class="square-check"
             phx-update="ignore"
             type="checkbox"
-            disabled={!has_plant(@plants[bed.id], idx)}
+            disabled={!has_plant(@plants[bed.id], idx) or !@plantability[bed.id][to_string(val)]}
             name="Square[]"
             id={"square_picker_#{idx}"}
             value={val}

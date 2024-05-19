@@ -20,8 +20,55 @@ defmodule VisualGardenWeb.PlannerLive.Show do
      |> assign(:garden, garden)
      |> add_entries()
      |> assign(:beds, Gardens.list_beds(id))
+     |> add_plantability(Date.utc_today())
      |> add_current_plants(day)
      |> assign(:extent_dates, extent_dates(garden.tz))}
+  end
+
+  def add_plantability(socket, start_date, end_date \\ nil) do
+    beds = socket.assigns.beds
+
+    entries =
+      for bed <- beds do
+        for i <- 0..(bed.width - 1) do
+          for j <- 0..(bed.length - 1) do
+            square =
+              VisualGardenWeb.PlannerLive.GraphComponent.bed_square(%{row: i, column: j}, bed)
+              |> to_string()
+
+            end_date =
+              if end_date, do: end_date, else: Planner.get_end_date(square, bed, start_date)
+
+            Planner.get_plantables_from_garden(
+              bed,
+              start_date,
+              end_date,
+              Date.utc_today()
+            )
+            |> case do
+              [] -> {bed.id, square, false}
+              _ -> {bed.id, square, true}
+            end
+          end
+        end
+      end
+      |> List.flatten()
+
+    entries =
+      entries
+      |> Enum.group_by(fn {bid, _square, _tf} ->
+        bid
+      end)
+      |> Enum.map(fn {bid, bsf} ->
+        {bid,
+         Enum.group_by(bsf, fn {_, square, _tf} -> square end)
+         |> Enum.map(fn {a, [{_, _square, tf}]} -> {a, tf} end)
+         |> Enum.into(%{})}
+      end)
+      |> Enum.into(%{})
+
+    socket
+    |> assign(:plantability, entries)
   end
 
   def has_plant(plants, idx) do
@@ -73,25 +120,28 @@ defmodule VisualGardenWeb.PlannerLive.Show do
     )
   end
 
-  def add_params(socket, %{"bed_id" => bid, "squares" => sq} = params) do
-    bed = Gardens.get_product!(bid)
-    start_date = if params["start_date"], do: Date.from_iso8601!(params["start_date"])
-    start_date = start_date || Date.utc_today()
-
+  defp get_end_date(squares, bed, start_date) do
     ed_list =
-      for square <- sq do
+      for square <- squares do
         Planner.get_end_date(square, bed, start_date)
       end
       |> Enum.reject(&is_nil(&1))
       |> Enum.sort(Date)
       |> Enum.take(1)
 
-    end_date =
       if ed_list == [] do
         nil
       else
         hd(ed_list)
       end
+  end
+
+  def add_params(socket, %{"bed_id" => bid, "squares" => sq} = params) do
+    bed = Gardens.get_product!(bid)
+    start_date = if params["start_date"], do: Date.from_iso8601!(params["start_date"])
+    start_date = start_date || Date.utc_today()
+
+    end_date = get_end_date(sq, bed, start_date)
 
     plantables =
       Planner.get_plantables_from_garden(
@@ -175,6 +225,19 @@ defmodule VisualGardenWeb.PlannerLive.Show do
      |> push_patch(
        to: ~p"/planners/#{socket.assigns.garden.id}/#{bed_id}/new?#{[squares: squares]}"
      )}
+  end
+
+  @impl true
+  def handle_event("plant_combo_update", %{"Square" => squares, "bed_id" => bed_id}, socket) do
+    bed = Gardens.get_product!(bed_id)
+    end_date = get_end_date(squares, bed, Date.utc_today())
+    {:noreply, add_plantability(socket, Date.utc_today(), end_date)}
+  end
+
+  @impl true
+  def handle_event("plant_combo_update", %{"bed_id" => _bed_id}, socket) do
+    end_date = nil
+    {:noreply, add_plantability(socket, Date.utc_today(), end_date)}
   end
 
   @impl true
