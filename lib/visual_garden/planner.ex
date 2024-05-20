@@ -106,13 +106,15 @@ defmodule VisualGarden.Planner do
         end_date \\ nil,
         today \\ nil,
         species \\ nil,
-        schedules_map \\ nil
+        schedules_map \\ nil,
+        seeds \\ nil,
+        garden \\ nil
       ) do
     # get seeds in garden from bed.garden_id
     # get species -> schedule map
     # get days of maturation for each seed
-    seeds = Gardens.list_seeds(bed.garden_id)
-    garden = Gardens.get_garden!(bed.garden_id)
+    seeds = if seeds, do: seeds, else: Gardens.list_seeds(bed.garden_id)
+    garden = if garden, do: garden, else: Gardens.get_garden!(bed.garden_id)
     region_id = garden.region_id
     tz = garden.tz
 

@@ -29,6 +29,7 @@ defmodule VisualGardenWeb.PlannerLive.Show do
     beds = socket.assigns.beds
     species = VisualGarden.Library.list_species_with_schedule(socket.assigns.garden.region_id)
     schedules_map = Planner.schedules_map(species)
+    seeds = Gardens.list_seeds(socket.assigns.garden.id)
 
     entries =
       for bed <- beds do
@@ -47,7 +48,9 @@ defmodule VisualGardenWeb.PlannerLive.Show do
               end_date,
               Date.utc_today(),
               species,
-              schedules_map
+              schedules_map,
+              seeds,
+              socket.assigns.garden
             )
             |> case do
               [] -> {bed.id, square, false}
