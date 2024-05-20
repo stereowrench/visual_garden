@@ -33,8 +33,8 @@ defmodule VisualGardenWeb.PlannerLive.Show do
 
     entries =
       for bed <- beds do
-        for i <- 0..(bed.width - 1) do
-          for j <- 0..(bed.length - 1) do
+        for i <- 0..(bed.length - 1) do
+          for j <- 0..(bed.width - 1) do
             square =
               VisualGardenWeb.PlannerLive.GraphComponent.bed_square(%{row: i, column: j}, bed)
               |> to_string()
@@ -230,6 +230,7 @@ defmodule VisualGardenWeb.PlannerLive.Show do
   @impl true
   def handle_info({VisualGardenWeb.PlannerLive.FormComponent, {:saved, _plant}}, socket) do
     start_date = Date.utc_today()
+
     socket =
       socket
       |> add_plantability(start_date)

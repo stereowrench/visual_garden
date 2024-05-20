@@ -12,7 +12,7 @@
           <input
             class="square-check"
             type="checkbox"
-            disabled={!has_plant(@plants[bed.id], idx) or !@plantability[bed.id][to_string(val)]}
+            disabled={!has_plant(@plants[bed.id], val) or !@plantability[bed.id][to_string(val)]}
             name="Square[]"
             id={"square_picker_#{idx}"}
             value={val}
