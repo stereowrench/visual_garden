@@ -168,6 +168,22 @@ defmodule VisualGardenWeb.PlannerLive.Show do
     |> assign(:plantables, plantables)
   end
 
+  def add_params(socket, %{"bed_id" => bid, "square" => sq, "entry" => planner_entry_id} = params) do
+    bed = Gardens.get_product!(bid)
+    start_date = if params["start_date"], do: Date.from_iso8601!(params["start_date"])
+    start_date = start_date || Date.utc_today()
+
+    socket
+    |> assign(:bed, Gardens.get_product!(bid))
+    |> assign(:square, sq)
+    |> assign(:squares, nil)
+    |> assign(:bed, bed)
+    |> assign(:planner_entry, Planner.get_planner_entry!(planner_entry_id))
+    |> assign(:end_date, Planner.get_end_date(sq, bed, start_date))
+    |> assign(:start_date, nil)
+    |> assign(:plantables, [])
+  end
+
   def add_params(socket, %{"bed_id" => bid, "square" => sq} = params) do
     bed = Gardens.get_product!(bid)
     start_date = if params["start_date"], do: Date.from_iso8601!(params["start_date"])
@@ -189,15 +205,6 @@ defmodule VisualGardenWeb.PlannerLive.Show do
     |> assign(:start_date, start_date)
     |> assign(:planner_entry, nil)
     |> assign(:plantables, plantables)
-  end
-
-  def add_params(socket, %{"bed_id" => bid, "square" => sq, "entry" => planner_entry_id}) do
-    socket
-    |> assign(:bed, Gardens.get_product!(bid))
-    |> assign(:square, sq)
-    |> assign(:planner_entry, Planner.get_planner_entry!(planner_entry_id))
-    |> assign(:start_date, nil)
-    |> assign(:plantables, [])
   end
 
   def add_params(socket, _) do
@@ -222,6 +229,12 @@ defmodule VisualGardenWeb.PlannerLive.Show do
 
   @impl true
   def handle_info({VisualGardenWeb.PlannerLive.FormComponent, {:saved, _plant}}, socket) do
+    start_date = Date.utc_today()
+    socket =
+      socket
+      |> add_plantability(start_date)
+      |> add_current_plants(start_date)
+
     {:noreply, socket}
   end
 
@@ -248,9 +261,17 @@ defmodule VisualGardenWeb.PlannerLive.Show do
   end
 
   @impl true
-  def handle_event("delete", %{"id" => planner_id}, socket) do
+  def handle_event("delete", %{"id" => planner_id} = params, socket) do
     planner = Planner.get_planner_entry!(planner_id)
     Planner.delete_planner_entry(planner)
+
+    start_date = if params["start_date"], do: Date.from_iso8601!(params["start_date"])
+    start_date = start_date || Date.utc_today()
+
+    socket =
+      socket
+      |> add_plantability(start_date)
+      |> add_current_plants(start_date)
 
     {:noreply,
      socket
