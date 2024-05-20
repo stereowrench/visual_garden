@@ -92,7 +92,22 @@ defmodule VisualGarden.Planner do
     end
   end
 
-  def get_plantables_from_garden(bed, start_date, end_date \\ nil, today \\ nil) do
+  def schedules_map(species) do
+    schedule_ids = Enum.map(species, fn {_, _common_name, id} -> id end)
+
+    Repo.all(from s in Schedule, where: s.id in ^schedule_ids, preload: [:species])
+    |> Enum.map(&{&1.id, &1})
+    |> Enum.into(%{})
+  end
+
+  def get_plantables_from_garden(
+        bed,
+        start_date,
+        end_date \\ nil,
+        today \\ nil,
+        species \\ nil,
+        schedules_map \\ nil
+      ) do
     # get seeds in garden from bed.garden_id
     # get species -> schedule map
     # get days of maturation for each seed
@@ -100,7 +115,17 @@ defmodule VisualGarden.Planner do
     garden = Gardens.get_garden!(bed.garden_id)
     region_id = garden.region_id
     tz = garden.tz
-    get_plantables(seeds, region_id, tz, start_date, end_date, today)
+
+    species = if species, do: species, else: Library.list_species_with_schedule(region_id)
+
+    schedules_map =
+      if schedules_map do
+        schedules_map
+      else
+        schedules_map(species)
+      end
+
+    get_plantables(seeds, region_id, tz, start_date, end_date, today, species, schedules_map)
   end
 
   # def get_plantables_from_garden_ignore_schedule(bed, start_date, end_date \\ nil, today \\ nil) do
@@ -145,7 +170,7 @@ defmodule VisualGarden.Planner do
   #   |> List.flatten()
   # end
 
-  defp get_plantables(seeds, region_id, tz, start_date, end_date, today) do
+  defp get_plantables(seeds, region_id, tz, start_date, end_date, today, species, schedules_map) do
     today =
       if today do
         today
@@ -159,15 +184,6 @@ defmodule VisualGarden.Planner do
       else
         start_date
       end
-
-    species = Library.list_species_with_schedule(region_id)
-
-    schedule_ids = Enum.map(species, fn {_, _common_name, id} -> id end)
-
-    schedules_map =
-      Repo.all(from s in Schedule, where: s.id in ^schedule_ids, preload: [:species])
-      |> Enum.map(&{&1.id, &1})
-      |> Enum.into(%{})
 
     schedules_map =
       species

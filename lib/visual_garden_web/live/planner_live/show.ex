@@ -27,6 +27,8 @@ defmodule VisualGardenWeb.PlannerLive.Show do
 
   def add_plantability(socket, start_date, end_date \\ nil) do
     beds = socket.assigns.beds
+    species = VisualGarden.Library.list_species_with_schedule(socket.assigns.garden.region_id)
+    schedules_map = Planner.schedules_map(species)
 
     entries =
       for bed <- beds do
@@ -43,7 +45,9 @@ defmodule VisualGardenWeb.PlannerLive.Show do
               bed,
               start_date,
               end_date,
-              Date.utc_today()
+              Date.utc_today(),
+              species,
+              schedules_map
             )
             |> case do
               [] -> {bed.id, square, false}
@@ -129,11 +133,11 @@ defmodule VisualGardenWeb.PlannerLive.Show do
       |> Enum.sort(Date)
       |> Enum.take(1)
 
-      if ed_list == [] do
-        nil
-      else
-        hd(ed_list)
-      end
+    if ed_list == [] do
+      nil
+    else
+      hd(ed_list)
+    end
   end
 
   def add_params(socket, %{"bed_id" => bid, "squares" => sq} = params) do

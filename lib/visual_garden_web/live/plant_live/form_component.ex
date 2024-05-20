@@ -34,7 +34,15 @@ defmodule VisualGardenWeb.PlantLive.FormComponent do
           <%= if get_field(@form, :seed_id) == "-1" do %>
             <.inputs_for :let={seed} field={@form[:seed]}>
               <.input label="Seed Name" type="text" field={seed[:name]} />
+              <.input
+                field={@form[:type]}
+                type="select"
+                label="Type"
+                prompt="Choose a value"
+                options={Ecto.Enum.values(VisualGarden.Library.LibrarySeed, :type)}
+              />
               <.input label="Seed Description" type="textarea" field={seed[:description]} />
+              <.input label="Days to maturation" type="number" field={seed[:days_to_maturation]} />
             </.inputs_for>
           <% end %>
 
@@ -104,6 +112,7 @@ defmodule VisualGardenWeb.PlantLive.FormComponent do
      socket
      |> assign(assigns)
      |> assign(:plant, plant)
+     |> assign(:unavailable_squares, %{})
      |> assign_form(changeset)}
   end
 
