@@ -24,6 +24,8 @@ defmodule VisualGarden.Gardens.PlannerEntry do
   def changeset(planner_entry, attrs) do
     planner_entry
     |> cast(attrs, [
+      :nursery_start,
+      :nursery_end,
       :start_plant_date,
       :end_plant_date,
       :days_to_maturity,

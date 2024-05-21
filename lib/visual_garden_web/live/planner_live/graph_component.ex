@@ -70,7 +70,7 @@ defmodule VisualGardenWeb.PlannerLive.GraphComponent do
           </rect>
           <rect
             width={
-              entry.days_to_maturity - Timex.diff(entry.end_plant_date, entry.start_plant_date, :days)
+              entry_width(entry)
             }
             height="25"
             y={25 + 25 * bed_square(entry, @bed)}
@@ -94,7 +94,7 @@ defmodule VisualGardenWeb.PlannerLive.GraphComponent do
             x={
               40 +
                 x_shift_date(
-                  Timex.shift(entry.start_plant_date, days: entry.days_to_maturity),
+                  days_to_maturity_from_plant_start(entry),
                   @garden.tz,
                   @extent_dates
                 )
@@ -140,6 +140,22 @@ defmodule VisualGardenWeb.PlannerLive.GraphComponent do
       />
     </svg>
     """
+  end
+
+  defp days_to_maturity_from_plant_start(entry) do
+    if entry.nursery_start do
+      Timex.shift(entry.nursery_start, days: entry.days_to_maturity)
+    else
+      Timex.shift(entry.start_plant_date, days: entry.days_to_maturity)
+    end
+  end
+
+  defp entry_width(entry) do
+    if entry.nursery_start do
+      entry.days_to_maturity - Timex.diff(entry.end_plant_date, entry.nursery_start, :days)
+    else
+      entry.days_to_maturity - Timex.diff(entry.end_plant_date, entry.start_plant_date, :days)
+    end
   end
 
   @impl true

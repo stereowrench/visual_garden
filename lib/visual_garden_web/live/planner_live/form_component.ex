@@ -71,17 +71,39 @@ defmodule VisualGardenWeb.PlannerLive.FormComponent do
                 type="date"
                 name="refuse_date"
                 label="Refuse date"
-                min={get_start_refuse_date(@form[:end_plant_date].value, @planner_map[:days])}
+                min={
+                  get_start_refuse_date(
+                    @form[:end_plant_date].value,
+                    @planner_map[:nursery_end],
+                    @planner_map[:days],
+                    @planner_map
+                  )
+                }
                 max={@end_refuse_date}
                 value={@refuse_date}
               />
             <% end %>
           <% end %>
           <:actions>
-            <.button phx-disable-with="Saving...">Save Nursery entry</.button>
+            <.button phx-disable-with="Saving...">Save entry</.button>
           </:actions>
         </.simple_form>
       <% else %>
+        <div class="prose">
+          <h3>Nursery start</h3>
+          <%= @planner_entry.nursery_start %>
+          <h3>Nursery end</h3>
+          <%= @planner_entry.nursery_end %>
+          <h3>Start plant</h3>
+          <%= @planner_entry.start_plant_date %>
+          <h3>End plant</h3>
+          <%= @planner_entry.end_plant_date %>
+          <h3>Days to maturity</h3>
+          <%= @planner_entry.days_to_maturity %>
+          <h3>Days to refuse</h3>
+          <%= @planner_entry.days_to_refuse %>
+        </div>
+        <br />
         <.link
           phx-click={JS.push("delete", value: %{id: @planner_entry.id})}
           data-confirm="Are you sure?"
@@ -93,8 +115,21 @@ defmodule VisualGardenWeb.PlannerLive.FormComponent do
     """
   end
 
-  def get_start_refuse_date(epd, days) do
-    Timex.shift(epd, days: days)
+  def get_start_refuse_date(epd, nursery_end, days, pm) do
+    if nursery_end do
+      ne = Timex.shift(epd, weeks: -pm[:min_lead])
+
+      ne =
+        if Timex.before?(nursery_end, pm[:nursery_end]) do
+          pm[:nursery_end]
+        else
+          ne
+        end
+
+      Timex.shift(ne, days: days)
+    else
+      Timex.shift(epd, days: days)
+    end
   end
 
   @impl true
@@ -251,6 +286,27 @@ defmodule VisualGardenWeb.PlannerLive.FormComponent do
       with pm when not is_nil(pm) <- socket.assigns.planner_map,
            ns when not is_nil(ns) <- pm[:nursery_start],
            ne when not is_nil(ne) <- pm[:nursery_end] do
+        spd = planner_params["start_plant_date"] |> Date.from_iso8601!()
+        epd = planner_params["end_plant_date"] |> Date.from_iso8601!()
+
+        ns = Timex.shift(spd, weeks: -pm[:max_lead])
+
+        ns =
+          if Timex.before?(ns, pm[:nursery_start]) do
+            pm[:nursery_start]
+          else
+            ns
+          end
+
+        ne = Timex.shift(epd, weeks: -pm[:min_lead])
+
+        ne =
+          if Timex.before?(ns, pm[:nursery_end]) do
+            pm[:nursery_end]
+          else
+            ne
+          end
+
         Map.merge(%{"nursery_start" => ns, "nursery_end" => ne}, planner_params)
       else
         _ -> planner_params

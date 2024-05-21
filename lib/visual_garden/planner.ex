@@ -291,6 +291,8 @@ defmodule VisualGarden.Planner do
                 type: "nursery",
                 nursery_start: nursery_start,
                 nursery_end: nursery_end,
+                min_lead: schedule.nursery_lead_weeks_min,
+                max_lead: schedule.nursery_lead_weeks_max,
                 sow_start: sow_start,
                 sow_end: sow_end,
                 days: days,
@@ -368,9 +370,40 @@ defmodule VisualGarden.Planner do
   # TODO scope to user's gardens
   def get_todo_items() do
     gardens = Gardens.list_gardens()
+    today = Date.utc_today()
 
     for garden <- gardens do
-      entries = list_planner_entries(garden.id)
+      entries =
+        list_planner_entries(garden.id)
+        |> Repo.preload([:nursery_entry])
+
+      nursery_filter_fn = fn entry ->
+        entry.nursery_start != nil and entry.nursery_end != nil and entry.nursery_entry != nil
+      end
+
+      nursery_entries =
+        entries
+        |> Enum.filter(nursery_filter_fn)
+
+      # nursery entries that end after today
+
+      current_n_fn = fn entry ->
+          Timex.diff(today, entry.nursery_end, :days) <= 0
+      end
+
+      current_nursery_entries =
+        nursery_entries
+        |> Enum.filter(current_n_fn)
+
+      overdue_nursery_entries =
+        nursery_entries
+        |> Enum.reject(current_n_fn)
+
+      # nursery entires that end before today
+
+      planting_entries =
+        entries
+        |> Enum.reject(nursery_filter_fn)
 
       # to_plant =
       #   entries
