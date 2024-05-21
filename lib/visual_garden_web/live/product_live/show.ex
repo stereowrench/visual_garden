@@ -62,7 +62,8 @@ defmodule VisualGardenWeb.ProductLive.Show do
 
   @impl true
   def handle_info({VisualGardenWeb.EventLogLive.FormComponent, {:saved, _event_log}}, socket) do
-    {:noreply, assign(socket, :events, Gardens.list_event_logs(socket.assigns.product.id))}
+    events = Gardens.list_event_logs(socket.assigns.product.id)
+    {:noreply, assign(socket, :events, events)}
   end
 
   def handle_info({VisualGardenWeb.ProductLive.FormComponent, {:saved, product}}, socket) do

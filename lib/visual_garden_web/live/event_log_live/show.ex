@@ -20,8 +20,10 @@ defmodule VisualGardenWeb.EventLogLive.Show do
   defp page_title(:edit), do: "Edit Event log"
 
   def render_events(assigns) do
+    # IO.inspect(assigns)
     event_groups =
-      Enum.group_by(assigns.events, & &1.event_time)
+      Enum.group_by(assigns.events, & {&1.event_time, &1.transferred_from_id, &1.transferred_to_id})
+      |> Enum.map(fn {{a, _, _}, b} -> {a, b} end)
       |> Enum.sort_by(fn {group, _el} -> group end)
 
     assigns =

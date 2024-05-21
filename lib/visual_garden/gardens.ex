@@ -589,8 +589,7 @@ defmodule VisualGarden.Gardens do
 
   def create_event_log(type = "transfer", attrs) do
     attrs = Map.merge(%{"event_type" => type}, attrs)
-
-    alt_attrs = Map.merge(%{"product_id" => attrs["transferred_from"]}, attrs)
+    alt_attrs = Map.merge(attrs, %{"product_id" => attrs["transferred_from_id"]})
 
     {:ok, rec} =
       Repo.transaction(fn ->
