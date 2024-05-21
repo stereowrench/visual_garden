@@ -81,6 +81,17 @@ Hooks.SplitMenu = {
   },
 };
 
+// getFullYear, getMonth, getDate, getHours, getMinutes all return values of local time.
+const convertToDateTimeLocalString = (date) => {
+  const year = date.getFullYear();
+  const month = (date.getMonth() + 1).toString().padStart(2, "0");
+  const day = date.getDate().toString().padStart(2, "0");
+  const hours = date.getHours().toString().padStart(2, "0");
+  const minutes = date.getMinutes().toString().padStart(2, "0");
+
+  return `${year}-${month}-${day}T${hours}:${minutes}`;
+}
+
 Hooks.EventTime = {
   mounted() {
     const stored = document.getElementById("event-time");
@@ -88,9 +99,8 @@ Hooks.EventTime = {
     const dateTimeLocalValue = new Date(
       d.getTime() - d.getTimezoneOffset() * 60000
     )
-      .toISOString()
-      .slice(0, -1);
-    this.el.value = dateTimeLocalValue;
+    this.el.value = convertToDateTimeLocalString(new Date(dateTimeLocalValue))
+
     stored.value = new Date(this.el.value).toISOString();
     stored.dispatchEvent(new Event("input", { bubbles: true }));
 

@@ -20,7 +20,6 @@ defmodule VisualGardenWeb.EventLogLive.Show do
   defp page_title(:edit), do: "Edit Event log"
 
   def render_events(assigns) do
-    # IO.inspect(assigns)
     event_groups =
       Enum.group_by(assigns.events, & {&1.event_time, &1.transferred_from_id, &1.transferred_to_id})
       |> Enum.map(fn {{a, _, _}, b} -> {a, b} end)
@@ -37,7 +36,7 @@ defmodule VisualGardenWeb.EventLogLive.Show do
       <br />
       <h3>Events</h3>
       <br />
-      <ul role="list" class="-mb-8" id="event-log-list" phx-update="stream">
+      <ul role="list" class="-mb-8" id="event-log-list">
         <%= for {event_time, events} <- @event_groups do %>
           <%= for {event_type, events} <- Enum.group_by(events, & &1.event_type) do %>
             <li title="Event type" id={"event_log_#{hd(events).id}"}>
