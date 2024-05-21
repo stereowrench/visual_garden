@@ -87,7 +87,7 @@ defmodule VisualGardenWeb.PlannerLive.GraphComponent do
           >
           </rect>
           <rect
-            width={Timex.diff(entry.end_plant_date, entry.start_plant_date, :days)}
+            width={if entry.nursery_start, do: 0, else: Timex.diff(entry.end_plant_date, entry.start_plant_date, :days)}
             height="25"
             y={25 + 25 * bed_square(entry, @bed)}
             class="crop-span-end"
