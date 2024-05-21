@@ -21,25 +21,28 @@ defmodule VisualGardenWeb.EventLogLive.Show do
 
   def render_events(assigns) do
     event_groups =
-      Enum.group_by(assigns.events, & {&1.event_time, &1.transferred_from_id, &1.transferred_to_id})
+      Enum.group_by(
+        assigns.events,
+        &{&1.event_time, &1.transferred_from_id, &1.transferred_to_id}
+      )
       |> Enum.map(fn {{a, _, _}, b} -> {a, b} end)
       |> Enum.sort_by(fn {group, _el} -> group end)
+      |> Enum.map(fn {time, events} -> {time, Enum.group_by(events, & &1.event_type)} end)
 
-    assigns =
-      %{
-        event_groups: event_groups
-      }
-      |> Map.merge(assigns)
+    assigns = assign(assigns, event_groups: event_groups)
 
     ~H"""
-    <div class="flow-root">
+    <div class="flow-root" id="event-log-list-container">
       <br />
       <h3>Events</h3>
       <br />
       <ul role="list" class="-mb-8" id="event-log-list">
-        <%= for {event_time, events} <- @event_groups do %>
-          <%= for {event_type, events} <- Enum.group_by(events, & &1.event_type) do %>
-            <li title="Event type" id={"event_log_#{hd(events).id}"}>
+        <%= for {event_time, events_group} <- @event_groups do %>
+          <%= for {event_type, events} <- events_group do %>
+            <li
+              title="Event type"
+              id={"event_log_#{Enum.map(events, & &1.id) |> Enum.intersperse("_") |> Enum.join()}"}
+            >
               <div class="relative pb-8">
                 <span class="absolute left-4 top-4 -ml-px h-full w-0.5 bg-gray-200" aria-hidden="true">
                 </span>
