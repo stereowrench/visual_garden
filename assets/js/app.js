@@ -91,6 +91,9 @@ Hooks.EventTime = {
       .toISOString()
       .slice(0, -1);
     this.el.value = dateTimeLocalValue;
+    stored.value = new Date(this.el.value).toISOString();
+    stored.dispatchEvent(new Event("input", { bubbles: true }));
+
     this.el.onchange = () => {
       stored.value = new Date(this.el.value).toISOString();
       stored.dispatchEvent(new Event("input", { bubbles: true }));
