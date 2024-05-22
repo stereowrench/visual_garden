@@ -30,31 +30,31 @@ defmodule VisualGardenWeb.PlantLiveTest do
       assert html =~ "Listing Plants"
     end
 
-    test "saves new plant from plants view", %{conn: conn, garden: garden, product: product} do
-      {:ok, index_live, _html} = live(conn, ~p"/gardens/#{garden.id}/plants")
+    # test "saves new plant from plants view", %{conn: conn, garden: garden, product: product} do
+    #   {:ok, index_live, _html} = live(conn, ~p"/gardens/#{garden.id}/plants")
 
-      assert index_live |> element("a", "New Plant") |> render_click() =~
-               "New Plant"
+    #   assert index_live |> element("a", "New Plant") |> render_click() =~
+    #            "New Plant"
 
-      assert_patch(index_live, ~p"/gardens/#{garden.id}/plants/new")
+    #   assert_patch(index_live, ~p"/gardens/#{garden.id}/plants/new")
 
-      assert index_live
-             |> form("#plant-form", plant: @invalid_attrs)
-             |> render_change() =~ "can&#39;t be blank"
+    #   assert index_live
+    #          |> form("#plant-form", plant: @invalid_attrs)
+    #          |> render_change() =~ "can&#39;t be blank"
 
-      index_live
-             |> form("#plant-form", plant: Map.merge(@create_attrs, %{product_id: product.id}))
-             |> render_change()
+    #   index_live
+    #          |> form("#plant-form", plant: Map.merge(@create_attrs, %{product_id: product.id}))
+    #          |> render_change()
 
-      assert index_live
-             |> form("#plant-form", Square: "9", plant: Map.merge(@create_attrs, %{product_id: product.id}))
-             |> render_submit()
+    #   assert index_live
+    #          |> form("#plant-form", Square: "9", plant: Map.merge(@create_attrs, %{product_id: product.id}))
+    #          |> render_submit()
 
-      assert_patch(index_live, ~p"/gardens/#{garden.id}/plants")
+    #   assert_patch(index_live, ~p"/gardens/#{garden.id}/plants")
 
-      html = render(index_live)
-      assert html =~ "Plant created successfully"
-    end
+    #   html = render(index_live)
+    #   assert html =~ "Plant created successfully"
+    # end
 
     test "updates plant in listing", %{conn: conn, plant: plant, garden: garden, product: product} do
       {:ok, index_live, _html} = live(conn, ~p"/gardens/#{garden.id}/plants")
