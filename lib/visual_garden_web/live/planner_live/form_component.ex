@@ -290,7 +290,6 @@ defmodule VisualGardenWeb.PlannerLive.FormComponent do
            ne when not is_nil(ne) <- pm[:nursery_end] do
         spd = planner_params["start_plant_date"] |> Date.from_iso8601!()
         epd = planner_params["end_plant_date"] |> Date.from_iso8601!()
-
         ns = Timex.shift(spd, weeks: -pm[:max_lead])
 
         ns =
@@ -303,7 +302,7 @@ defmodule VisualGardenWeb.PlannerLive.FormComponent do
         ne = Timex.shift(epd, weeks: -pm[:min_lead])
 
         ne =
-          if Timex.before?(ns, pm[:nursery_end]) do
+          if Timex.after?(ne, pm[:nursery_end]) do
             pm[:nursery_end]
           else
             ne

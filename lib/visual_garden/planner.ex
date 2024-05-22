@@ -93,7 +93,7 @@ defmodule VisualGarden.Planner do
   end
 
   def schedules_map(species) do
-    # TODO dirty hack
+    # TODO dirty hack. This breaks the schedule ancestry tree.
     schedule_ids =
       species
       |> Enum.map(fn {sp, _, _} -> sp end)
@@ -272,7 +272,11 @@ defmodule VisualGarden.Planner do
             sow_end = Timex.shift(b, days: -days)
 
             nursery_end =
-              clamp_date(start_date, end_date, Timex.shift(sow_end, days: -days))
+              clamp_date(
+                start_date,
+                end_date,
+                Timex.shift(sow_end, weeks: -schedule.nursery_lead_weeks_min)
+              )
 
             nursery_start =
               clamp_date(
@@ -367,7 +371,9 @@ defmodule VisualGarden.Planner do
     beds = Gardens.list_beds(garden_id)
     bed_ids = beds |> Enum.map(& &1.id)
 
-    Repo.all(from pe in PlannerEntry, where: pe.bed_id in ^bed_ids, preload: [:nursery_entry])
+    Repo.all(
+      from pe in PlannerEntry, where: pe.bed_id in ^bed_ids, preload: [:nursery_entry, :seed]
+    )
     |> Enum.group_by(& &1.bed_id)
   end
 
