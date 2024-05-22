@@ -46,7 +46,7 @@ defmodule VisualGardenWeb.PlannerLive.GraphComponent do
             <rect
               width={Timex.diff(b, a, :days)}
               height="25"
-              y={25 + 25 * (group)}
+              y={25 + 25 * group}
               class="new-crop-span"
               x={40 + x_shift_date(a, @garden.tz, @extent_dates)}
             >
@@ -69,9 +69,7 @@ defmodule VisualGardenWeb.PlannerLive.GraphComponent do
           >
           </rect>
           <rect
-            width={
-              entry_width(entry)
-            }
+            width={entry_width(entry)}
             height="25"
             y={25 + 25 * bed_square(entry, @bed)}
             x={
@@ -87,7 +85,11 @@ defmodule VisualGardenWeb.PlannerLive.GraphComponent do
           >
           </rect>
           <rect
-            width={if entry.nursery_start, do: 0, else: Timex.diff(entry.end_plant_date, entry.start_plant_date, :days)}
+            width={
+              if entry.nursery_start,
+                do: 0,
+                else: Timex.diff(entry.end_plant_date, entry.start_plant_date, :days)
+            }
             height="25"
             y={25 + 25 * bed_square(entry, @bed)}
             class="crop-span-end"
