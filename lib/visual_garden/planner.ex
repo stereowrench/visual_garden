@@ -72,21 +72,10 @@ defmodule VisualGarden.Planner do
   def parse_square(square, bed) do
     with b when not is_nil(b) <- bed,
          _ when not is_nil(square) <- square do
-      # i + bed.length * j
-      # is length, j is width
       {z, ""} = Integer.parse(square)
-      # => i
-      if bed.width > bed.length do
-        x = rem(z, bed.width)
-        # => j
-        y = trunc(:math.floor(z / bed.width))
-        {y, x}
-      else
-        x = rem(z, bed.length)
-        # => j
-        y = trunc(:math.floor(z / bed.length))
-        {y, x}
-      end
+      x = rem(z, bed.width)
+      y = trunc(:math.floor(z / bed.width))
+      {y, x}
     else
       _ -> :error
     end
