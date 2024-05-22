@@ -14,7 +14,7 @@
             type="checkbox"
             disabled={!has_plant(@plants[bed.id], val) or !@plantability[bed.id][to_string(val)]}
             name="Square[]"
-            id={"square_picker_#{idx}"}
+            id={"square_picker_#{idx}_#{bed.id}"}
             value={val}
           />
           <span></span>
