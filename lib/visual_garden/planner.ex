@@ -93,7 +93,12 @@ defmodule VisualGarden.Planner do
   end
 
   def schedules_map(species) do
-    schedule_ids = Enum.map(species, fn {_, _common_name, id} -> id end)
+    # TODO dirty hack
+    schedule_ids =
+      species
+      |> Enum.map(fn {sp, _, _} -> sp end)
+      |> Repo.preload([:schedules])
+      |> Enum.flat_map(fn sp -> Enum.map(sp.schedules, & &1.id) end)
 
     Repo.all(from s in Schedule, where: s.id in ^schedule_ids, preload: [:species])
     |> Enum.map(&{&1.id, &1})
@@ -172,7 +177,7 @@ defmodule VisualGarden.Planner do
   #   |> List.flatten()
   # end
 
-  defp get_plantables(seeds, region_id, tz, start_date, end_date, today, species, schedules_map) do
+  defp get_plantables(seeds, _region_id, tz, start_date, end_date, today, species, schedules_map) do
     today =
       if today do
         today
@@ -188,13 +193,12 @@ defmodule VisualGarden.Planner do
       end
 
     schedules_map =
-      species
-      |> Enum.map(fn {species, _common_name, schedule_id} ->
-        {species.id, schedules_map[schedule_id]}
+      schedules_map
+      |> Enum.group_by(fn {_schedule_id, schedule} ->
+        schedule.species_id
       end)
-      |> Enum.group_by(fn {sp_id, _schedule_id} -> sp_id end)
-      |> Enum.map(fn {sp_id, vals} ->
-        {sp_id, Enum.map(vals, fn {_, schedule} -> schedule end)}
+      |> Enum.map(fn {spid, schedules} ->
+        {spid, Enum.map(schedules, fn {_, sched} -> sched end)}
       end)
       |> Enum.into(%{})
 
@@ -388,7 +392,7 @@ defmodule VisualGarden.Planner do
       # nursery entries that end after today
 
       current_n_fn = fn entry ->
-          Timex.diff(today, entry.nursery_end, :days) <= 0
+        Timex.diff(today, entry.nursery_end, :days) <= 0
       end
 
       current_nursery_entries =
