@@ -12,6 +12,8 @@ defmodule VisualGarden.Gardens.PlannerEntry do
     field :common_name, :string
     field :row, :integer
     field :column, :integer
+    field :min_lead, :integer
+    field :max_lead, :integer
     belongs_to :bed, VisualGarden.Gardens.Product
     belongs_to :seed, VisualGarden.Gardens.Seed
     has_one :nursery_entry, VisualGarden.Gardens.NurseryEntry
@@ -35,7 +37,9 @@ defmodule VisualGarden.Gardens.PlannerEntry do
       :bed_id,
       :row,
       :column,
-      :plant_id
+      :plant_id,
+      :min_lead,
+      :max_lead
     ])
     |> validate_required([
       :start_plant_date,

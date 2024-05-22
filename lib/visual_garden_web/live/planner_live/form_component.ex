@@ -61,6 +61,8 @@ defmodule VisualGardenWeb.PlannerLive.FormComponent do
               max={@planner_map[:sow_end]}
             />
             <.input field={@form[:days_to_maturity]} type="hidden" value={@planner_map[:days]} />
+            <.input field={@form[:min_lead]} type="hidden" value={@planner_map[:min_lead]} />
+            <.input field={@form[:max_lead]} type="hidden" value={@planner_map[:max_lead]} />
             <.input field={@form[:seed_id]} type="hidden" value={@seed_id} />
             <.input field={@form[:bed_id]} type="hidden" value={@bed.id} />
             <.input field={@form[:row]} type="hidden" value={@row} />
