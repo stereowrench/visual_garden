@@ -46,6 +46,9 @@ defmodule VisualGardenWeb.PlannerLive.FormComponent do
             />
           <% end %>
           <%= unless @species_selected == "" or @type_selected == "" or @plantable_selected == "" do %>
+            <%= if @nursery_start do %>
+              Nursery dates: <%= @nursery_start %> to <%= @nursery_end %>
+            <% end %>
             <.input
               field={@form[:start_plant_date]}
               type="date"
@@ -171,6 +174,8 @@ defmodule VisualGardenWeb.PlannerLive.FormComponent do
      |> assign(:plantable_selected, "")
      |> assign(:planner_map, %{})
      |> assign(:seed_id, nil)
+     |> assign(:nursery_start, nil)
+     |> assign(:nursery_end, nil)
      |> assign(:refuse_date, nil)
      |> assign(:end_refuse_date, end_date)
      |> assign(:plantables_parsed, plantables_parsed)
@@ -270,12 +275,17 @@ defmodule VisualGardenWeb.PlannerLive.FormComponent do
             planner_params
           end
 
+        {ns, ne} = calculate_nursery_dates(socket, planner_params)
+
         changeset =
           %PlannerEntry{}
           |> Library.change_planner_entry(planner_params)
           |> Map.put(:action, :validate)
 
-        assign_form(socket, changeset)
+        socket
+        |> assign_form(changeset)
+        |> assign(:nursery_start, ns)
+        |> assign(:nursery_end, ne)
       else
         socket
       end
@@ -284,36 +294,54 @@ defmodule VisualGardenWeb.PlannerLive.FormComponent do
   end
 
   def handle_event("save", %{"planner_entry" => planner_params} = params, socket) do
+    {ns, ne} = calculate_nursery_dates(socket, planner_params)
+
     planner_params =
-      with pm when not is_nil(pm) <- socket.assigns.planner_map,
-           ns when not is_nil(ns) <- pm[:nursery_start],
-           ne when not is_nil(ne) <- pm[:nursery_end] do
-        spd = planner_params["start_plant_date"] |> Date.from_iso8601!()
-        epd = planner_params["end_plant_date"] |> Date.from_iso8601!()
-        ns = Timex.shift(spd, weeks: -pm[:max_lead])
-
-        ns =
-          if Timex.before?(ns, pm[:nursery_start]) do
-            pm[:nursery_start]
-          else
-            ns
-          end
-
-        ne = Timex.shift(epd, weeks: -pm[:min_lead])
-
-        ne =
-          if Timex.after?(ne, pm[:nursery_end]) do
-            pm[:nursery_end]
-          else
-            ne
-          end
-
+      if ns != nil && ne != nil do
         Map.merge(%{"nursery_start" => ns, "nursery_end" => ne}, planner_params)
       else
-        _ -> planner_params
+        planner_params
       end
 
     save_planner(socket, socket.assigns.action, planner_params, params)
+  end
+
+  defp calculate_nursery_dates(socket, planner_params) do
+    with pm when not is_nil(pm) <- socket.assigns.planner_map,
+         ns when not is_nil(ns) <- pm[:nursery_start],
+         ne when not is_nil(ne) <- pm[:nursery_end],
+         spd when spd != "" <- planner_params["start_plant_date"],
+         spd when spd != "" <- planner_params["end_plant_date"] do
+      spd = planner_params["start_plant_date"] |> Date.from_iso8601!()
+      epd = planner_params["end_plant_date"] |> Date.from_iso8601!()
+      ns = Timex.shift(spd, weeks: -pm[:max_lead])
+      ns =
+        if Timex.before?(ns, pm[:nursery_start]) do
+          pm[:nursery_start]
+        else
+          ns
+        end
+
+      ne = Timex.shift(epd, weeks: -pm[:min_lead])
+
+      ne =
+        if Timex.after?(ne, pm[:nursery_end]) do
+          pm[:nursery_end]
+        else
+          ne
+        end
+
+      ne =
+        if Timex.after?(ns, ne) do
+          ns
+        else
+          ne
+        end
+
+      {ns, ne}
+    else
+      _ -> {nil, nil}
+    end
   end
 
   defp add_params(planner_params, params, _socket) do
