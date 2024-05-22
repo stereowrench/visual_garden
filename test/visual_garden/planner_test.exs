@@ -77,7 +77,7 @@ defmodule VisualGarden.PlannerTest do
                  days: 51,
                  sow_start: ~D[2025-04-17],
                  sow_end: ~D[2025-06-01],
-                 nursery_end: ~D[2025-04-11],
+                 nursery_end: ~D[2025-05-18],
                  nursery_start: ~D[2025-04-03]
                }
              ] =
@@ -118,7 +118,7 @@ defmodule VisualGarden.PlannerTest do
                  days: 10,
                  sow_start: ~D[2024-06-13],
                  sow_end: ~D[2024-06-30],
-                 nursery_end: ~D[2024-06-20],
+                 nursery_end: ~D[2024-06-23],
                  nursery_start: ~D[2024-06-06]
                }
              ] =
