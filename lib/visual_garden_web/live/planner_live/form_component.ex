@@ -96,7 +96,7 @@ defmodule VisualGardenWeb.PlannerLive.FormComponent do
                 min={
                   get_start_refuse_date(
                     @form[:end_plant_date].value,
-                    @planner_map[:nursery_end],
+                    @form[:nursery_end].value,
                     @planner_map[:days],
                     @planner_map
                   )
@@ -138,24 +138,8 @@ defmodule VisualGardenWeb.PlannerLive.FormComponent do
   end
 
   def get_start_refuse_date(epd, nursery_end, days, pm) do
-    epd =
-      if epd == nil do
-        Timex.shift(nursery_end, days: days)
-      else
-        epd
-      end
-
-    if nursery_end do
-      ne = Timex.shift(epd, weeks: -pm[:min_lead])
-
-      ne =
-        if Timex.before?(nursery_end, pm[:nursery_end]) do
-          pm[:nursery_end]
-        else
-          ne
-        end
-
-      Timex.shift(ne, days: days)
+    if epd == nil do
+      Timex.shift(nursery_end, days: days)
     else
       Timex.shift(epd, days: days)
     end
