@@ -46,23 +46,40 @@ defmodule VisualGardenWeb.PlannerLive.FormComponent do
             />
           <% end %>
           <%= unless @species_selected == "" or @type_selected == "" or @plantable_selected == "" do %>
-            <%= if @nursery_start do %>
-              Nursery dates: <%= @nursery_start %> to <%= @nursery_end %>
+            <%= if @planner_map[:type] == "nursery" do %>
+              <.input
+                field={@form[:nursery_start]}
+                type="date"
+                label="Earliest Nursery Plant"
+                min={@planner_map[:nursery_start]}
+                max={@form[:nursery_end].value || @planner_map[:nursery_end]}
+              />
+              <.input
+                field={@form[:nursery_end]}
+                type="date"
+                label="Latest Nursery Plant"
+                min={@form[:nursery_start].value || @planner_map[:nursery_start]}
+                max={@planner_map[:nursery_end]}
+              />
+            <% else %>
+              <%= if @nursery_start do %>
+                Nursery dates: <%= @nursery_start %> to <%= @nursery_end %>
+              <% end %>
+              <.input
+                field={@form[:start_plant_date]}
+                type="date"
+                label="Earliest Plant"
+                min={@planner_map[:sow_start]}
+                max={@form[:end_plant_date].value || @planner_map[:sow_end]}
+              />
+              <.input
+                field={@form[:end_plant_date]}
+                type="date"
+                label="Latest Plant"
+                min={@form[:start_plant_date].value || @planner_map[:sow_start]}
+                max={@planner_map[:sow_end]}
+              />
             <% end %>
-            <.input
-              field={@form[:start_plant_date]}
-              type="date"
-              label="Earliest Plant"
-              min={@planner_map[:sow_start]}
-              max={@form[:end_plant_date].value || @planner_map[:sow_end]}
-            />
-            <.input
-              field={@form[:end_plant_date]}
-              type="date"
-              label="Latest Plant"
-              min={@form[:start_plant_date].value || @planner_map[:sow_start]}
-              max={@planner_map[:sow_end]}
-            />
             <.input field={@form[:days_to_maturity]} type="hidden" value={@planner_map[:days]} />
             <.input field={@form[:min_lead]} type="hidden" value={@planner_map[:min_lead]} />
             <.input field={@form[:max_lead]} type="hidden" value={@planner_map[:max_lead]} />
@@ -71,7 +88,7 @@ defmodule VisualGardenWeb.PlannerLive.FormComponent do
             <.input field={@form[:row]} type="hidden" value={@row} />
             <.input field={@form[:column]} type="hidden" value={@column} />
             <.input field={@form[:common_name]} type="hidden" value={@species_selected} />
-            <%= if @form[:end_plant_date].value not in ["", nil] do %>
+            <%= if @form[:end_plant_date].value not in ["", nil] or @form[:nursery_end].value not in ["", nil] do %>
               <.input
                 type="date"
                 name="refuse_date"
@@ -121,6 +138,13 @@ defmodule VisualGardenWeb.PlannerLive.FormComponent do
   end
 
   def get_start_refuse_date(epd, nursery_end, days, pm) do
+    epd =
+      if epd == nil do
+        Timex.shift(nursery_end, days: days)
+      else
+        epd
+      end
+
     if nursery_end do
       ne = Timex.shift(epd, weeks: -pm[:min_lead])
 
@@ -298,7 +322,10 @@ defmodule VisualGardenWeb.PlannerLive.FormComponent do
 
     planner_params =
       if ns != nil && ne != nil do
-        Map.merge(%{"nursery_start" => ns, "nursery_end" => ne}, planner_params)
+        Map.merge(planner_params, %{
+          "start_plant_date" => Date.to_string(ns),
+          "end_plant_date" => Date.to_string(ne)
+        })
       else
         planner_params
       end
@@ -308,35 +335,16 @@ defmodule VisualGardenWeb.PlannerLive.FormComponent do
 
   defp calculate_nursery_dates(socket, planner_params) do
     with pm when not is_nil(pm) <- socket.assigns.planner_map,
-         ns when not is_nil(ns) <- pm[:nursery_start],
-         ne when not is_nil(ne) <- pm[:nursery_end],
-         spd when spd != "" <- planner_params["start_plant_date"],
-         spd when spd != "" <- planner_params["end_plant_date"] do
-      spd = planner_params["start_plant_date"] |> Date.from_iso8601!()
-      epd = planner_params["end_plant_date"] |> Date.from_iso8601!()
-      ns = Timex.shift(spd, weeks: -pm[:max_lead])
-      ns =
-        if Timex.before?(ns, pm[:nursery_start]) do
-          pm[:nursery_start]
-        else
-          ns
-        end
+         "nursery" <- pm[:type],
+         nss when nss != "" <- planner_params["nursery_start"],
+         nes when nes != "" <- planner_params["nursery_end"],
+         spd when not is_nil(spd) <- pm[:sow_start],
+         epd when not is_nil(epd) <- pm[:sow_end] do
+      ns = nss |> Date.from_iso8601!()
+      ne = nes |> Date.from_iso8601!()
 
-      ne = Timex.shift(epd, weeks: -pm[:min_lead])
-
-      ne =
-        if Timex.after?(ne, pm[:nursery_end]) do
-          pm[:nursery_end]
-        else
-          ne
-        end
-
-      ne =
-        if Timex.after?(ns, ne) do
-          ns
-        else
-          ne
-        end
+      ns = Planner.clamp_date(spd, epd, Timex.shift(ns, weeks: pm[:min_lead]))
+      ne = Planner.clamp_date(spd, epd, Timex.shift(ne, weeks: pm[:max_lead]))
 
       {ns, ne}
     else
