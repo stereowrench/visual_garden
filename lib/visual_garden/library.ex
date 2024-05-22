@@ -154,7 +154,6 @@ defmodule VisualGarden.Library do
     Species.changeset(species, attrs)
   end
 
-  # TODO get rid of this. It doesn't work.
   @species_cte """
   SELECT
   	species.id as species_id,
