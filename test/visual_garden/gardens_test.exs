@@ -516,4 +516,13 @@ defmodule VisualGarden.GardensTest do
       assert %Ecto.Changeset{} = Gardens.change_nursery_entry(nursery_entry)
     end
   end
+
+  test "squares_options" do
+    length = 3
+    width = 4
+    assert Enum.to_list(0..(3 * 4 - 1)) ==
+             Gardens.squares_options(%{length: length, width: width})
+             |> Enum.map(fn {_, idx} -> idx end)
+             |> Enum.sort()
+  end
 end

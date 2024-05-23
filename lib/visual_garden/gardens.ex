@@ -821,20 +821,15 @@ defmodule VisualGarden.Gardens do
   end
 
   def squares_options(bed) do
-    for i <- 0..(bed.length - 1) do
-      for j <- 0..(bed.width - 1) do
-        {"#{i}, #{j}", j * bed.width + i}
-      end
+    for k <- 0..(bed.length * bed.width - 1) do
+      {i, j} = Planner.parse_square(to_string(k), bed)
+      {"#{i}, #{j}", k}
     end
     |> List.flatten()
   end
 
   def row_col_to_square(row, col, bed) do
-    if bed.width > bed.length do
-      row * bed.width + col
-    else
-      row * bed.length + col
-    end
+    col * bed.width + row
   end
 
   def content_for_cell(plants, idx) do

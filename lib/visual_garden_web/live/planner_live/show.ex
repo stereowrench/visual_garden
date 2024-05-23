@@ -33,29 +33,25 @@ defmodule VisualGardenWeb.PlannerLive.Show do
 
     entries =
       for bed <- beds do
-        for i <- 0..(bed.length - 1) do
-          for j <- 0..(bed.width - 1) do
-            square =
-              VisualGardenWeb.PlannerLive.GraphComponent.bed_square(%{row: i, column: j}, bed)
-              |> to_string()
+        for k <- 0..(bed.length * bed.width - 1) do
+          square = k
 
-            end_date =
-              if end_date, do: end_date, else: Planner.get_end_date(square, bed, start_date)
+          end_date =
+            if end_date, do: end_date, else: Planner.get_end_date(square, bed, start_date)
 
-            Planner.get_plantables_from_garden(
-              bed,
-              start_date,
-              end_date,
-              Date.utc_today(),
-              species,
-              schedules_map,
-              seeds,
-              socket.assigns.garden
-            )
-            |> case do
-              [] -> {bed.id, square, false}
-              _ -> {bed.id, square, true}
-            end
+          Planner.get_plantables_from_garden(
+            bed,
+            start_date,
+            end_date,
+            Date.utc_today(),
+            species,
+            schedules_map,
+            seeds,
+            socket.assigns.garden
+          )
+          |> case do
+            [] -> {bed.id, square, false}
+            _ -> {bed.id, square, true}
           end
         end
       end
