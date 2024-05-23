@@ -76,17 +76,10 @@ defmodule VisualGarden.Planner do
       # is length, j is width
       {z, ""} = Integer.parse(square)
       # => i
-      if bed.width > bed.length do
-        x = rem(z, bed.width)
-        # => j
-        y = trunc(:math.floor(z / bed.width))
-        {y, x}
-      else
-        x = rem(z, bed.length)
-        # => j
-        y = trunc(:math.floor(z / bed.length))
-        {y, x}
-      end
+      x = rem(z, bed.width)
+      # => j
+      y = trunc(:math.floor(z / bed.width))
+      {x, y}
     else
       _ -> :error
     end
@@ -117,6 +110,7 @@ defmodule VisualGarden.Planner do
     tz = garden.tz
 
     species = if species, do: species, else: Library.list_species_with_schedule(region_id)
+
     schedules_map =
       if schedules_map do
         schedules_map
