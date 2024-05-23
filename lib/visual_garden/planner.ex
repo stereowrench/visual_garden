@@ -92,15 +92,8 @@ defmodule VisualGarden.Planner do
     end
   end
 
-  def schedules_map(species) do
-    # TODO dirty hack. This breaks the schedule ancestry tree.
-    schedule_ids =
-      species
-      |> Enum.map(fn {sp, _, _} -> sp end)
-      |> Repo.preload([:schedules])
-      |> Enum.flat_map(fn sp -> Enum.map(sp.schedules, & &1.id) end)
-
-    Repo.all(from s in Schedule, where: s.id in ^schedule_ids, preload: [:species])
+  def schedules_map(region_id) do
+    Repo.all(from s in Schedule, where: s.region_id == ^region_id, preload: [:species])
     |> Enum.map(&{&1.id, &1})
     |> Enum.into(%{})
   end
@@ -124,12 +117,11 @@ defmodule VisualGarden.Planner do
     tz = garden.tz
 
     species = if species, do: species, else: Library.list_species_with_schedule(region_id)
-
     schedules_map =
       if schedules_map do
         schedules_map
       else
-        schedules_map(species)
+        schedules_map(region_id)
       end
 
     get_plantables(seeds, region_id, tz, start_date, end_date, today, species, schedules_map)
