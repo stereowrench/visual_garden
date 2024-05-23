@@ -144,10 +144,10 @@ defmodule VisualGarden.PlannerTest do
 
           bed2 = %{length: 11, width: 6}
 
-          assert {^i, ^j} =
+          assert {^j, ^i} =
                    Planner.parse_square(
                      VisualGardenWeb.PlannerLive.GraphComponent.bed_square(
-                       %{row: i, column: j},
+                       %{row: j, column: i},
                        bed2
                      )
                      |> to_string(),

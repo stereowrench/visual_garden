@@ -229,7 +229,11 @@ defmodule VisualGardenWeb.PlannerLive.GraphComponent do
   end
 
   def bed_square(entry, bed) do
-    entry.row * bed.width + entry.column
+    if bed.width > bed.length do
+      entry.row * bed.width + entry.column
+    else
+      entry.row * bed.length + entry.column
+    end
   end
 
   defp generate_available_regions(entries, extent_dates, bed) do
