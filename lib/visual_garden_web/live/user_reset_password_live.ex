@@ -60,7 +60,7 @@ defmodule VisualGardenWeb.UserResetPasswordLive do
       {:ok, _} ->
         {:noreply,
          socket
-         |> put_flash(:info, "Password reset successfully.")
+         |> put_notification(Normal.new(:info, "Password reset successfully."))
          |> redirect(to: ~p"/users/log_in")}
 
       {:error, changeset} ->
@@ -78,7 +78,9 @@ defmodule VisualGardenWeb.UserResetPasswordLive do
       assign(socket, user: user, token: token)
     else
       socket
-      |> put_flash(:error, "Reset password link is invalid or it has expired.")
+      |> put_notification(
+        Normal.new(:danger, "Reset password link is invalid or it has expired.")
+      )
       |> redirect(to: ~p"/")
     end
   end

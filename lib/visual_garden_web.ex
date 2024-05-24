@@ -45,6 +45,7 @@ defmodule VisualGardenWeb do
       import Plug.Conn
       import VisualGardenWeb.Gettext
 
+      alias VisualGardenWeb.Components.Notifications.{Normal, Disconnected}
       unquote(verified_routes())
     end
   end

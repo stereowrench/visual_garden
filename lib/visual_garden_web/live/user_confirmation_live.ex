@@ -35,7 +35,7 @@ defmodule VisualGardenWeb.UserConfirmationLive do
       {:ok, _} ->
         {:noreply,
          socket
-         |> put_flash(:info, "User confirmed successfully.")
+         |> put_notification(Normal.new(:info, "User confirmed successfully."))
          |> redirect(to: ~p"/")}
 
       :error ->
@@ -50,7 +50,9 @@ defmodule VisualGardenWeb.UserConfirmationLive do
           %{} ->
             {:noreply,
              socket
-             |> put_flash(:error, "User confirmation link is invalid or it has expired.")
+             |> put_notification(
+               Normal.new(:danger, "User confirmation link is invalid or it has expired.")
+             )
              |> redirect(to: ~p"/")}
         end
     end

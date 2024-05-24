@@ -34,7 +34,12 @@ defmodule VisualGardenWeb.Router do
 
     get "/", PageController, :home
 
-    live_session :routed, on_mount: [VisualGardenWeb.Nav, Flashy.Hook] do
+    live_session :routed,
+      on_mount: [
+        {VisualGardenWeb.UserAuth, :mount_current_user},
+        VisualGardenWeb.Nav,
+        Flashy.Hook
+      ] do
       live "/home", HomeLive.Show, :show
 
       live "/gardens", GardenLive.Index, :index

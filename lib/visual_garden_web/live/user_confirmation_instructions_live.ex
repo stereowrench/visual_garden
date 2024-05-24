@@ -45,7 +45,7 @@ defmodule VisualGardenWeb.UserConfirmationInstructionsLive do
 
     {:noreply,
      socket
-     |> put_flash(:info, info)
+     |> put_notification(Normal.new(:info, info))
      |> redirect(to: ~p"/")}
   end
 end
