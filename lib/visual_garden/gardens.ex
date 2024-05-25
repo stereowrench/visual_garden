@@ -4,7 +4,7 @@ defmodule VisualGarden.Gardens do
   """
 
   import Ecto.Query, warn: false
-  alias VisualGarden.Gardens.GardenUsers
+  alias VisualGarden.Gardens.GardenUser
   alias VisualGarden.Repo
 
   alias VisualGarden.Gardens.Garden
@@ -13,9 +13,16 @@ defmodule VisualGarden.Gardens do
   def create_garden_user(garden, user) do
     params = %{garden_id: garden.id, user_id: user.id}
 
-    %GardenUsers{}
-    |> GardenUsers.changeset(params)
+    %GardenUser{}
+    |> GardenUser.changeset(params)
     |> Repo.insert()
+  end
+
+  def get_garden_user(garden, user) do
+    Repo.one(
+      from gu in GardenUser,
+        where: gu.garden_id == ^garden.id and gu.user_id == ^user.id
+    )
   end
 
   @doc """
@@ -31,7 +38,7 @@ defmodule VisualGarden.Gardens do
     if user do
       Repo.all(
         from g in Garden,
-          left_join: gu in GardenUsers,
+          left_join: gu in GardenUser,
           on: gu.garden_id == g.id,
           where: g.owner_id == ^user.id or gu.user_id == ^user.id
       )

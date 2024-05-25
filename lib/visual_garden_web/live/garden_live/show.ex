@@ -10,7 +10,7 @@ defmodule VisualGardenWeb.GardenLive.Show do
 
   @impl true
   def handle_params(%{"id" => id}, _, socket) do
-    Authorization.authorize_garden(id, socket.assigns.current_user)
+    Authorization.authorize_garden_view(id, socket.assigns.current_user)
 
     {:noreply,
      socket

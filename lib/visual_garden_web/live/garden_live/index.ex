@@ -15,7 +15,7 @@ defmodule VisualGardenWeb.GardenLive.Index do
   end
 
   defp apply_action(socket, :edit, %{"id" => id}) do
-    Authorization.authorize_garden(id, socket.assigns.current_user)
+    Authorization.authorize_garden_view(id, socket.assigns.current_user)
 
     socket
     |> assign(:page_title, "Edit Garden")
@@ -41,7 +41,7 @@ defmodule VisualGardenWeb.GardenLive.Index do
 
   @impl true
   def handle_event("delete", %{"id" => id}, socket) do
-    Authorization.authorize_garden(id, socket.assigns.current_user)
+    Authorization.authorize_garden_view(id, socket.assigns.current_user)
     garden = Gardens.get_garden!(id)
     {:ok, _} = Gardens.delete_garden(garden)
 

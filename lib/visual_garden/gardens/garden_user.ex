@@ -1,4 +1,4 @@
-defmodule VisualGarden.Gardens.GardenUsers do
+defmodule VisualGarden.Gardens.GardenUser do
   use Ecto.Schema
   import Ecto.Changeset
 
