@@ -28,6 +28,11 @@ defmodule VisualGardenWeb.ConnCase do
       import Plug.Conn
       import Phoenix.ConnTest
       import VisualGardenWeb.ConnCase
+
+      def unwrap_flash(flash) do
+        [key = ("flashy-" <> _rest)|_] = Map.keys(flash)
+        flash[key].message
+      end
     end
   end
 

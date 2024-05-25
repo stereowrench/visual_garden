@@ -23,7 +23,14 @@ defmodule VisualGarden.GardensTest do
 
     test "create_garden/1 with valid data creates a garden" do
       region = LibraryFixtures.region_fixture()
-      valid_attrs = %{name: "My Other Garden", tz: "America/Chicago", region_id: region.id}
+      user = VisualGarden.AccountsFixtures.user_fixture()
+
+      valid_attrs = %{
+        name: "My Other Garden",
+        tz: "America/Chicago",
+        region_id: region.id,
+        owner_id: user.id
+      }
 
       assert {:ok, %Garden{} = garden} = Gardens.create_garden(valid_attrs)
     end
@@ -520,6 +527,7 @@ defmodule VisualGarden.GardensTest do
   test "squares_options" do
     length = 3
     width = 4
+
     assert Enum.to_list(0..(3 * 4 - 1)) ==
              Gardens.squares_options(%{length: length, width: width})
              |> Enum.map(fn {_, idx} -> idx end)

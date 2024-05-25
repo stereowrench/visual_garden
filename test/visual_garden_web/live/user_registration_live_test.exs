@@ -49,6 +49,9 @@ defmodule VisualGardenWeb.UserRegistrationLiveTest do
 
       # Now do a logged in request and assert on the menu
       conn = get(conn, "/")
+      assert redirected_to(conn) == ~p"/home/"
+      _response = html_response(conn, 302)
+      conn = get(conn, redirected_to(conn))
       response = html_response(conn, 200)
       assert response =~ email
       assert response =~ "Settings"

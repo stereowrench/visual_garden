@@ -27,10 +27,8 @@ defmodule VisualGardenWeb.UserResetPasswordLiveTest do
     test "does not render reset password with invalid token", %{conn: conn} do
       {:error, {:redirect, to}} = live(conn, ~p"/users/reset_password/invalid")
 
-      assert to == %{
-               flash: %{"error" => "Reset password link is invalid or it has expired."},
-               to: ~p"/"
-             }
+      assert to.to == ~p"/"
+      assert "Reset password link is invalid or it has expired." = unwrap_flash(to.flash)
     end
 
     test "renders errors for invalid data", %{conn: conn, token: token} do
@@ -64,7 +62,7 @@ defmodule VisualGardenWeb.UserResetPasswordLiveTest do
         |> follow_redirect(conn, ~p"/users/log_in")
 
       refute get_session(conn, :user_token)
-      assert Phoenix.Flash.get(conn.assigns.flash, :info) =~ "Password reset successfully"
+      assert unwrap_flash(conn.assigns.flash) =~ "Password reset successfully"
       assert Accounts.get_user_by_email_and_password(user.email, "new valid password")
     end
 

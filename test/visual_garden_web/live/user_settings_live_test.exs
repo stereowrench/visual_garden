@@ -21,7 +21,7 @@ defmodule VisualGardenWeb.UserSettingsLiveTest do
 
       assert {:redirect, %{to: path, flash: flash}} = redirect
       assert path == ~p"/users/log_in"
-      assert %{"error" => "You must log in to access this page."} = flash
+      assert "You must log in to access this page." = unwrap_flash(flash)
     end
   end
 
@@ -112,7 +112,7 @@ defmodule VisualGardenWeb.UserSettingsLiveTest do
 
       assert get_session(new_password_conn, :user_token) != get_session(conn, :user_token)
 
-      assert Phoenix.Flash.get(new_password_conn.assigns.flash, :info) =~
+      assert unwrap_flash(new_password_conn.assigns.flash) =~
                "Password updated successfully"
 
       assert Accounts.get_user_by_email_and_password(user.email, new_password)
@@ -176,8 +176,7 @@ defmodule VisualGardenWeb.UserSettingsLiveTest do
 
       assert {:live_redirect, %{to: path, flash: flash}} = redirect
       assert path == ~p"/users/settings"
-      assert %{"info" => message} = flash
-      assert message == "Email changed successfully."
+      assert unwrap_flash(flash) == "Email changed successfully."
       refute Accounts.get_user_by_email(user.email)
       assert Accounts.get_user_by_email(email)
 
@@ -185,16 +184,14 @@ defmodule VisualGardenWeb.UserSettingsLiveTest do
       {:error, redirect} = live(conn, ~p"/users/settings/confirm_email/#{token}")
       assert {:live_redirect, %{to: path, flash: flash}} = redirect
       assert path == ~p"/users/settings"
-      assert %{"error" => message} = flash
-      assert message == "Email change link is invalid or it has expired."
+      assert unwrap_flash(flash) == "Email change link is invalid or it has expired."
     end
 
     test "does not update email with invalid token", %{conn: conn, user: user} do
       {:error, redirect} = live(conn, ~p"/users/settings/confirm_email/oops")
       assert {:live_redirect, %{to: path, flash: flash}} = redirect
       assert path == ~p"/users/settings"
-      assert %{"error" => message} = flash
-      assert message == "Email change link is invalid or it has expired."
+      assert "Email change link is invalid or it has expired." = unwrap_flash(flash)
       assert Accounts.get_user_by_email(user.email)
     end
 
@@ -203,8 +200,7 @@ defmodule VisualGardenWeb.UserSettingsLiveTest do
       {:error, redirect} = live(conn, ~p"/users/settings/confirm_email/#{token}")
       assert {:redirect, %{to: path, flash: flash}} = redirect
       assert path == ~p"/users/log_in"
-      assert %{"error" => message} = flash
-      assert message == "You must log in to access this page."
+      assert "You must log in to access this page." = unwrap_flash(flash)
     end
   end
 end

@@ -41,7 +41,7 @@ defmodule VisualGardenWeb.UserForgotPasswordLiveTest do
         |> render_submit()
         |> follow_redirect(conn, "/")
 
-      assert Phoenix.Flash.get(conn.assigns.flash, :info) =~ "If your email is in our system"
+      assert unwrap_flash(conn.assigns.flash) =~ "If your email is in our system"
 
       assert Repo.get_by!(Accounts.UserToken, user_id: user.id).context ==
                "reset_password"
@@ -56,7 +56,7 @@ defmodule VisualGardenWeb.UserForgotPasswordLiveTest do
         |> render_submit()
         |> follow_redirect(conn, "/")
 
-      assert Phoenix.Flash.get(conn.assigns.flash, :info) =~ "If your email is in our system"
+      assert unwrap_flash(conn.assigns.flash) =~ "If your email is in our system"
       assert Repo.all(Accounts.UserToken) == []
     end
   end
