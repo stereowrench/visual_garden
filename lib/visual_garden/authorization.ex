@@ -17,7 +17,7 @@ defmodule VisualGarden.Authorization do
           raise UnauthorizedError
         end
 
-        unless garden.owner_id == user.id do
+        if garden.owner_id != user.id && user.role not in [:admin, :moderator] do
           raise UnauthorizedError
         end
     end

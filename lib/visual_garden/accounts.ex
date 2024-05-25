@@ -350,4 +350,10 @@ defmodule VisualGarden.Accounts do
       {:error, :user, changeset, _} -> {:error, changeset}
     end
   end
+
+  def promote_role(user, role) do
+    user
+    |> User.promote_changeset(role)
+    |> Repo.update()
+  end
 end

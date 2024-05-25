@@ -7,6 +7,7 @@ defmodule VisualGarden.Accounts.User do
     field :password, :string, virtual: true, redact: true
     field :hashed_password, :string, redact: true
     field :confirmed_at, :naive_datetime
+    field :role, Ecto.Enum, values: [:admin, :user], default: :user
 
     timestamps(type: :utc_datetime)
   end
@@ -39,6 +40,12 @@ defmodule VisualGarden.Accounts.User do
     |> cast(attrs, [:email, :password])
     |> validate_email(opts)
     |> validate_password(opts)
+  end
+
+  def promote_changeset(user, role) do
+    user
+    |> cast(%{role: role}, [:role])
+    |> validate_required([:role])
   end
 
   defp validate_email(changeset, opts) do
