@@ -6,7 +6,10 @@ defmodule VisualGardenWeb.GardenLive.Index do
 
   @impl true
   def mount(_params, _session, socket) do
-    {:ok, stream(socket, :gardens, Gardens.list_gardens(socket.assigns.current_user))}
+    {:ok,
+     socket
+     |> stream(:public_gardens, Gardens.list_public_gardens(socket.assigns.current_user))
+     |> stream(:gardens, Gardens.list_gardens(socket.assigns.current_user))}
   end
 
   @impl true

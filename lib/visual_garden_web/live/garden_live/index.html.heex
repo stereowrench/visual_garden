@@ -7,12 +7,17 @@
   </:actions>
 </.header>
 
+<div class="prose">
+  <h3>Your gardens</h3>
+</div>
 <.table
   id="gardens"
   rows={@streams.gardens}
   row_click={fn {_id, garden} -> JS.navigate(~p"/gardens/#{garden}") end}
 >
-  <:col :let={{_id, garden}} label="name"><%= garden.name %> <%= visibility_badge(garden.visibility) %></:col>
+  <:col :let={{_id, garden}} label="name">
+    <%= garden.name %> <%= visibility_badge(garden.visibility) %>
+  </:col>
   <:action :let={{_id, garden}}>
     <div class="sr-only">
       <.link navigate={~p"/gardens/#{garden}"}>Show</.link>
@@ -27,6 +32,19 @@
       Delete
     </.link>
   </:action>
+</.table>
+
+<div class="prose">
+  <h3>Public gardens</h3>
+</div>
+<.table
+  id="gardens"
+  rows={@streams.public_gardens}
+  row_click={fn {_id, garden} -> JS.navigate(~p"/gardens/#{garden}") end}
+>
+  <:col :let={{_id, garden}} label="name">
+    <%= garden.name %> <%= visibility_badge(garden.visibility) %>
+  </:col>
 </.table>
 
 <.modal
