@@ -71,7 +71,6 @@ defmodule VisualGardenWeb.GardenLiveTest do
       assert index_live |> element("#gardens-#{garden.id} a", "Edit") |> render_click() =~
                "Edit Garden"
 
-
       assert_patch(index_live, ~p"/gardens/#{garden}/edit")
 
       assert index_live

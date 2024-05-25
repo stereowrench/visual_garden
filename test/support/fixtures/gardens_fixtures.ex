@@ -24,7 +24,8 @@ defmodule VisualGarden.GardensFixtures do
         name: "My Garden#{System.unique_integer()}",
         tz: "America/Chicago",
         region_id: region.id,
-        owner_id: user.id
+        owner_id: user.id,
+        visibility: :private
       })
       |> VisualGarden.Gardens.create_garden()
 

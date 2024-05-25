@@ -24,6 +24,6 @@ defmodule VisualGarden.Gardens.Garden do
     |> cast(attrs, [:name, :region_id, :tz, :owner_id, :visibility])
     |> cast_assoc(:products)
     |> validate_inclusion(:tz, Tzdata.zone_list())
-    |> validate_required([:name, :tz, :region_id, :owner_id])
+    |> validate_required([:name, :tz, :region_id, :owner_id, :visibility])
   end
 end

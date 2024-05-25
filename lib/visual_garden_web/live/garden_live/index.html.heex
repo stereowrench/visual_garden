@@ -8,7 +8,7 @@
 </.header>
 
 <div class="prose">
-  <h3>Your gardens</h3>
+<h3>Your gardens</h3>
 </div>
 <.table
   id="gardens"
@@ -38,7 +38,7 @@
   <h3>Public gardens</h3>
 </div>
 <.table
-  id="gardens"
+  id="public-gardens"
   rows={@streams.public_gardens}
   row_click={fn {_id, garden} -> JS.navigate(~p"/gardens/#{garden}") end}
 >
