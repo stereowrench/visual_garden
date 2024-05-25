@@ -158,7 +158,7 @@ defmodule VisualGardenWeb.PlannerLive.FormComponent do
     # garden
     # bed
     # extent_dates
-    changeset = Planner.change_planner_entry(%PlannerEntry{})
+    changeset = Planner.change_planner_entry(%PlannerEntry{}, assigns.garden)
 
     {row, column} =
       if assigns.square do
@@ -290,7 +290,7 @@ defmodule VisualGardenWeb.PlannerLive.FormComponent do
 
         changeset =
           %PlannerEntry{}
-          |> Library.change_planner_entry(planner_params)
+          |> Library.change_planner_entry(planner_params, socket.assigns.garden)
           |> Map.put(:action, :validate)
 
         socket

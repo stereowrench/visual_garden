@@ -187,7 +187,7 @@ defmodule VisualGardenWeb.PlannerLive.GraphComponent do
      socket
      |> assign(
        :can_edit?,
-       Authorization.can_modify_garden?(assigns.garden.id, assigns.current_user)
+       Authorization.can_modify_garden?(assigns.garden, assigns.current_user)
      )
      |> assign(assigns)}
   end

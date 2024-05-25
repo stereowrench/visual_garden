@@ -13,9 +13,9 @@ defmodule VisualGarden.Planner do
     |> Repo.insert()
   end
 
-  def change_planner_entry(%PlannerEntry{} = entry, attrs \\ %{}) do
+  def change_planner_entry(%PlannerEntry{} = entry, garden, attrs \\ %{}) do
     entry
-    |> PlannerEntry.changeset(attrs)
+    |> PlannerEntry.changeset(attrs, garden)
   end
 
   def delete_planner_entry(%PlannerEntry{} = planner) do
