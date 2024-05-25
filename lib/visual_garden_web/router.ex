@@ -30,6 +30,19 @@ defmodule VisualGardenWeb.Router do
   end
 
   scope "/", VisualGardenWeb do
+    pipe_through [:browser, :require_authenticated_user]
+
+    live_session :creation,
+      on_mount: [
+        {VisualGardenWeb.UserAuth, :ensure_authenticated},
+        VisualGardenWeb.Nav,
+        Flashy.Hook
+      ] do
+      live "/gardens/new", GardenLive.Index, :new
+    end
+  end
+
+  scope "/", VisualGardenWeb do
     pipe_through :browser
 
     get "/", PageController, :home
@@ -43,7 +56,6 @@ defmodule VisualGardenWeb.Router do
       live "/home", HomeLive.Show, :show
 
       live "/gardens", GardenLive.Index, :index
-      live "/gardens/new", GardenLive.Index, :new
       live "/gardens/:id/edit", GardenLive.Index, :edit
 
       live "/gardens/:id", GardenLive.Show, :show

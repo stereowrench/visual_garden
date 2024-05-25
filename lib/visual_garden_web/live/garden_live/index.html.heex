@@ -39,6 +39,7 @@
     module={VisualGardenWeb.GardenLive.FormComponent}
     id={@garden.id || :new}
     title={@page_title}
+    current_user={@current_user}
     action={@live_action}
     garden={@garden}
     patch={~p"/gardens"}

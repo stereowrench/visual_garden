@@ -9,15 +9,18 @@ defmodule VisualGarden.Gardens.Garden do
     has_many :products, VisualGarden.Gardens.Product
     belongs_to :region, VisualGarden.Library.Region
 
+    belongs_to :owner, VisualGarden.Accounts.User
+    field :visibility, Ecto.Enum, values: [:public, :private], default: :private
+
     timestamps(type: :utc_datetime)
   end
 
   @doc false
   def changeset(garden, attrs) do
     garden
-    |> cast(attrs, [:name, :region_id, :tz])
+    |> cast(attrs, [:name, :region_id, :tz, :owner_id])
     |> cast_assoc(:products)
     |> validate_inclusion(:tz, Tzdata.zone_list())
-    |> validate_required([:name, :tz, :region_id])
+    |> validate_required([:name, :tz, :region_id, :owner_id])
   end
 end

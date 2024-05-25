@@ -39,6 +39,7 @@
     module={VisualGardenWeb.GardenLive.FormComponent}
     id={@garden.id}
     title={@page_title}
+    current_user={@current_user}
     action={@live_action}
     garden={@garden}
     patch={~p"/gardens/#{@garden}"}
@@ -59,6 +60,7 @@
     garden={@garden}
     products={@products}
     seeds={@seeds}
+    current_user={@current_user}
     patch={~p"/gardens/#{@garden}"}
   />
 </.modal>

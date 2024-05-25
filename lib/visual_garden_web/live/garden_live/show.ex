@@ -2,6 +2,7 @@ defmodule VisualGardenWeb.GardenLive.Show do
   use VisualGardenWeb, :live_view
 
   alias VisualGarden.Gardens
+  alias VisualGarden.Authorization
 
   @impl true
   def mount(_params, _session, socket) do
@@ -10,6 +11,7 @@ defmodule VisualGardenWeb.GardenLive.Show do
 
   @impl true
   def handle_params(%{"id" => id}, _, socket) do
+    Authorization.authorize_garden(id, socket.assigns.current_user)
     {:noreply,
      socket
      |> assign(:page_title, page_title(socket.assigns.live_action))
