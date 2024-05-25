@@ -9,7 +9,8 @@ defmodule VisualGarden.MixProject do
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
-      deps: deps()
+      deps: deps(),
+      test_coverage: [ignore_modules: [~r/.*\.PC/]]
     ]
   end
 
