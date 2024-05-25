@@ -27,6 +27,8 @@ defmodule VisualGardenWeb.Router do
         Flashy.Hook
       ] do
       live "/gardens/new", GardenLive.Index, :new
+      live "/gardens/:id/show/edit", GardenLive.Show, :edit
+      live "/gardens/:id/show/collab", GardenLive.Show, :collab
     end
   end
 
@@ -47,7 +49,6 @@ defmodule VisualGardenWeb.Router do
       live "/gardens/:id/edit", GardenLive.Index, :edit
 
       live "/gardens/:id", GardenLive.Show, :show
-      live "/gardens/:id/show/edit", GardenLive.Show, :edit
 
       live "/gardens/:garden_id/products", ProductLive.Index, :index
       live "/gardens/:garden_id/beds", ProductLive.Index, :beds
