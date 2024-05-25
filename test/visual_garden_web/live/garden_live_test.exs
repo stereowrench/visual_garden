@@ -148,4 +148,31 @@ defmodule VisualGardenWeb.GardenLiveTest do
       end)
     end
   end
+
+  test "adding a user", %{conn: conn, garden: garden, user: owner} do
+    user2 = user_fixture()
+    conn = log_in_user(conn, user2)
+
+    assert_raise(VisualGarden.Authorization.UnauthorizedError, fn ->
+      live(conn, ~p"/gardens/#{garden}")
+    end)
+
+    conn = log_in_user(conn, owner)
+    {:ok, live_show, _html} = live(conn, ~p"/gardens/#{garden}")
+
+    assert show_live |> element("a", "Add collaborators") |> render_click() =~
+             "Add collaborators"
+
+    assert show_live
+           |> form("#collab-form", user_email: "")
+           |> render_change() =~ "can&#39;t be blank"
+
+    assert show_live
+           |> form("#collab-form", user_email: user2.email)
+           |> render_submit()
+
+    conn = log_in_user(conn, user2)
+
+    {:ok, _, _} = live(conn, ~p"/gardens/#{garden}")
+  end
 end
