@@ -355,7 +355,11 @@ defmodule VisualGardenWeb.PlannerLive.FormComponent do
   end
 
   defp save_planner(socket, :new, planner_params, params) do
-    case planner_params |> add_params(params, socket) |> Planner.create_planner_entry() do
+    Authorization.authorize_garden_modify(socket.assigns.garden.id, socket.assigns.current_user)
+
+    case planner_params
+         |> add_params(params, socket)
+         |> Planner.create_planner_entry(socket.assigns.garden) do
       {:ok, planner_entry} ->
         notify_parent({:saved, planner_entry})
 
@@ -370,13 +374,15 @@ defmodule VisualGardenWeb.PlannerLive.FormComponent do
   end
 
   defp save_planner(socket, :new_bulk, planner_params, params) do
+    Authorization.authorize_garden_modify(socket.assigns.garden.id, socket.assigns.current_user)
+
     res =
       VisualGarden.Repo.transaction(fn ->
         for square <- socket.assigns.squares do
           case planner_params
                |> add_params(params, socket)
                |> add_square(square, socket.assigns.bed)
-               |> Planner.create_planner_entry() do
+               |> Planner.create_planner_entry(socket.assigns.garden) do
             {:ok, planner_entry} ->
               notify_parent({:saved, planner_entry})
               :ok
