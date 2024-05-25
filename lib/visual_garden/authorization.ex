@@ -5,6 +5,16 @@ defmodule VisualGarden.Authorization do
     defexception message: "Unauthorized", plug_status: 401
   end
 
+  def can_modify_library?(user) do
+    user.role == :admin
+  end
+
+  def authorize_library(user) do
+    unless can_modify_library?(user) do
+      raise UnauthorizedError
+    end
+  end
+
   def authorize_garden_view(id, user) do
     garden = Gardens.get_garden!(id)
 
