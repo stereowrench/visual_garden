@@ -87,6 +87,16 @@ defmodule VisualGardenWeb.GardenLiveTest do
       assert html =~ "Garden updated successfully"
     end
 
+    test "updates garden in listing wrong user", %{conn: conn, garden: garden} do
+      user = user_fixture()
+      conn = log_in_user(conn, user)
+      {:ok, index_live, _html} = live(conn, ~p"/gardens")
+
+      assert_raise(VisualGarden.Authorization.UnauthorizedError, fn ->
+        live(conn, ~p"/gardens/#{garden}/edit")
+      end)
+    end
+
     test "deletes garden in listing", %{conn: conn, garden: garden} do
       {:ok, index_live, _html} = live(conn, ~p"/gardens")
 
@@ -126,6 +136,15 @@ defmodule VisualGardenWeb.GardenLiveTest do
 
       html = render(show_live)
       assert html =~ "Garden updated successfully"
+    end
+
+    test "updates garden in listing wrong user", %{conn: conn, garden: garden} do
+      user = user_fixture()
+      conn = log_in_user(conn, user)
+
+      assert_raise(VisualGarden.Authorization.UnauthorizedError, fn ->
+        live(conn, ~p"/gardens/#{garden}")
+      end)
     end
   end
 end

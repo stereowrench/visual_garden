@@ -15,6 +15,8 @@ defmodule VisualGardenWeb.GardenLive.Index do
   end
 
   defp apply_action(socket, :edit, %{"id" => id}) do
+    Authorization.authorize_garden(id, socket.assigns.current_user)
+
     socket
     |> assign(:page_title, "Edit Garden")
     |> assign(:garden, Gardens.get_garden!(id))
