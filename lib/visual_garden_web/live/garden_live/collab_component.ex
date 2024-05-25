@@ -1,10 +1,9 @@
 defmodule VisualGardenWeb.GardenLive.CollabComponent do
+  alias VisualGarden.Authorization
   alias VisualGarden.Accounts
-  alias VisualGarden.Library
   use VisualGardenWeb, :live_component
 
   alias VisualGarden.Gardens
-  alias VisualGardenWeb.KeywordHighlighter
 
   defmodule EmailSchema do
     alias VisualGarden.Accounts
@@ -65,6 +64,7 @@ defmodule VisualGardenWeb.GardenLive.CollabComponent do
 
   @impl true
   def update(%{garden: garden} = assigns, socket) do
+    Authorization.authorize_garden_modify(garden, socket.assigns.current_user)
     changeset = EmailSchema.changeset()
 
     {:ok,
