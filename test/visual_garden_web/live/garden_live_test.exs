@@ -24,6 +24,10 @@ defmodule VisualGardenWeb.GardenLiveTest do
         {:ok, _, _html} = live(conn, ~p"/gardens/#{garden.id}")
       end)
     end
+
+    test "create should send to login", %{conn: conn} do
+      assert {:error, {:redirect, %{to: "/users/log_in"}}} = live(conn, ~p"/gardens/new")
+    end
   end
 
   describe "Index" do
