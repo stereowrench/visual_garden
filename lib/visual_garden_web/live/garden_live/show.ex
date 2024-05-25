@@ -11,12 +11,17 @@ defmodule VisualGardenWeb.GardenLive.Show do
   @impl true
   def handle_params(%{"id" => id}, _, socket) do
     Authorization.authorize_garden_view(id, socket.assigns.current_user)
+    garden = Gardens.get_garden!(id)
 
     {:noreply,
      socket
      |> assign(:page_title, page_title(socket.assigns.live_action))
-     |> assign(:garden, Gardens.get_garden!(id))
+     |> assign(:garden, garden)
      |> assign(:seeds, Gardens.list_seeds(id))
+     |> assign(
+       :can_modify?,
+       Authorization.can_modify_garden?(garden, socket.assigns.current_user)
+     )
      |> assign_plants()
      |> assign(:products, Gardens.list_products(id))}
   end
@@ -46,5 +51,4 @@ defmodule VisualGardenWeb.GardenLive.Show do
     |> assign(:plants, plants)
     |> assign(:total_plants, total_plants)
   end
-
 end

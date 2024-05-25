@@ -3,7 +3,7 @@
 <.header>
   <%= @garden.name %>
   <:subtitle>Grow, grow, grow!</:subtitle>
-  <:actions>
+  <:actions :if={@can_modify?}>
     <button class="major-button">
       <.link patch={~p"/gardens/#{@garden}/show/edit"} phx-click={JS.push_focus()}>
         Edit garden

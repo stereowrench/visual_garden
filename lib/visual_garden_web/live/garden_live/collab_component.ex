@@ -64,7 +64,7 @@ defmodule VisualGardenWeb.GardenLive.CollabComponent do
 
   @impl true
   def update(%{garden: garden} = assigns, socket) do
-    Authorization.authorize_garden_modify(garden, socket.assigns.current_user)
+    Authorization.authorize_garden_modify(garden.id, assigns.current_user)
     changeset = EmailSchema.changeset()
 
     {:ok,
