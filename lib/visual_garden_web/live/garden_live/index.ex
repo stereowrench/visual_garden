@@ -6,7 +6,7 @@ defmodule VisualGardenWeb.GardenLive.Index do
 
   @impl true
   def mount(_params, _session, socket) do
-    {:ok, stream(socket, :gardens, Gardens.list_gardens())}
+    {:ok, stream(socket, :gardens, Gardens.list_gardens(socket.assigns.current_user))}
   end
 
   @impl true
@@ -41,6 +41,7 @@ defmodule VisualGardenWeb.GardenLive.Index do
 
   @impl true
   def handle_event("delete", %{"id" => id}, socket) do
+    Authorization.authorize_garden(id, socket.assigns.current_user)
     garden = Gardens.get_garden!(id)
     {:ok, _} = Gardens.delete_garden(garden)
 

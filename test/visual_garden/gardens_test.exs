@@ -12,8 +12,8 @@ defmodule VisualGarden.GardensTest do
     @invalid_attrs %{name: nil}
 
     test "list_gardens/0 returns all gardens" do
-      garden = garden_fixture()
-      assert Gardens.list_gardens() == [garden]
+      garden = garden_fixture(%{visibility: :public})
+      assert Gardens.list_public_gardens() == [garden]
     end
 
     test "get_garden!/1 returns the garden with given id" do

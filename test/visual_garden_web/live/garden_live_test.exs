@@ -71,6 +71,7 @@ defmodule VisualGardenWeb.GardenLiveTest do
       assert index_live |> element("#gardens-#{garden.id} a", "Edit") |> render_click() =~
                "Edit Garden"
 
+
       assert_patch(index_live, ~p"/gardens/#{garden}/edit")
 
       assert index_live
@@ -97,7 +98,8 @@ defmodule VisualGardenWeb.GardenLiveTest do
       end)
     end
 
-    test "deletes garden in listing", %{conn: conn, garden: garden} do
+    test "deletes garden in listing", %{conn: conn, garden: garden, user: user} do
+      conn = log_in_user(conn, user)
       {:ok, index_live, _html} = live(conn, ~p"/gardens")
 
       assert index_live |> element("#gardens-#{garden.id} a", "Delete") |> render_click()
