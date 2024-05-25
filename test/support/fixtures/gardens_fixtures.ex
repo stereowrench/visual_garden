@@ -4,6 +4,7 @@ defmodule VisualGarden.GardensFixtures do
   entities via the `VisualGarden.Gardens` context.
   """
   alias VisualGarden.LibraryFixtures
+  alias VisualGarden.AccountsFixtures
 
   @doc """
   Generate a garden.
@@ -14,12 +15,15 @@ defmodule VisualGarden.GardensFixtures do
         do: region,
         else: LibraryFixtures.region_fixture(%{name: "garden region"})
 
+      user = AccountsFixtures.user_fixture()
+
     {:ok, garden} =
       attrs
       |> Enum.into(%{
         name: "My Garden",
         tz: "America/Chicago",
-        region_id: region.id
+        region_id: region.id,
+        owner_id: user.id
       })
       |> VisualGarden.Gardens.create_garden()
 
