@@ -1,4 +1,5 @@
 defmodule VisualGardenWeb.LibrarySeedLive.FormComponent do
+  alias VisualGarden.Authorization
   alias VisualGardenWeb.KeywordHighlighter
   use VisualGardenWeb, :live_component
 
@@ -78,6 +79,7 @@ defmodule VisualGardenWeb.LibrarySeedLive.FormComponent do
   end
 
   def handle_event("save", %{"library_seed" => library_seed_params}, socket) do
+    Authorization.authorize_library(socket.assigns.current_user)
     save_library_seed(socket, socket.assigns.action, library_seed_params)
   end
 
