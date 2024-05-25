@@ -12,7 +12,7 @@
   rows={@streams.gardens}
   row_click={fn {_id, garden} -> JS.navigate(~p"/gardens/#{garden}") end}
 >
-  <:col :let={{_id, garden}} label="name"><%= garden.name %></:col>
+  <:col :let={{_id, garden}} label="name"><%= garden.name %> <%= visibility_badge(garden.visibility) %></:col>
   <:action :let={{_id, garden}}>
     <div class="sr-only">
       <.link navigate={~p"/gardens/#{garden}"}>Show</.link>
