@@ -31,7 +31,7 @@ defmodule VisualGarden.Planner do
       if start_date do
         start_date
       else
-        Date.utc_today()
+        VisualGarden.MyDateTime.utc_today()
       end
 
     {row, column} = parse_square(to_string(square), bed)
@@ -366,7 +366,7 @@ defmodule VisualGarden.Planner do
   # TODO scope to user's gardens
   def get_todo_items() do
     gardens = Gardens.list_gardens()
-    today = Date.utc_today()
+    today = VisualGarden.MyDateTime.utc_today()
 
     for garden <- gardens do
       entries =
