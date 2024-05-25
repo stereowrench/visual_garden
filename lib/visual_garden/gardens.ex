@@ -25,6 +25,14 @@ defmodule VisualGarden.Gardens do
     )
   end
 
+  def list_garden_users(garden) do
+    Repo.all(
+      from gu in GardenUser,
+        where: gu.garden_id == ^garden.id
+    ) |> Repo.preload([:user])
+  end
+
+
   @doc """
   Returns the list of gardens.
 

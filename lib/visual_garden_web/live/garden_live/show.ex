@@ -23,7 +23,7 @@ defmodule VisualGardenWeb.GardenLive.Show do
 
   defp page_title(:show), do: "Show Garden"
   defp page_title(:edit), do: "Edit Garden"
-  defp page_title(:plant), do: "Plant"
+  defp page_title(:collab), do: "Add Collaborators"
 
   @impl true
   def handle_info({VisualGardenWeb.GardenLive.FormComponent, {:saved, garden}}, socket) do

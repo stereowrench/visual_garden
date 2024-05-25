@@ -149,30 +149,34 @@ defmodule VisualGardenWeb.GardenLiveTest do
     end
   end
 
-  test "adding a user", %{conn: conn, garden: garden, user: owner} do
-    user2 = user_fixture()
-    conn = log_in_user(conn, user2)
+  describe "collaborators" do
+    setup [:create_garden]
 
-    assert_raise(VisualGarden.Authorization.UnauthorizedError, fn ->
-      live(conn, ~p"/gardens/#{garden}")
-    end)
+    test "adding a user", %{conn: conn, garden: garden, user: owner} do
+      user2 = user_fixture()
+      conn = log_in_user(conn, user2)
 
-    conn = log_in_user(conn, owner)
-    {:ok, live_show, _html} = live(conn, ~p"/gardens/#{garden}")
+      assert_raise(VisualGarden.Authorization.UnauthorizedError, fn ->
+        live(conn, ~p"/gardens/#{garden}")
+      end)
 
-    assert show_live |> element("a", "Add collaborators") |> render_click() =~
-             "Add collaborators"
+      conn = log_in_user(conn, owner)
+      {:ok, show_live, _html} = live(conn, ~p"/gardens/#{garden}")
 
-    assert show_live
-           |> form("#collab-form", user_email: "")
-           |> render_change() =~ "can&#39;t be blank"
+      assert show_live |> element("a", "Add collaborators") |> render_click() =~
+               "Add collaborators"
 
-    assert show_live
-           |> form("#collab-form", user_email: user2.email)
-           |> render_submit()
+      assert show_live
+             |> form("#collab-form", email_schema: %{email: "f"})
+             |> render_change() =~ "Not found!"
 
-    conn = log_in_user(conn, user2)
+      assert show_live
+             |> form("#collab-form", email_schema: %{email: user2.email})
+             |> render_submit()
 
-    {:ok, _, _} = live(conn, ~p"/gardens/#{garden}")
+      conn = log_in_user(conn, user2)
+
+      {:ok, _, _} = live(conn, ~p"/gardens/#{garden}")
+    end
   end
 end
