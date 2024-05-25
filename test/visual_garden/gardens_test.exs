@@ -533,4 +533,49 @@ defmodule VisualGarden.GardensTest do
              |> Enum.map(fn {_, idx} -> idx end)
              |> Enum.sort()
   end
+
+  describe "auth" do
+    alias VisualGarden.Gardens.Garden
+
+    import VisualGarden.GardensFixtures
+    import VisualGarden.AccountsFixtures
+
+    test "lists my gardens" do
+      user = user_fixture()
+      garden = garden_fixture(%{owner_id: user.id})
+
+      assert Gardens.list_gardens(user) == [garden]
+    end
+
+    test "list gardens for user" do
+      user1 = user_fixture()
+      user2 = user_fixture()
+      garden = garden_fixture(%{owner_id: user1.id})
+      _ = garden_users_fixture(garden, user2)
+
+      assert Gardens.list_gardens(user2) == [garden]
+    end
+
+    test "doesn't list other user's private gardens" do
+      user1 = user_fixture()
+      user2 = user_fixture()
+      garden = garden_fixture(%{owner_id: user1.id})
+
+      assert Gardens.list_gardens(user2) == []
+    end
+
+    test "lists public visible gardens" do
+      user1 = user_fixture()
+      user2 = user_fixture()
+      user3 = user_fixture()
+      garden1 = garden_fixture(%{owner_id: user1.id, visibility: "public"})
+      garden2 = garden_fixture(%{owner_id: user2.id, visibility: "public"})
+
+      _ = garden_users_fixture(garden2, user3)
+
+      assert Gardens.list_public_gardens(user1) == [garden2]
+      assert Gardens.list_public_gardens(user2) == [garden1]
+      assert Gardens.list_public_gardens(user3) == [garden1]
+    end
+  end
 end

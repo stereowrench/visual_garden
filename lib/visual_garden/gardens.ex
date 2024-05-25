@@ -4,10 +4,19 @@ defmodule VisualGarden.Gardens do
   """
 
   import Ecto.Query, warn: false
+  alias VisualGarden.Gardens.GardenUsers
   alias VisualGarden.Repo
 
   alias VisualGarden.Gardens.Garden
   alias VisualGarden.Planner
+
+  def create_garden_user(garden, user) do
+    params = %{garden_id: garden.id, user_id: user.id}
+
+    %GardenUsers{}
+    |> GardenUsers.changeset(params)
+    |> Repo.insert()
+  end
 
   @doc """
   Returns the list of gardens.
@@ -18,8 +27,24 @@ defmodule VisualGarden.Gardens do
       [%Garden{}, ...]
 
   """
-  def list_gardens do
-    Repo.all(Garden)
+  def list_gardens(user \\ nil) do
+    if user do
+      Repo.all(
+        from g in Garden,
+          left_join: gu in GardenUsers,
+          on: gu.garden_id == g.id,
+          where: g.owner_id == ^user.id or gu.user_id == ^user.id
+      )
+    else
+      []
+    end
+  end
+
+  def list_public_gardens(user \\ nil) do
+    user_garden_ids = list_gardens(user) |> Enum.map(& &1.id)
+
+    Repo.all(from g in Garden, where: g.visibility == :public)
+    |> Enum.reject(&(&1.id in user_garden_ids))
   end
 
   @doc """
