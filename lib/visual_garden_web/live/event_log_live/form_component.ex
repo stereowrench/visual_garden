@@ -27,7 +27,7 @@ defmodule VisualGardenWeb.EventLogLive.FormComponent do
           type="datetime-local"
           label="Event time"
           phx-update="ignore"
-          value={DateTime.utc_now()}
+          value={VisualGarden.MyDateTime.utc_now()}
         />
         <.input id="event-time" field={@form[:event_time]} type="hidden" />
 

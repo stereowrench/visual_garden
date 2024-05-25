@@ -135,7 +135,7 @@ defmodule VisualGarden.GardensFixtures do
       attrs
       |> Enum.into(%{
         "product_id" => product.id,
-        "event_time" => DateTime.utc_now(),
+        "event_time" => VisualGarden.MyDateTime.utc_now(),
         "event_type" => type,
         "humidity" => 42,
         "mow_depth_in" => "120.5",

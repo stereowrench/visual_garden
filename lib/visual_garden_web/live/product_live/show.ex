@@ -92,7 +92,7 @@ defmodule VisualGardenWeb.ProductLive.Show do
     {:ok, _event} =
       Gardens.create_event_log(evt, %{
         "event_type" => evt,
-        "event_time" => DateTime.utc_now(),
+        "event_time" => VisualGarden.MyDateTime.utc_now(),
         "product_id" => socket.assigns.product.id
       })
 

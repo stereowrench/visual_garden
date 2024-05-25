@@ -672,7 +672,7 @@ defmodule VisualGarden.Gardens do
 
   def create_event_logs(type = "weed", squares, bed) do
     Repo.transaction(fn ->
-      time = DateTime.utc_now()
+      time = VisualGarden.MyDateTime.utc_now()
 
       for square <- squares do
         {row, column} = Planner.parse_square(square, bed)

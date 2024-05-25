@@ -210,7 +210,7 @@ defmodule VisualGardenWeb.PlannerLive.Show do
 
   def extent_dates(tz) do
     now =
-      DateTime.utc_now()
+      VisualGarden.MyDateTime.utc_now()
       |> Timex.Timezone.convert(tz)
       |> Timex.to_date()
 

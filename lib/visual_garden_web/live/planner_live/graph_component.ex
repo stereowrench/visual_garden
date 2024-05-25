@@ -70,9 +70,9 @@ defmodule VisualGardenWeb.PlannerLive.GraphComponent do
       <% end %>
 
       <line
-        x1={40 + x_shift_date(DateTime.utc_now(), nil, @extent_dates)}
+        x1={40 + x_shift_date(VisualGarden.MyDateTime.utc_now(), nil, @extent_dates)}
         y1={0}
-        x2={40 + x_shift_date(DateTime.utc_now(), nil, @extent_dates)}
+        x2={40 + x_shift_date(VisualGarden.MyDateTime.utc_now(), nil, @extent_dates)}
         y2={13 + 25 * (@bed.length * @bed.width)}
         stroke="blue"
       />
@@ -284,15 +284,15 @@ defmodule VisualGardenWeb.PlannerLive.GraphComponent do
       pairs = List.flatten(pairs)
 
       new_list =
-        [Date.new!(DateTime.utc_now().year, 1, 1)] ++
-          pairs ++ [Timex.shift(DateTime.utc_now(), years: 2)]
+        [Date.new!(VisualGarden.MyDateTime.utc_now().year, 1, 1)] ++
+          pairs ++ [Timex.shift(VisualGarden.MyDateTime.utc_now(), years: 2)]
 
       chunks = Enum.chunk_every(new_list, 2)
 
       spans =
         for [a, b] <- chunks do
           %{
-            start_date: clamp_date(DateTime.utc_now(), ed, a),
+            start_date: clamp_date(VisualGarden.MyDateTime.utc_now(), ed, a),
             finish_date: clamp_date(sd, ed, b)
           }
         end

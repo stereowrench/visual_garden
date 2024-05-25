@@ -363,7 +363,7 @@ defmodule VisualGarden.GardensTest do
       valid_attrs = %{
         "product_id" => product.id,
         "event_type" => "till",
-        "event_time" => DateTime.utc_now(),
+        "event_time" => VisualGarden.MyDateTime.utc_now(),
         "till_depth_in" => "120.5"
       }
 
@@ -378,7 +378,7 @@ defmodule VisualGarden.GardensTest do
       valid_attrs = %{
         "product_id" => product.id,
         "event_type" => "water",
-        "event_time" => DateTime.utc_now()
+        "event_time" => VisualGarden.MyDateTime.utc_now()
       }
 
       assert {:ok, %EventLog{} = event_log} = Gardens.create_event_log("water", valid_attrs)
@@ -394,7 +394,7 @@ defmodule VisualGarden.GardensTest do
         "plant_id" => plant.id,
         "product_id" => product.id,
         "event_type" => "plant",
-        "event_time" => DateTime.utc_now()
+        "event_time" => VisualGarden.MyDateTime.utc_now()
       }
 
       assert {:ok, %EventLog{} = event_log} = Gardens.create_event_log("plant", valid_attrs)
@@ -409,7 +409,7 @@ defmodule VisualGarden.GardensTest do
       valid_attrs = %{
         "product_id" => product.id,
         "event_type" => "transfer",
-        "event_time" => DateTime.utc_now(),
+        "event_time" => VisualGarden.MyDateTime.utc_now(),
         "transferred_to_id" => product.id,
         "transferred_from_id" => product2.id
       }

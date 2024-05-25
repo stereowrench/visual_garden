@@ -238,7 +238,7 @@ defmodule VisualGardenWeb.PlantLive.FormComponent do
       {:ok, plant} ->
         {:ok, _} =
           Gardens.create_event_log("plant", %{
-            "event_time" => DateTime.utc_now(),
+            "event_time" => VisualGarden.MyDateTime.utc_now(),
             "plant_id" => plant.id,
             "product_id" => plant.product_id
           })
