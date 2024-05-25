@@ -379,7 +379,6 @@ defmodule VisualGardenWeb.PlannerLive.FormComponent do
               :ok
 
             {:error, %Ecto.Changeset{} = changeset} ->
-              IO.inspect(changeset)
               VisualGarden.Repo.rollback(:error)
           end
         end
