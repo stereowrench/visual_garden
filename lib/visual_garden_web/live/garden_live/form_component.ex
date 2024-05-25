@@ -22,6 +22,13 @@ defmodule VisualGardenWeb.GardenLive.FormComponent do
         phx-submit="save"
       >
         <.input field={@form[:name]} label="Name" />
+        <.input
+          field={@form[:visibility]}
+          type="select"
+          label="Visibility"
+          prompt="Choose a value"
+          options={Ecto.Enum.values(VisualGarden.Gardens.Garden, :visibility)}
+        />
         <.live_select
           field={@form[:tz]}
           value_mapper={&to_string(&1)}
