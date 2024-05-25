@@ -1,4 +1,5 @@
 defmodule VisualGardenWeb.PlannerLive.FormComponent do
+  alias VisualGarden.Authorization
   alias VisualGarden.Planner
   alias VisualGarden.Gardens.PlannerEntry
   use VisualGardenWeb, :live_component
@@ -147,6 +148,7 @@ defmodule VisualGardenWeb.PlannerLive.FormComponent do
 
   @impl true
   def update(assigns, socket) do
+    Authorization.authorize_garden_modify(assigns.garden.id, assigns.current_user)
     end_date = assigns.end_date
 
     plantables_parsed =
@@ -185,6 +187,7 @@ defmodule VisualGardenWeb.PlannerLive.FormComponent do
      |> assign(:nursery_start, nil)
      |> assign(:nursery_end, nil)
      |> assign(:refuse_date, nil)
+     |> assign(:can_edit?, Authorization.can_modify_garden?(assigns.garden, assigns.current_user))
      |> assign(:end_refuse_date, end_date)
      |> assign(:plantables_parsed, plantables_parsed)
      |> assign_form(changeset)}

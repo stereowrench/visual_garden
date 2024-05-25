@@ -10,6 +10,7 @@ defmodule VisualGardenWeb.PlannerLive.Show do
 
   @impl true
   def handle_params(%{"garden_id" => id} = params, _, socket) do
+    Authorization.authorize_garden_view(id, socket.assigns.current_user)
     garden = Gardens.get_garden!(id)
     day = Date.utc_today()
 

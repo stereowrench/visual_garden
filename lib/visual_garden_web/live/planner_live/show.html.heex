@@ -30,6 +30,7 @@
     garden={@garden}
     id={"garden_graph-" <> to_string(bed.id)}
     planner_entries={@planner_entries[bed.id] || []}
+    current_user={@current_user}
     extent_dates={@extent_dates}
   />
 <% end %>
@@ -51,6 +52,7 @@
     square={@square}
     squares={@squares}
     plantables={@plantables}
+    current_user={@current_user}
     patch={~p"/planners/#{@garden.id}"}
     action={@live_action}
   />
