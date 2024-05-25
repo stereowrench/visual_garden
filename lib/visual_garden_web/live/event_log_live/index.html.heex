@@ -38,7 +38,7 @@
   </:action>
 </.table>
 
-<.modal :if={@live_action in [:new, :edit]} id="event_log-modal" show on_cancel={JS.patch(~p"/event_logs")}>
+<%!-- <.modal :if={@live_action in [:new, :edit]} id="event_log-modal" show on_cancel={JS.patch(~p"/event_logs")}>
   <.live_component
     module={VisualGardenWeb.EventLogLive.FormComponent}
     id={@event_log.id || :new}
@@ -47,4 +47,4 @@
     event_log={@event_log}
     patch={~p"/event_logs"}
   />
-</.modal>
+</.modal> --%>

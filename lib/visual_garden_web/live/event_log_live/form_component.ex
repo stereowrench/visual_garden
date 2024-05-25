@@ -1,4 +1,5 @@
 defmodule VisualGardenWeb.EventLogLive.FormComponent do
+  alias VisualGarden.Authorization
   alias VisualGarden.Gardens.EventLog
   use VisualGardenWeb, :live_component
 
@@ -150,6 +151,7 @@ defmodule VisualGardenWeb.EventLogLive.FormComponent do
   end
 
   defp do_save_event_log(socket, type, event_log_params) do
+    Authorization.authorize_garden_modify(socket.assigns.garden.id, socket.assigns.current_user)
     case Gardens.create_event_log(
            type,
            merge_attrs(event_log_params, socket.assigns.action, socket.assigns.product)
