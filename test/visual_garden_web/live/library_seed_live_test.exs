@@ -1,8 +1,12 @@
 defmodule VisualGardenWeb.LibrarySeedLiveTest do
+  alias VisualGarden.Accounts
+  alias VisualGarden.Gardens
+  alias VisualGarden.Gardens.Garden
   use VisualGardenWeb.ConnCase
 
   import Phoenix.LiveViewTest
   import VisualGarden.LibraryFixtures
+  import VisualGarden.AccountsFixtures
 
   @create_attrs %{type: :slip, days_to_maturation: 42, manufacturer: "some manufacturer"}
   @update_attrs %{type: :seed, days_to_maturation: 43, manufacturer: "some updated manufacturer"}
@@ -10,7 +14,9 @@ defmodule VisualGardenWeb.LibrarySeedLiveTest do
 
   defp create_library_seed(_) do
     library_seed = library_seed_fixture()
-    %{library_seed: library_seed}
+    user = user_fixture()
+    Accounts.promote_role(user, :admin)
+    %{library_seed: library_seed, user: user}
   end
 
   describe "Index" do
@@ -23,7 +29,8 @@ defmodule VisualGardenWeb.LibrarySeedLiveTest do
       assert html =~ library_seed.manufacturer
     end
 
-    test "saves new library_seed", %{conn: conn} do
+    test "saves new library_seed", %{conn: conn, user: user} do
+      conn = log_in_user(conn, user)
       species = species_fixture(%{name: "new name"})
       {:ok, index_live, _html} = live(conn, ~p"/library_seeds")
 
@@ -47,10 +54,13 @@ defmodule VisualGardenWeb.LibrarySeedLiveTest do
       assert html =~ "some manufacturer"
     end
 
-    test "updates library_seed in listing", %{conn: conn, library_seed: library_seed} do
+    test "updates library_seed in listing", %{conn: conn, library_seed: library_seed, user: user} do
+      conn = log_in_user(conn, user)
       {:ok, index_live, _html} = live(conn, ~p"/library_seeds")
 
-      assert index_live |> element("#library_seeds-#{library_seed.id} a", "Edit") |> render_click() =~
+      assert index_live
+             |> element("#library_seeds-#{library_seed.id} a", "Edit")
+             |> render_click() =~
                "Edit Library seed"
 
       assert_patch(index_live, ~p"/library_seeds/#{library_seed}/edit")
@@ -70,10 +80,14 @@ defmodule VisualGardenWeb.LibrarySeedLiveTest do
       assert html =~ "some updated manufacturer"
     end
 
-    test "deletes library_seed in listing", %{conn: conn, library_seed: library_seed} do
+    test "deletes library_seed in listing", %{conn: conn, library_seed: library_seed, user: user} do
+      conn = log_in_user(conn, user)
       {:ok, index_live, _html} = live(conn, ~p"/library_seeds")
 
-      assert index_live |> element("#library_seeds-#{library_seed.id} a", "Delete") |> render_click()
+      assert index_live
+             |> element("#library_seeds-#{library_seed.id} a", "Delete")
+             |> render_click()
+
       refute has_element?(index_live, "#library_seeds-#{library_seed.id}")
     end
   end
@@ -88,7 +102,12 @@ defmodule VisualGardenWeb.LibrarySeedLiveTest do
       assert html =~ library_seed.manufacturer
     end
 
-    test "updates library_seed within modal", %{conn: conn, library_seed: library_seed} do
+    test "updates library_seed within modal", %{
+      conn: conn,
+      library_seed: library_seed,
+      user: user
+    } do
+      conn = log_in_user(conn, user)
       {:ok, show_live, _html} = live(conn, ~p"/library_seeds/#{library_seed}")
 
       assert show_live |> element("a", "Edit") |> render_click() =~

@@ -6,7 +6,8 @@ defmodule VisualGarden.Authorization do
   end
 
   def can_modify_library?(user) do
-    user.role == :admin
+    IO.inspect(user)
+    user && user.role == :admin
   end
 
   def authorize_library(user) do
