@@ -8,7 +8,9 @@ defmodule VisualGarden.Accounts.UserNotifier do
     email =
       new()
       |> to(recipient)
-      |> from({"VisualGarden", "contact@example.com"})
+      |> from(
+        {"VisualGarden", Application.get_env(:visual_garden, :mail_from, "noreply@example.com")}
+      )
       |> subject(subject)
       |> text_body(body)
 

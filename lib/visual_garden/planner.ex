@@ -1,5 +1,6 @@
 defmodule VisualGarden.Planner do
   import Ecto.Query, warn: false
+  alias VisualGarden.MyDateTime
   alias VisualGarden.Gardens.PlannerEntry
   alias VisualGarden.Library.Schedule
   alias VisualGarden.Library
@@ -13,6 +14,44 @@ defmodule VisualGarden.Planner do
     |> Repo.insert()
   end
 
+  def set_planner_entry_plant(entry, plant_id, garden) do
+    entry
+    |> PlannerEntry.changeset(
+      %{
+        "plant_id" => plant_id,
+        "start_plant_date" => MyDateTime.utc_today(),
+        "end_plant_date" => MyDateTime.utc_today()
+      },
+      garden
+    )
+    |> Repo.update()
+  end
+
+  def set_entry_nurse_date(entry, garden) do
+    date = MyDateTime.utc_today()
+
+    entry
+    |> PlannerEntry.changeset(
+      %{
+        nursery_start: date,
+        nursery_end: date,
+        start_plant_date:
+          clamp_date(
+            entry.start_plant_date,
+            entry.end_plant_date,
+            Timex.shift(date, weeks: entry.min_lead)
+          ),
+        end_plant_date:
+          clamp_date(
+            entry.start_plant_date,
+            entry.end_plant_date,
+            Timex.shift(date, weeks: entry.max_lead)
+          )
+      },
+      garden
+    )
+  end
+
   def change_planner_entry(%PlannerEntry{} = entry, garden, attrs \\ %{}) do
     entry
     |> PlannerEntry.changeset(attrs, garden)
@@ -24,6 +63,7 @@ defmodule VisualGarden.Planner do
 
   def get_planner_entry!(id) do
     Repo.get!(PlannerEntry, id)
+    |> Repo.preload([:bed, :seed])
   end
 
   def get_end_date(square, bed, start_date) do
@@ -353,28 +393,42 @@ defmodule VisualGarden.Planner do
     end
   end
 
-  def list_planner_entries(garden_id) do
+  def list_planner_entries_ungrouped(garden_id) do
     beds = Gardens.list_beds(garden_id)
     bed_ids = beds |> Enum.map(& &1.id)
 
     Repo.all(
-      from pe in PlannerEntry, where: pe.bed_id in ^bed_ids, preload: [:nursery_entry, :seed]
+      from pe in PlannerEntry,
+        where: pe.bed_id in ^bed_ids,
+        preload: [:nursery_entry, :seed, :bed]
     )
+  end
+
+  def list_planner_entries(garden_id) do
+    list_planner_entries_ungrouped(garden_id)
     |> Enum.group_by(& &1.bed_id)
   end
 
-  # TODO scope to user's gardens
-  def get_todo_items() do
-    gardens = Gardens.list_gardens()
+  def list_planner_entries_for_user(user) do
+    gardens = Gardens.list_gardens(user)
+
+    for garden <- gardens do
+      list_planner_entries_ungrouped(garden.id)
+    end
+    |> List.flatten()
+  end
+
+  def get_todo_items(user) do
+    gardens = Gardens.list_gardens(user)
     today = VisualGarden.MyDateTime.utc_today()
 
     for garden <- gardens do
       entries =
-        list_planner_entries(garden.id)
+        list_planner_entries_ungrouped(garden.id)
         |> Repo.preload([:nursery_entry])
 
       nursery_filter_fn = fn entry ->
-        entry.nursery_start != nil and entry.nursery_end != nil and entry.nursery_entry != nil
+        entry.nursery_start != nil and entry.nursery_end != nil and entry.nursery_entry == nil
       end
 
       nursery_entries =
@@ -390,23 +444,79 @@ defmodule VisualGarden.Planner do
       current_nursery_entries =
         nursery_entries
         |> Enum.filter(current_n_fn)
+        |> Enum.map(fn ne ->
+          today = MyDateTime.utc_today()
+
+          date =
+            if Timex.after?(ne.nursery_start, today) do
+              ne.nursery_start
+            else
+              today
+            end
+
+          %{
+            type: "nursery_plant",
+            planner_entry_id: ne.id,
+            date: date,
+            end_date: ne.nursery_end
+          }
+        end)
 
       overdue_nursery_entries =
         nursery_entries
         |> Enum.reject(current_n_fn)
+        |> Enum.map(fn ne ->
+          %{
+            type: "nursery_overdue",
+            date: ne.nursery_end,
+            planner_entry_id: ne.id
+          }
+        end)
 
-      # nursery entires that end before today
+      current_p_fn = fn entry ->
+        Timex.diff(today, entry.end_plant_date, :days) <= 0
+      end
 
       planting_entries =
         entries
         |> Enum.reject(nursery_filter_fn)
+        |> Enum.reject(&(&1.plant_id != nil))
 
-      # to_plant =
-      #   entries
-      #   |> Enum.map()
+      current_plant_entries =
+        planting_entries
+        |> Enum.filter(current_p_fn)
+        |> Enum.map(fn entry ->
+          today = MyDateTime.utc_today()
 
-      # TODO to plant:
-      # If
+          date =
+            if Timex.after?(entry.start_plant_date, today) do
+              entry.start_plant_date
+            else
+              today
+            end
+
+          %{
+            type: "plant",
+            planner_entry_id: entry.id,
+            date: date,
+            end_date: entry.end_plant_date
+          }
+        end)
+
+      overdue_plant_entries =
+        planting_entries
+        |> Enum.reject(current_p_fn)
+        |> Enum.map(fn entry ->
+          %{
+            type: "plant_overdue",
+            date: entry.end_plant_date,
+            planner_entry_id: entry.id
+          }
+        end)
+
+      current_nursery_entries ++
+        overdue_nursery_entries ++ current_plant_entries ++ overdue_plant_entries
     end
+    |> List.flatten()
   end
 end
