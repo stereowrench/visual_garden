@@ -1,4 +1,5 @@
 defmodule VisualGardenWeb.EventLogLive.FormComponent do
+  alias VisualGarden.Authorization.UnauthorizedError
   alias VisualGarden.Authorization
   alias VisualGarden.Gardens.EventLog
   use VisualGardenWeb, :live_component
@@ -139,7 +140,14 @@ defmodule VisualGardenWeb.EventLogLive.FormComponent do
   # end
 
   defp save_event_log(socket, :transfer, event_log_params) do
-    do_save_event_log(socket, "transfer", event_log_params)
+    if event_log_params["transferred_from_id"] not in Enum.map(
+         socket.assigns.products,
+         &to_string(&1.id)
+       ) do
+      raise UnauthorizedError
+    else
+      do_save_event_log(socket, "transfer", event_log_params)
+    end
   end
 
   defp save_event_log(socket, :new_water, event_log_params) do
@@ -152,6 +160,7 @@ defmodule VisualGardenWeb.EventLogLive.FormComponent do
 
   defp do_save_event_log(socket, type, event_log_params) do
     Authorization.authorize_garden_modify(socket.assigns.garden.id, socket.assigns.current_user)
+
     case Gardens.create_event_log(
            type,
            merge_attrs(event_log_params, socket.assigns.action, socket.assigns.product)
