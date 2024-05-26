@@ -50,6 +50,8 @@ defmodule VisualGardenWeb.HarvestLiveTest do
       conn = log_in_user(conn, user)
       {:ok, index_live, _html} = live(conn, ~p"/home")
       index_live |> element("button", "Nurse") |> render_click()
+
+      assert length(Gardens.list_nursery_entries(garden.id)) == 1
     end
 
     test "plant todo current", %{garden: garden, bed: bed, seed: seed, user: user, conn: conn} do
@@ -75,6 +77,8 @@ defmodule VisualGardenWeb.HarvestLiveTest do
       conn = log_in_user(conn, user)
       {:ok, index_live, _html} = live(conn, ~p"/home")
       index_live |> element("button", "Plant") |> render_click()
+
+      assert length(Gardens.list_plants(garden.id)) == 1
     end
   end
 end
