@@ -12,6 +12,9 @@ defmodule VisualGardenWeb.ProductLive.Show do
   @impl true
   def handle_params(%{"garden_id" => garden_id, "id" => id, "square" => square}, _, socket) do
     product = Gardens.get_product!(id)
+
+    Authorization.authorize_garden_view(garden_id, socket.assigns.current_user)
+
     {row, column} = Planner.parse_square(square, product)
 
     els = Gardens.list_event_logs(id, nil, row, column)
@@ -23,8 +26,14 @@ defmodule VisualGardenWeb.ProductLive.Show do
         Gardens.row_col_to_square(plant.row, plant.column, product)
       end)
 
+    garden = Gardens.get_garden!(garden_id)
+
     {:noreply,
      socket
+     |> assign(
+       :can_modify?,
+       Authorization.can_modify_garden?(garden, socket.assigns.current_user)
+     )
      |> assign(:page_title, page_title(socket.assigns.live_action))
      |> assign(:product, product)
      |> assign(:row, row)
@@ -32,11 +41,12 @@ defmodule VisualGardenWeb.ProductLive.Show do
      |> assign(:grouped_plants, grouped_plants)
      |> assign(:products, Gardens.list_products(garden_id))
      |> assign(:plants, Gardens.list_plants(garden_id, id, row, column))
-     |> assign(:garden, Gardens.get_garden!(garden_id))}
+     |> assign(:garden, garden)}
   end
 
   @impl true
   def handle_params(%{"garden_id" => garden_id, "id" => id}, _, socket) do
+    Authorization.authorize_garden_view(garden_id, socket.assigns.current_user)
     els = Gardens.list_event_logs(id)
     socket = assign(socket, :events, els)
 
@@ -48,16 +58,22 @@ defmodule VisualGardenWeb.ProductLive.Show do
         Gardens.row_col_to_square(plant.row, plant.column, product)
       end)
 
+    garden = Gardens.get_garden!(garden_id)
+
     {:noreply,
      socket
      |> assign(:page_title, page_title(socket.assigns.live_action))
      |> assign(:product, product)
      |> assign(:row, nil)
+     |> assign(
+       :can_modify?,
+       Authorization.can_modify_garden?(garden, socket.assigns.current_user)
+     )
      |> assign(:column, nil)
      |> assign(:grouped_plants, grouped_plants)
      |> assign(:products, Gardens.list_products(garden_id))
      |> assign(:plants, Gardens.list_plants(garden_id, id))
-     |> assign(:garden, Gardens.get_garden!(garden_id))}
+     |> assign(:garden, garden)}
   end
 
   @impl true
@@ -89,6 +105,8 @@ defmodule VisualGardenWeb.ProductLive.Show do
 
   @impl true
   def handle_event(evt, %{}, socket) when evt in ["water", "till"] do
+    Authorization.authorize_garden_modify(socket.assigns.garden.id, socket.assigns.current_user)
+
     {:ok, _event} =
       Gardens.create_event_log(evt, %{
         "event_type" => evt,

@@ -6,9 +6,19 @@ defmodule VisualGardenWeb.ProductLive.Index do
 
   @impl true
   def mount(%{"garden_id" => garden_id}, _session, socket) do
+    Authorization.authorize_garden_view(garden_id, socket.assigns.current_user)
+    garden = Gardens.get_garden!(garden_id)
+
     {:ok,
      socket
      |> assign(:garden_id, garden_id)
+     |> assign(
+       :can_modify?,
+       Authorization.can_modify_garden?(
+         garden,
+         socket.assigns.current_user
+       )
+     )
      |> assign_products()}
   end
 
@@ -81,6 +91,7 @@ defmodule VisualGardenWeb.ProductLive.Index do
 
   @impl true
   def handle_event("delete", %{"id" => id}, socket) do
+    Authorization.authorize_garden_modify(socket.assigns.garden_id, socket.assigns.current_user)
     product = Gardens.get_product!(id)
     {:ok, _} = Gardens.delete_product(product)
 

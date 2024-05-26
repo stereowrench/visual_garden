@@ -11,7 +11,7 @@
   <% else %>
     Listing products
   <% end %>
-  <:actions>
+  <:actions :if={@can_modify?}>
     <%= if @live_action in [:beds, :new_bed, :edit_bed] do %>
       <.link patch={~p"/gardens/#{@garden.id}/products/new_bed"}>
         <.button>New bed</.button>
@@ -52,13 +52,15 @@
             <.link navigate={~p"/gardens/#{@garden.id}/products/#{product}"}>Show</.link>
           <% end %>
         </div>
-        <%= if @live_action in [:beds, :new_bed, :edit_bed] do %>
-          <.link patch={~p"/gardens/#{@garden.id}/beds/#{product}/edit"}>Edit</.link>
-        <% else %>
-          <.link patch={~p"/gardens/#{@garden.id}/products/#{product}/edit"}>Edit</.link>
+        <%= if @can_modify? do %>
+          <%= if @live_action in [:beds, :new_bed, :edit_bed] do %>
+            <.link patch={~p"/gardens/#{@garden.id}/beds/#{product}/edit"}>Edit</.link>
+          <% else %>
+            <.link patch={~p"/gardens/#{@garden.id}/products/#{product}/edit"}>Edit</.link>
+          <% end %>
         <% end %>
       </:action>
-      <:action :let={product}>
+      <:action :let={product} :if={@can_modify?}>
         <.link
           data-confirm="Are you sure?"
           phx-click={
@@ -92,6 +94,7 @@
     title={@page_title}
     action={@live_action}
     product={@product}
+    current_user={@current_user}
     patch={
       if @live_action in [:bed, :new_bed, :edit_bed] do
         ~p"/gardens/#{@garden.id}/beds"
