@@ -32,6 +32,9 @@ defmodule VisualGarden.Gardens do
     ) |> Repo.preload([:user])
   end
 
+  def delete_garden_user(%GardenUser{} = gu) do
+    Repo.delete(gu)
+  end
 
   @doc """
   Returns the list of gardens.

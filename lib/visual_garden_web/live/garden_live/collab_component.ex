@@ -1,4 +1,5 @@
 defmodule VisualGardenWeb.GardenLive.CollabComponent do
+  alias Swoosh.Email
   alias VisualGarden.Authorization
   alias VisualGarden.Accounts
   use VisualGardenWeb, :live_component
@@ -14,7 +15,7 @@ defmodule VisualGardenWeb.GardenLive.CollabComponent do
       field :email, :string
     end
 
-    def changeset(attrs \\ %{}) do
+    def changeset(attrs \\ %{}, unique_error \\ false) do
       %EmailSchema{}
       |> cast(attrs, [:email])
       |> validate_change(:email, fn :email, email ->
@@ -22,6 +23,13 @@ defmodule VisualGardenWeb.GardenLive.CollabComponent do
           []
         else
           [email: "Not found!"]
+        end
+      end)
+      |> validate_change(:email, fn :email, _email ->
+        if unique_error do
+          [email: "Already added"]
+        else
+          []
         end
       end)
     end
@@ -38,6 +46,14 @@ defmodule VisualGardenWeb.GardenLive.CollabComponent do
 
       <.table id="garden-users" rows={@users}>
         <:col :let={user} label="email"><%= user.user.email %></:col>
+        <:action :let={user}>
+          <.link
+            phx-click={JS.push("delete", value: %{id: user.user_id})}
+            data-confirm="Are you sure?"
+          >
+            Delete
+          </.link>
+        </:action>
       </.table>
 
       <.simple_form
@@ -70,7 +86,6 @@ defmodule VisualGardenWeb.GardenLive.CollabComponent do
     {:ok,
      socket
      |> assign(assigns)
-     |> assign(:users, Gardens.list_garden_users(assigns.garden))
      |> assign_form(changeset)}
   end
 
@@ -93,17 +108,30 @@ defmodule VisualGardenWeb.GardenLive.CollabComponent do
       %Ecto.Changeset{valid?: true} = es ->
         user = Accounts.get_user_by_email(Ecto.Changeset.get_field(es, :email))
         true = not is_nil(user)
-        {:ok, _} = Gardens.create_garden_user(socket.assigns.garden, user)
 
-        {:noreply,
-         socket
-         |> put_notification(Normal.new(:success, "Added a collaborator!"))
-         |> push_patch(to: socket.assigns.patch)}
+        case Gardens.create_garden_user(socket.assigns.garden, user) do
+          {:ok, _} ->
+            notify_parent({:saved, user})
+
+            {:noreply,
+             socket
+             |> send_notification(Normal.new(:success, "Added a collaborator!"))}
+
+          {:error, _changeset} ->
+            cs = EmailSchema.changeset(%{email: email}, true) |> Map.put(:action, :validate)
+
+            {:noreply,
+             socket
+             |> send_notification(Normal.new(:warning, "User already added"))
+             |> assign_form(cs)}
+        end
 
       %Ecto.Changeset{} = changeset ->
         {:noreply, assign_form(socket, changeset)}
     end
   end
+
+  defp notify_parent(msg), do: send(self(), {__MODULE__, msg})
 
   defp assign_form(socket, %Ecto.Changeset{} = changeset) do
     assign(socket, :form, to_form(changeset))

@@ -1,4 +1,5 @@
 defmodule VisualGardenWeb.GardenLive.Show do
+  alias VisualGarden.Accounts
   use VisualGardenWeb, :live_view
 
   alias VisualGarden.Gardens
@@ -23,6 +24,7 @@ defmodule VisualGardenWeb.GardenLive.Show do
        Authorization.can_modify_garden?(garden, socket.assigns.current_user)
      )
      |> assign_plants()
+     |> assign(:users, Gardens.list_garden_users(garden))
      |> assign(:products, Gardens.list_products(id))}
   end
 
@@ -50,5 +52,26 @@ defmodule VisualGardenWeb.GardenLive.Show do
     socket
     |> assign(:plants, plants)
     |> assign(:total_plants, total_plants)
+  end
+
+  @impl true
+  def handle_event("delete", %{"id" => user_id}, socket) do
+    Authorization.authorize_garden_modify(socket.assigns.garden.id, socket.assigns.current_user)
+    user = Accounts.get_user!(user_id)
+
+    if gu = Gardens.get_garden_user(socket.assigns.garden, user) do
+      Gardens.delete_garden_user(gu)
+    end
+
+    {:noreply,
+     socket
+     |> assign(:users, Gardens.list_garden_users(socket.assigns.garden))}
+  end
+
+  @impl true
+  def handle_info({VisualGardenWeb.GardenLive.CollabComponent, {:saved, _}}, socket) do
+    {:noreply,
+     socket
+     |> assign(:users, Gardens.list_garden_users(socket.assigns.garden))}
   end
 end

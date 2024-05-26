@@ -12,5 +12,6 @@ defmodule VisualGarden.Gardens.GardenUser do
     cs
     |> cast(attrs, [:garden_id, :user_id])
     |> validate_required([:garden_id, :user_id])
+    |> unique_constraint([:user_id, :garden_id])
   end
 end
