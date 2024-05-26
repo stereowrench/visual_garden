@@ -21,7 +21,7 @@ defmodule VisualGardenWeb.NavBarLibrary do
         </.form>
       </div>
       <div class="hidden sm:block">
-        <div class="border-b border-gray-200">
+        <div class="border-b border-eagle-200">
           <nav class="-mb-px flex space-x-8" aria-label="Tabs">
             <%= for {name, path} <- routes() do %>
               <.link navigate={path} class={link_style(name, @current)}><%= name %></.link>
@@ -36,9 +36,9 @@ defmodule VisualGardenWeb.NavBarLibrary do
   defp link_style(name, current) do
     custom =
       if name == current do
-        "border-indigo-500 text-indigo-600"
+        "border-eagle-600 text-eagle-800"
       else
-        "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700"
+        "border-transparent text-eagle-600 hover:border-eagle-300 hover:text-eagle-800"
       end
 
     common = "whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium"

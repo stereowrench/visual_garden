@@ -27,6 +27,35 @@ module.exports = {
 
         // Options: slate, gray, zinc, neutral, stone
         gray: colors.gray,
+
+        // Logo based reds
+        mojo: {
+          50: "#fdf4f3",
+          100: "#fce7e4",
+          200: "#fad4ce",
+          300: "#f5b7ac",
+          400: "#ee8c7b",
+          500: "#e26651",
+          600: "#bf432e",
+          700: "#ad3b28",
+          800: "#8f3425",
+          900: "#783024",
+          950: "#40160f",
+        },
+        // Logo based greens
+        eagle: {
+          50: "#f6f6f4",
+          100: "#e5e6df",
+          200: "#ccccbb",
+          300: "#b7b7a0",
+          400: "#9f9d80",
+          500: "#918c6f",
+          600: "#7f7860",
+          700: "#6b6352",
+          800: "#595247",
+          900: "#4b453c",
+          950: "#29251f",
+        },
       },
     },
   },
@@ -64,7 +93,10 @@ module.exports = {
     // See your `CoreComponents.icon/1` for more information.
     //
     plugin(function ({ matchComponents, theme }) {
-      let iconsDir = path.join(__dirname, "../deps/tailwind_heroicons/optimized");
+      let iconsDir = path.join(
+        __dirname,
+        "../deps/tailwind_heroicons/optimized"
+      );
       let values = {};
       let icons = [
         ["", "/24/outline"],

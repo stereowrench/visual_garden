@@ -231,8 +231,8 @@ defmodule VisualGardenWeb.CoreComponents do
     <button
       type={@type}
       class={[
-        "phx-submit-loading:opacity-75 rounded-lg bg-zinc-900 hover:bg-zinc-700 py-2 px-3",
-        "text-sm font-semibold leading-6 text-white active:text-white/80",
+        "phx-submit-loading:opacity-75 rounded-lg bg-mojo-900 hover:bg-mojo-700 py-2 px-3",
+        "text-sm font-semibold leading-6 text-mojo-50 active:text-mojo/80",
         @class
       ]}
       {@rest}
@@ -430,10 +430,10 @@ defmodule VisualGardenWeb.CoreComponents do
     ~H"""
     <header class={[@actions != [] && "md:flex md:items-center md:justify-between", @class]}>
       <div class="min-w-0 flex-1">
-        <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
+        <h2 class="text-2xl font-bold leading-7 text-eagle-900 sm:truncate sm:text-3xl sm:tracking-tight">
           <%= render_slot(@inner_block) %>
         </h2>
-        <p :if={@subtitle != []} class="mt-2 text-sm leading-6 text-zinc-600">
+        <p :if={@subtitle != []} class="mt-2 text-sm leading-6 text-eagle-600">
           <%= render_slot(@subtitle) %>
         </p>
       </div>
@@ -500,18 +500,18 @@ defmodule VisualGardenWeb.CoreComponents do
               class={["relative p-0", @row_click && "hover:cursor-pointer"]}
             >
               <div class="block py-4 pr-6">
-                <span class="absolute -inset-y-px right-0 -left-4 group-hover:bg-zinc-50 sm:rounded-l-xl" />
-                <span class={["relative", i == 0 && "font-semibold text-zinc-900"]}>
+                <span class="absolute -inset-y-px right-0 -left-4 group-hover:bg-eagle-50 sm:rounded-l-xl" />
+                <span class={["relative", i == 0 && "font-semibold text-eagle-900"]}>
                   <%= render_slot(col, @row_item.(row)) %>
                 </span>
               </div>
             </td>
             <td :if={@action != []} class="relative w-14 p-0">
               <div class="relative whitespace-nowrap py-4 text-right text-sm font-medium">
-                <span class="absolute -inset-y-px -right-4 left-0 group-hover:bg-zinc-50 sm:rounded-r-xl" />
+                <span class="absolute -inset-y-px -right-4 left-0 group-hover:bg-eagle-50 sm:rounded-r-xl" />
                 <span
                   :for={action <- @action}
-                  class="relative ml-4 font-semibold leading-6 text-zinc-900 hover:text-zinc-700"
+                  class="relative ml-4 font-semibold leading-6 text-eagle-900 hover:text-eagle-600"
                 >
                   <%= render_slot(action, @row_item.(row)) %>
                 </span>
