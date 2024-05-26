@@ -1,9 +1,13 @@
-
-<.live_component module={VisualGardenWeb.NavBar} id="navbar" garden={@garden} current={"Seeds, etc"} />
+<.live_component
+  module={VisualGardenWeb.NavBar}
+  id="navbar"
+  garden={@garden}
+  current="Seeds, etc"
+/>
 
 <.header>
   Listing Seeds
-  <:actions>
+  <:actions :if={@can_modify?}>
     <.link patch={~p"/gardens/#{@garden.id}/seeds/new"}>
       <.button>New Seed</.button>
     </.link>
@@ -21,9 +25,11 @@
     <div class="sr-only">
       <.link navigate={~p"/gardens/#{@garden}/seeds/#{seed}"}>Show</.link>
     </div>
-    <.link patch={~p"/gardens/#{@garden}/seeds/#{seed}/edit"}>Edit</.link>
+    <%= if @can_modify? do %>
+      <.link patch={~p"/gardens/#{@garden}/seeds/#{seed}/edit"}>Edit</.link>
+    <% end %>
   </:action>
-  <:action :let={{id, seed}}>
+  <:action :let={{id, seed}} :if={@can_modify?}>
     <.link
       phx-click={JS.push("delete", value: %{id: seed.id}) |> hide("##{id}")}
       data-confirm="Are you sure?"
@@ -33,7 +39,12 @@
   </:action>
 </.table>
 
-<.modal :if={@live_action in [:new, :edit]} id="seed-modal" show on_cancel={JS.patch(~p"/gardens/#{@garden.id}/seeds")}>
+<.modal
+  :if={@live_action in [:new, :edit]}
+  id="seed-modal"
+  show
+  on_cancel={JS.patch(~p"/gardens/#{@garden.id}/seeds")}
+>
   <.live_component
     module={VisualGardenWeb.SeedLive.FormComponent}
     id={@seed.id || :new}
@@ -41,6 +52,7 @@
     garden={@garden}
     action={@live_action}
     seed={@seed}
+    current_user={@current_user}
     patch={~p"/gardens/#{@garden.id}/seeds"}
   />
 </.modal>

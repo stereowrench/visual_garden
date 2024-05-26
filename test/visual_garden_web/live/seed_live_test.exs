@@ -1,11 +1,18 @@
 defmodule VisualGardenWeb.SeedLiveTest do
+  alias VisualGarden.Gardens
   alias VisualGarden.LibraryFixtures
   use VisualGardenWeb.ConnCase
 
   import Phoenix.LiveViewTest
   import VisualGarden.GardensFixtures
+  import VisualGarden.AccountsFixtures
 
-  @create_attrs %{name: "some name 3", description: "some description", days_to_maturation: 30, type: "seed"}
+  @create_attrs %{
+    name: "some name 3",
+    description: "some description",
+    days_to_maturation: 30,
+    type: "seed"
+  }
   @update_attrs %{name: "some updated name 4", description: "some updated description"}
   @invalid_attrs %{name: nil, description: nil}
 
@@ -13,20 +20,24 @@ defmodule VisualGardenWeb.SeedLiveTest do
     region = LibraryFixtures.region_fixture()
     garden = garden_fixture(%{name: "My Garden"}, region)
     seed = seed_fixture(%{garden_id: garden.id, name: "My seed", description: "foo bar"})
-    %{garden: garden, seed: seed}
+    user = user_fixture()
+    Gardens.create_garden_user(garden, user)
+    %{garden: garden, seed: seed, user: user}
   end
 
   describe "Index" do
     setup [:create_seed]
 
-    test "lists all seeds", %{conn: conn, seed: seed, garden: garden} do
+    test "lists all seeds", %{conn: conn, seed: seed, garden: garden, user: user} do
+      conn = log_in_user(conn, user)
       {:ok, _index_live, html} = live(conn, ~p"/gardens/#{garden.id}/seeds")
 
       assert html =~ "Listing Seeds"
       assert html =~ seed.name
     end
 
-    test "saves new seed", %{conn: conn, garden: garden} do
+    test "saves new seed", %{conn: conn, garden: garden, user: user} do
+      conn = log_in_user(conn, user)
       species = LibraryFixtures.species_fixture(%{name: "seed live"})
       {:ok, index_live, _html} = live(conn, ~p"/gardens/#{garden.id}/seeds")
 
@@ -50,7 +61,8 @@ defmodule VisualGardenWeb.SeedLiveTest do
       assert html =~ "some name"
     end
 
-    test "updates seed in listing", %{conn: conn, seed: seed, garden: garden} do
+    test "updates seed in listing", %{conn: conn, seed: seed, garden: garden, user: user} do
+      conn = log_in_user(conn, user)
       {:ok, index_live, _html} = live(conn, ~p"/gardens/#{garden.id}/seeds")
 
       assert index_live |> element("#seeds-#{seed.id} a", "Edit") |> render_click() =~
@@ -73,7 +85,8 @@ defmodule VisualGardenWeb.SeedLiveTest do
       assert html =~ "some updated name"
     end
 
-    test "deletes seed in listing", %{conn: conn, seed: seed, garden: garden} do
+    test "deletes seed in listing", %{conn: conn, seed: seed, garden: garden, user: user} do
+      conn = log_in_user(conn, user)
       {:ok, index_live, _html} = live(conn, ~p"/gardens/#{garden.id}/seeds")
 
       assert index_live |> element("#seeds-#{seed.id} a", "Delete") |> render_click()
@@ -84,14 +97,16 @@ defmodule VisualGardenWeb.SeedLiveTest do
   describe "Show" do
     setup [:create_seed]
 
-    test "displays seed", %{conn: conn, seed: seed, garden: garden} do
+    test "displays seed", %{conn: conn, seed: seed, garden: garden, user: user} do
+      conn = log_in_user(conn, user)
       {:ok, _show_live, html} = live(conn, ~p"/gardens/#{garden.id}/seeds/#{seed}")
 
       assert html =~ "Show Seed"
       assert html =~ seed.name
     end
 
-    test "updates seed within modal", %{conn: conn, seed: seed, garden: garden} do
+    test "updates seed within modal", %{conn: conn, seed: seed, garden: garden, user: user} do
+      conn = log_in_user(conn, user)
       {:ok, show_live, _html} = live(conn, ~p"/gardens/#{garden.id}/seeds/#{seed}")
 
       assert show_live |> element("a", "Edit") |> render_click() =~

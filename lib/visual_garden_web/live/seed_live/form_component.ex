@@ -1,4 +1,5 @@
 defmodule VisualGardenWeb.SeedLive.FormComponent do
+  alias VisualGarden.Authorization
   alias VisualGarden.Library
   alias VisualGardenWeb.KeywordHighlighter
   use VisualGardenWeb, :live_component
@@ -55,6 +56,7 @@ defmodule VisualGardenWeb.SeedLive.FormComponent do
 
   @impl true
   def update(%{seed: seed} = assigns, socket) do
+    Authorization.authorize_garden_modify(assigns.garden.id, assigns.current_user)
     changeset = Gardens.change_seed(seed)
 
     species =
@@ -99,6 +101,7 @@ defmodule VisualGardenWeb.SeedLive.FormComponent do
   end
 
   def handle_event("save", %{"seed" => seed_params}, socket) do
+    Authorization.authorize_garden_modify(socket.assigns.garden.id, socket.assigns.current_user)
     save_seed(socket, socket.assigns.action, seed_params)
   end
 

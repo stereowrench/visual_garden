@@ -6,10 +6,17 @@ defmodule VisualGardenWeb.SeedLive.Index do
 
   @impl true
   def mount(%{"garden_id" => garden_id}, _session, socket) do
+    Authorization.authorize_garden_view(garden_id, socket.assigns.current_user)
+    garden = Gardens.get_garden!(garden_id)
+
     {:ok,
      socket
+     |> assign(
+       :can_modify?,
+       Authorization.can_modify_garden?(garden, socket.assigns.current_user)
+     )
      |> stream(:seeds, Gardens.list_seeds(garden_id))
-     |> assign(:garden, Gardens.get_garden!(garden_id))}
+     |> assign(:garden, garden)}
   end
 
   @impl true
@@ -42,6 +49,7 @@ defmodule VisualGardenWeb.SeedLive.Index do
 
   @impl true
   def handle_event("delete", %{"id" => id}, socket) do
+    Authorization.authorize_garden_modify(socket.assigns.garden.id, socket.assigns.current_user)
     seed = Gardens.get_seed!(id)
     {:ok, _} = Gardens.delete_seed(seed)
 
