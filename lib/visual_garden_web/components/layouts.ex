@@ -13,7 +13,7 @@ defmodule VisualGardenWeb.Layouts do
     ~H"""
     <.link
       navigate={@path}
-      class={(if @active == @name, do: "bg-gray-50 text-indigo-600", else: "text-gray-700 hover:text-indigo-600 hover:bg-gray-50") <> " group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"}
+      class={(if @active == @name, do: "bg-eagle-100 text-mojo-600", else: "text-eagle-700 hover:text-mojo-600 hover:bg-eagle-100") <> " group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"}
     >
       <%= if @icon do %>
         <.icon name={@icon} />
