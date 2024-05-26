@@ -1,4 +1,5 @@
 defmodule VisualGardenWeb.PlantLive.FormComponent do
+  alias VisualGarden.Authorization
   alias VisualGarden.Planner
   alias VisualGarden.Gardens.Plant
   use VisualGardenWeb, :live_component
@@ -93,6 +94,7 @@ defmodule VisualGardenWeb.PlantLive.FormComponent do
 
   @impl true
   def update(assigns, socket) do
+    Authorization.authorize_garden_modify(assigns.garden.id, assigns.current_user)
     plant =
       case assigns[:plant] do
         nil -> %Plant{}
@@ -205,6 +207,7 @@ defmodule VisualGardenWeb.PlantLive.FormComponent do
   end
 
   def handle_event("save", %{"plant" => plant_params} = params, socket) do
+    Authorization.authorize_garden_modify(socket.assigns.garden.id, socket.assigns.current_user)
     save_plant(socket, socket.assigns.action, plant_params, params["Square"])
   end
 
@@ -238,7 +241,7 @@ defmodule VisualGardenWeb.PlantLive.FormComponent do
       {:ok, plant} ->
         {:ok, _} =
           Gardens.create_event_log("plant", %{
-            "event_time" => DateTime.utc_now(),
+            "event_time" => VisualGarden.MyDateTime.utc_now(),
             "plant_id" => plant.id,
             "product_id" => plant.product_id
           })

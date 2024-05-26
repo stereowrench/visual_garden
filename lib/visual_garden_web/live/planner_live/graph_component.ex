@@ -1,4 +1,5 @@
 defmodule VisualGardenWeb.PlannerLive.GraphComponent do
+  alias VisualGarden.Authorization
   use VisualGardenWeb, :live_component
 
   @impl true
@@ -56,96 +57,108 @@ defmodule VisualGardenWeb.PlannerLive.GraphComponent do
       <% end %>
 
       <%= for entry <- @planner_entries do %>
-        <.link
-          patch={~p"/planners/#{@garden.id}/#{@bed.id}/#{bed_square(entry, @bed)}/#{entry.id}/edit"}
-          class="crop-span"
-        >
-          <rect
-            width={Timex.diff(entry.end_plant_date, entry.start_plant_date, :days)}
-            height="25"
-            class="crop-span-end"
-            y={25 + 25 * bed_square(entry, @bed)}
-            x={40 + x_shift_date(entry.start_plant_date, @garden.tz, @extent_dates)}
+        <%= if @can_edit? do %>
+          <.link
+            patch={~p"/planners/#{@garden.id}/#{@bed.id}/#{bed_square(entry, @bed)}/#{entry.id}/edit"}
+            class="crop-span"
           >
-          </rect>
-          <rect
-            width={entry_width(entry)}
-            height="25"
-            y={25 + 25 * bed_square(entry, @bed)}
-            x={
-              40 +
-                x_shift_date(
-                  Timex.shift(entry.start_plant_date,
-                    days: Timex.diff(entry.end_plant_date, entry.start_plant_date, :days)
-                  ),
-                  @garden.tz,
-                  @extent_dates
-                )
-            }
-          >
-          </rect>
-          <rect
-            width={
-              if entry.nursery_start,
-                do:
-                  Timex.diff(
-                    Timex.shift(entry.nursery_end, days: entry.days_to_maturity),
-                    entry.end_plant_date,
-                    :days
-                  ),
-                else: Timex.diff(entry.end_plant_date, entry.start_plant_date, :days)
-            }
-            height="25"
-            y={25 + 25 * bed_square(entry, @bed)}
-            class="crop-span-end"
-            x={
-              40 +
-                x_shift_date(
-                  days_to_maturity_from_plant_start(entry),
-                  @garden.tz,
-                  @extent_dates
-                )
-            }
-          >
-          </rect>
-          <text
-            dominant-baseline="central"
-            text-anchor="middle"
-            x={
-              40 + x_shift_date(entry.start_plant_date, @garden.tz, @extent_dates) +
-                entry.days_to_maturity / 2 +
-                +Timex.diff(entry.end_plant_date, entry.start_plant_date, :days) / 2
-            }
-            y={25 + 25 * bed_square(entry, @bed) + 25 / 2}
-            style="font-size: 11px"
-          >
-            <%= entry.common_name %>
-          </text>
-
-          <line
-            x1={
-              40 + x_shift_date(entry.end_plant_date, @garden.tz, @extent_dates) +
-                entry.days_to_refuse
-            }
-            x2={
-              40 + x_shift_date(entry.end_plant_date, @garden.tz, @extent_dates) +
-                entry.days_to_refuse
-            }
-            y1={25 + 25 * bed_square(entry, @bed)}
-            y2={2 * 25 + 25 * bed_square(entry, @bed)}
-            stroke="red"
-          />
-        </.link>
+            <.render_entry entry={entry} garden={@garden} extent_dates={@extent_dates} bed={@bed} />
+          </.link>
+        <% else %>
+          <.render_entry entry={entry} garden={@garden} extent_dates={@extent_dates} bed={@bed} />
+        <% end %>
       <% end %>
 
       <line
-        x1={40 + x_shift_date(DateTime.utc_now(), nil, @extent_dates)}
+        x1={40 + x_shift_date(VisualGarden.MyDateTime.utc_now(), nil, @extent_dates)}
         y1={0}
-        x2={40 + x_shift_date(DateTime.utc_now(), nil, @extent_dates)}
+        x2={40 + x_shift_date(VisualGarden.MyDateTime.utc_now(), nil, @extent_dates)}
         y2={13 + 25 * (@bed.length * @bed.width)}
         stroke="blue"
       />
     </svg>
+    """
+  end
+
+  defp render_entry(assigns) do
+    ~H"""
+    <g>
+      <rect
+        width={Timex.diff(@entry.end_plant_date, @entry.start_plant_date, :days)}
+        height="25"
+        class="crop-span-end"
+        y={25 + 25 * bed_square(@entry, @bed)}
+        x={40 + x_shift_date(@entry.start_plant_date, @garden.tz, @extent_dates)}
+      >
+      </rect>
+      <rect
+        width={entry_width(@entry)}
+        height="25"
+        y={25 + 25 * bed_square(@entry, @bed)}
+        x={
+          40 +
+            x_shift_date(
+              Timex.shift(@entry.start_plant_date,
+                days: Timex.diff(@entry.end_plant_date, @entry.start_plant_date, :days)
+              ),
+              @garden.tz,
+              @extent_dates
+            )
+        }
+      >
+      </rect>
+      <rect
+        width={
+          if @entry.nursery_start,
+            do:
+              Timex.diff(
+                Timex.shift(@entry.nursery_end, days: @entry.days_to_maturity),
+                @entry.end_plant_date,
+                :days
+              ),
+            else: Timex.diff(@entry.end_plant_date, @entry.start_plant_date, :days)
+        }
+        height="25"
+        y={25 + 25 * bed_square(@entry, @bed)}
+        class="crop-span-end"
+        x={
+          40 +
+            x_shift_date(
+              days_to_maturity_from_plant_start(@entry),
+              @garden.tz,
+              @extent_dates
+            )
+        }
+      >
+      </rect>
+      <text
+        dominant-baseline="central"
+        text-anchor="middle"
+        x={
+          40 + x_shift_date(@entry.start_plant_date, @garden.tz, @extent_dates) +
+            @entry.days_to_maturity / 2 +
+            +Timex.diff(@entry.end_plant_date, @entry.start_plant_date, :days) / 2
+        }
+        y={25 + 25 * bed_square(@entry, @bed) + 25 / 2}
+        style="font-size: 11px"
+      >
+        <%= @entry.common_name %>
+      </text>
+
+      <line
+        x1={
+          40 + x_shift_date(@entry.end_plant_date, @garden.tz, @extent_dates) +
+            @entry.days_to_refuse
+        }
+        x2={
+          40 + x_shift_date(@entry.end_plant_date, @garden.tz, @extent_dates) +
+            @entry.days_to_refuse
+        }
+        y1={25 + 25 * bed_square(@entry, @bed)}
+        y2={2 * 25 + 25 * bed_square(@entry, @bed)}
+        stroke="red"
+      />
+    </g>
     """
   end
 
@@ -168,7 +181,15 @@ defmodule VisualGardenWeb.PlannerLive.GraphComponent do
 
   @impl true
   def update(assigns, socket) do
-    {:ok, assign(socket, assigns)}
+    Authorization.authorize_garden_view(assigns.garden.id, assigns.current_user)
+
+    {:ok,
+     socket
+     |> assign(
+       :can_edit?,
+       Authorization.can_modify_garden?(assigns.garden, assigns.current_user)
+     )
+     |> assign(assigns)}
   end
 
   def months_in_extent({start_d, end_d}) do
@@ -263,15 +284,15 @@ defmodule VisualGardenWeb.PlannerLive.GraphComponent do
       pairs = List.flatten(pairs)
 
       new_list =
-        [Date.new!(DateTime.utc_now().year, 1, 1)] ++
-          pairs ++ [Timex.shift(DateTime.utc_now(), years: 2)]
+        [Date.new!(VisualGarden.MyDateTime.utc_now().year, 1, 1)] ++
+          pairs ++ [Timex.shift(VisualGarden.MyDateTime.utc_now(), years: 2)]
 
       chunks = Enum.chunk_every(new_list, 2)
 
       spans =
         for [a, b] <- chunks do
           %{
-            start_date: clamp_date(DateTime.utc_now(), ed, a),
+            start_date: clamp_date(VisualGarden.MyDateTime.utc_now(), ed, a),
             finish_date: clamp_date(sd, ed, b)
           }
         end

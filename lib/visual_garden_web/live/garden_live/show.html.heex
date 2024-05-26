@@ -3,10 +3,15 @@
 <.header>
   <%= @garden.name %>
   <:subtitle>Grow, grow, grow!</:subtitle>
-  <:actions>
+  <:actions :if={@can_modify?}>
     <button class="major-button">
       <.link patch={~p"/gardens/#{@garden}/show/edit"} phx-click={JS.push_focus()}>
         Edit garden
+      </.link>
+    </button>
+    <button class="major-button">
+      <.link patch={~p"/gardens/#{@garden}/show/collab"} phx-click={JS.push_focus()}>
+        Add collaborators
       </.link>
     </button>
   </:actions>
@@ -39,6 +44,7 @@
     module={VisualGardenWeb.GardenLive.FormComponent}
     id={@garden.id}
     title={@page_title}
+    current_user={@current_user}
     action={@live_action}
     garden={@garden}
     patch={~p"/gardens/#{@garden}"}
@@ -46,19 +52,19 @@
 </.modal>
 
 <.modal
-  :if={@live_action == :plant}
-  id="garden-modal"
+  :if={@live_action == :collab}
+  id="collab-modal"
   show
   on_cancel={JS.patch(~p"/gardens/#{@garden}")}
 >
   <.live_component
-    module={VisualGardenWeb.PlantLive.FormComponent}
+    module={VisualGardenWeb.GardenLive.CollabComponent}
     id={@garden.id}
-    title="Add Plant"
+    title={@page_title}
+    current_user={@current_user}
     action={@live_action}
+    users={@users}
     garden={@garden}
-    products={@products}
-    seeds={@seeds}
     patch={~p"/gardens/#{@garden}"}
   />
 </.modal>

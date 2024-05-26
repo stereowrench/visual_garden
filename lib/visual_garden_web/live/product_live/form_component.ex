@@ -1,4 +1,5 @@
 defmodule VisualGardenWeb.ProductLive.FormComponent do
+  alias VisualGarden.Authorization
   use VisualGardenWeb, :live_component
 
   alias VisualGarden.Gardens
@@ -43,6 +44,7 @@ defmodule VisualGardenWeb.ProductLive.FormComponent do
 
   @impl true
   def update(%{product: product} = assigns, socket) do
+    Authorization.authorize_garden_modify(assigns.garden.id, assigns.current_user)
     changeset = Gardens.change_product(product)
 
     {:ok,
@@ -62,6 +64,7 @@ defmodule VisualGardenWeb.ProductLive.FormComponent do
   end
 
   def handle_event("save", %{"product" => product_params}, socket) do
+    Authorization.authorize_garden_modify(socket.assigns.garden.id, socket.assigns.current_user)
     save_product(socket, socket.assigns.action, product_params)
   end
 

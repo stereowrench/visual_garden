@@ -45,6 +45,7 @@ defmodule VisualGardenWeb do
       import Plug.Conn
       import VisualGardenWeb.Gettext
 
+      alias VisualGardenWeb.Components.Notifications.{Normal, Disconnected}
       unquote(verified_routes())
     end
   end
@@ -53,7 +54,7 @@ defmodule VisualGardenWeb do
     quote do
       use Phoenix.LiveView,
         layout: {VisualGardenWeb.Layouts, :app}
-
+        alias VisualGarden.Authorization
       unquote(html_helpers())
     end
   end

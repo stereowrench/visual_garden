@@ -6,7 +6,10 @@ defmodule VisualGardenWeb.GardenLive.Index do
 
   @impl true
   def mount(_params, _session, socket) do
-    {:ok, stream(socket, :gardens, Gardens.list_gardens())}
+    {:ok,
+     socket
+     |> stream(:public_gardens, Gardens.list_public_gardens(socket.assigns.current_user))
+     |> stream(:gardens, Gardens.list_gardens(socket.assigns.current_user))}
   end
 
   @impl true
@@ -15,6 +18,8 @@ defmodule VisualGardenWeb.GardenLive.Index do
   end
 
   defp apply_action(socket, :edit, %{"id" => id}) do
+    Authorization.authorize_garden_view(id, socket.assigns.current_user)
+
     socket
     |> assign(:page_title, "Edit Garden")
     |> assign(:garden, Gardens.get_garden!(id))
@@ -39,6 +44,7 @@ defmodule VisualGardenWeb.GardenLive.Index do
 
   @impl true
   def handle_event("delete", %{"id" => id}, socket) do
+    Authorization.authorize_garden_view(id, socket.assigns.current_user)
     garden = Gardens.get_garden!(id)
     {:ok, _} = Gardens.delete_garden(garden)
 

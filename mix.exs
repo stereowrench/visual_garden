@@ -9,7 +9,8 @@ defmodule VisualGarden.MixProject do
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
-      deps: deps()
+      deps: deps(),
+      test_coverage: [ignore_modules: [~r/.*\.PC/]]
     ]
   end
 
@@ -32,6 +33,7 @@ defmodule VisualGarden.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
+      {:bcrypt_elixir, "~> 3.0"},
       {:phoenix, "~> 1.7.11"},
       {:phoenix_ecto, "~> 4.4"},
       {:ecto_sql, "~> 3.10"},
@@ -64,8 +66,6 @@ defmodule VisualGarden.MixProject do
       {:live_select, "~> 1.0"},
       {:earmark, "~> 1.4"},
       {:seqfuzz, "~> 0.2.0"},
-      {:phoenix_storybook, "~> 0.6.1"},
-      {:doggo, "~> 0.5.0"},
       {:sentry, "~> 10.0"},
       {:hackney, "~> 1.19"}
     ]

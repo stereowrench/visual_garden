@@ -2,7 +2,7 @@
 <.header>
   Library seed <%= @library_seed.id %>
   <:subtitle>This is a library_seed record from your database.</:subtitle>
-  <:actions>
+  <:actions :if={@can_edit?}>
     <.link patch={~p"/library_seeds/#{@library_seed}/show/edit"} phx-click={JS.push_focus()}>
       <.button>Edit library_seed</.button>
     </.link>
@@ -23,6 +23,7 @@
     id={@library_seed.id}
     title={@page_title}
     action={@live_action}
+    current_user={@current_user}
     library_seed={@library_seed}
     patch={~p"/library_seeds/#{@library_seed}"}
   />

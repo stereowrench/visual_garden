@@ -549,7 +549,7 @@ defmodule VisualGarden.Library do
     LibrarySeed.changeset(library_seed, attrs)
   end
 
-  def change_planner_entry(%PlannerEntry{} = entry, attrs \\ %{}) do
-    PlannerEntry.changeset(entry, attrs)
+  def change_planner_entry(%PlannerEntry{} = entry, attrs \\ %{}, garden) do
+    PlannerEntry.changeset(entry, attrs, garden)
   end
 end

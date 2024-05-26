@@ -1,8 +1,10 @@
 defmodule VisualGardenWeb.RegionLiveTest do
+  alias VisualGarden.Accounts
   use VisualGardenWeb.ConnCase
 
   import Phoenix.LiveViewTest
   import VisualGarden.LibraryFixtures
+  import VisualGarden.AccountsFixtures
 
   @create_attrs %{name: "some name 2"}
   @update_attrs %{name: "some updated name"}
@@ -10,7 +12,9 @@ defmodule VisualGardenWeb.RegionLiveTest do
 
   defp create_region(_) do
     region = region_fixture()
-    %{region: region}
+    user = user_fixture()
+    Accounts.promote_role(user, :admin)
+    %{region: region, user: user}
   end
 
   describe "Index" do
@@ -23,7 +27,8 @@ defmodule VisualGardenWeb.RegionLiveTest do
       assert html =~ region.name
     end
 
-    test "saves new region", %{conn: conn} do
+    test "saves new region", %{conn: conn, user: user} do
+      conn = log_in_user(conn, user)
       {:ok, index_live, _html} = live(conn, ~p"/regions")
 
       assert index_live |> element("a", "New Region") |> render_click() =~
@@ -46,7 +51,8 @@ defmodule VisualGardenWeb.RegionLiveTest do
       assert html =~ "some name"
     end
 
-    test "updates region in listing", %{conn: conn, region: region} do
+    test "updates region in listing", %{conn: conn, region: region, user: user} do
+      conn = log_in_user(conn, user)
       {:ok, index_live, _html} = live(conn, ~p"/regions")
 
       assert index_live |> element("#regions-#{region.id} a", "Edit") |> render_click() =~
@@ -69,7 +75,8 @@ defmodule VisualGardenWeb.RegionLiveTest do
       assert html =~ "some updated name"
     end
 
-    test "deletes region in listing", %{conn: conn, region: region} do
+    test "deletes region in listing", %{conn: conn, region: region, user: user} do
+      conn = log_in_user(conn, user)
       {:ok, index_live, _html} = live(conn, ~p"/regions")
 
       assert index_live |> element("#regions-#{region.id} a", "Delete") |> render_click()
@@ -87,7 +94,8 @@ defmodule VisualGardenWeb.RegionLiveTest do
       assert html =~ region.name
     end
 
-    test "updates region within modal", %{conn: conn, region: region} do
+    test "updates region within modal", %{conn: conn, region: region, user: user} do
+      conn = log_in_user(conn, user)
       {:ok, show_live, _html} = live(conn, ~p"/regions/#{region}")
 
       assert show_live |> element("a", "Edit") |> render_click() =~

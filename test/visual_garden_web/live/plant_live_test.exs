@@ -1,8 +1,10 @@
 defmodule VisualGardenWeb.PlantLiveTest do
+  alias VisualGarden.Gardens
   use VisualGardenWeb.ConnCase
 
   import Phoenix.LiveViewTest
   import VisualGarden.GardensFixtures
+  import VisualGarden.AccountsFixtures
 
   @create_attrs %{name: "my plant", qty: 1}
   @update_attrs %{name: "my plant 2"}
@@ -12,19 +14,28 @@ defmodule VisualGardenWeb.PlantLiveTest do
     garden = garden_fixture()
     product = product_fixture(%{type: "bed", length: 3, width: 4}, garden)
     plant = plant_fixture(%{product_id: product.id}, garden)
-    %{plant: plant, product: product, garden: garden}
+    user = user_fixture()
+    Gardens.create_garden_user(garden, user)
+    %{plant: plant, product: product, garden: garden, user: user}
   end
 
   describe "Index" do
     setup [:create_plant]
 
-    test "lists all plants", %{conn: conn, garden: garden} do
+    test "lists all plants", %{conn: conn, garden: garden, user: user} do
+      conn = log_in_user(conn, user)
       {:ok, _index_live, html} = live(conn, ~p"/gardens/#{garden.id}/plants")
 
       assert html =~ "Listing Plants"
     end
 
-    test "lists all plants under product", %{conn: conn, garden: garden, product: product} do
+    test "lists all plants under product", %{
+      conn: conn,
+      garden: garden,
+      product: product,
+      user: user
+    } do
+      conn = log_in_user(conn, user)
       {:ok, _index_live, html} = live(conn, ~p"/gardens/#{garden.id}/beds/#{product.id}/plants")
 
       assert html =~ "Listing Plants"
@@ -56,7 +67,14 @@ defmodule VisualGardenWeb.PlantLiveTest do
     #   assert html =~ "Plant created successfully"
     # end
 
-    test "updates plant in listing", %{conn: conn, plant: plant, garden: garden, product: product} do
+    test "updates plant in listing", %{
+      conn: conn,
+      plant: plant,
+      garden: garden,
+      product: product,
+      user: user
+    } do
+      conn = log_in_user(conn, user)
       {:ok, index_live, _html} = live(conn, ~p"/gardens/#{garden.id}/plants")
 
       assert index_live |> element("#plants-#{plant.id} a", "Edit") |> render_click() =~
@@ -78,7 +96,8 @@ defmodule VisualGardenWeb.PlantLiveTest do
       assert html =~ "Plant updated successfully"
     end
 
-    test "deletes plant in listing", %{conn: conn, plant: plant, garden: garden} do
+    test "deletes plant in listing", %{conn: conn, plant: plant, garden: garden, user: user} do
+      conn = log_in_user(conn, user)
       {:ok, index_live, _html} = live(conn, ~p"/gardens/#{garden.id}/plants")
 
       assert index_live |> element("#plants-#{plant.id} a", "Delete") |> render_click()
@@ -89,19 +108,32 @@ defmodule VisualGardenWeb.PlantLiveTest do
   describe "Show" do
     setup [:create_plant]
 
-    test "displays plant", %{conn: conn, plant: plant, garden: garden, product: product} do
-      {:ok, _show_live, html} = live(conn, ~p"/gardens/#{garden.id}/beds/#{product.id}/plants/#{plant}")
+    test "displays plant", %{conn: conn, plant: plant, garden: garden, product: product, user: user} do
+      conn = log_in_user(conn, user)
+      {:ok, _show_live, html} =
+        live(conn, ~p"/gardens/#{garden.id}/beds/#{product.id}/plants/#{plant}")
 
       assert html =~ "Show Plant"
     end
 
-    test "updates plant within modal", %{conn: conn, plant: plant, garden: garden, product: product} do
-      {:ok, show_live, _html} = live(conn, ~p"/gardens/#{garden.id}/beds/#{product.id}/plants/#{plant}")
+    test "updates plant within modal", %{
+      conn: conn,
+      plant: plant,
+      garden: garden,
+      product: product,
+      user: user
+    } do
+      conn = log_in_user(conn, user)
+      {:ok, show_live, _html} =
+        live(conn, ~p"/gardens/#{garden.id}/beds/#{product.id}/plants/#{plant}")
 
       assert show_live |> element("a", "Edit") |> render_click() =~
                "Edit Plant"
 
-      assert_patch(show_live, ~p"/gardens/#{garden.id}/beds/#{product.id}/plants/#{plant}/show/edit")
+      assert_patch(
+        show_live,
+        ~p"/gardens/#{garden.id}/beds/#{product.id}/plants/#{plant}/show/edit"
+      )
 
       assert show_live
              |> form("#plant-form", plant: @invalid_attrs)

@@ -6,16 +6,16 @@ defmodule VisualGarden.Planner do
   alias VisualGarden.Gardens
   alias VisualGarden.Repo
 
-  def create_planner_entry(attrs \\ %{}) do
+  def create_planner_entry(attrs \\ %{}, garden) do
     # TODO we need to make sure the entry will still fit if there's a competing change.
     %PlannerEntry{}
-    |> PlannerEntry.changeset(attrs)
+    |> PlannerEntry.changeset(attrs, garden)
     |> Repo.insert()
   end
 
-  def change_planner_entry(%PlannerEntry{} = entry, attrs \\ %{}) do
+  def change_planner_entry(%PlannerEntry{} = entry, garden, attrs \\ %{}) do
     entry
-    |> PlannerEntry.changeset(attrs)
+    |> PlannerEntry.changeset(attrs, garden)
   end
 
   def delete_planner_entry(%PlannerEntry{} = planner) do
@@ -31,7 +31,7 @@ defmodule VisualGarden.Planner do
       if start_date do
         start_date
       else
-        Date.utc_today()
+        VisualGarden.MyDateTime.utc_today()
       end
 
     {row, column} = parse_square(to_string(square), bed)
@@ -366,7 +366,7 @@ defmodule VisualGarden.Planner do
   # TODO scope to user's gardens
   def get_todo_items() do
     gardens = Gardens.list_gardens()
-    today = Date.utc_today()
+    today = VisualGarden.MyDateTime.utc_today()
 
     for garden <- gardens do
       entries =

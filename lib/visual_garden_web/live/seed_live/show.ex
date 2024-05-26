@@ -5,7 +5,16 @@ defmodule VisualGardenWeb.SeedLive.Show do
 
   @impl true
   def mount(%{"garden_id" => garden_id}, _session, socket) do
-    {:ok, assign(socket, :garden, Gardens.get_garden!(garden_id))}
+    Authorization.authorize_garden_view(garden_id, socket.assigns.current_user)
+    garden = Gardens.get_garden!(garden_id)
+
+    {:ok,
+     socket
+     |> assign(
+       :can_modify?,
+       Authorization.can_modify_garden?(garden, socket.assigns.current_user)
+     )
+     |> assign(:garden, garden)}
   end
 
   @impl true

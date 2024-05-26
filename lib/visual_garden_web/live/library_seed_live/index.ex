@@ -11,7 +11,10 @@ defmodule VisualGardenWeb.LibrarySeedLive.Index do
 
   @impl true
   def handle_params(params, _url, socket) do
-    {:noreply, apply_action(socket, socket.assigns.live_action, params)}
+    {:noreply,
+     socket
+     |> assign(:can_edit?, Authorization.can_modify_library?(socket.assigns.current_user))
+     |> apply_action(socket.assigns.live_action, params)}
   end
 
   defp apply_action(socket, :edit, %{"id" => id}) do
@@ -39,6 +42,7 @@ defmodule VisualGardenWeb.LibrarySeedLive.Index do
 
   @impl true
   def handle_event("delete", %{"id" => id}, socket) do
+    Authorization.authorize_library(socket.assigns.current_user)
     library_seed = Library.get_library_seed!(id)
     {:ok, _} = Library.delete_library_seed(library_seed)
 

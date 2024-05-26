@@ -10,8 +10,9 @@ defmodule VisualGardenWeb.PlannerLive.Show do
 
   @impl true
   def handle_params(%{"garden_id" => id} = params, _, socket) do
+    Authorization.authorize_garden_view(id, socket.assigns.current_user)
     garden = Gardens.get_garden!(id)
-    day = Date.utc_today()
+    day = VisualGarden.MyDateTime.utc_today()
 
     {:noreply,
      socket
@@ -20,7 +21,7 @@ defmodule VisualGardenWeb.PlannerLive.Show do
      |> assign(:garden, garden)
      |> add_entries()
      |> assign(:beds, Gardens.list_beds(id))
-     |> add_plantability(Date.utc_today())
+     |> add_plantability(VisualGarden.MyDateTime.utc_today())
      |> add_current_plants(day)
      |> assign(:extent_dates, extent_dates(garden.tz))}
   end
@@ -43,7 +44,7 @@ defmodule VisualGardenWeb.PlannerLive.Show do
             bed,
             start_date,
             end_date,
-            Date.utc_today(),
+            VisualGarden.MyDateTime.utc_today(),
             species,
             schedules_map,
             seeds,
@@ -142,7 +143,7 @@ defmodule VisualGardenWeb.PlannerLive.Show do
   def add_params(socket, %{"bed_id" => bid, "squares" => sq} = params) do
     bed = Gardens.get_product!(bid)
     start_date = if params["start_date"], do: Date.from_iso8601!(params["start_date"])
-    start_date = start_date || Date.utc_today()
+    start_date = start_date || VisualGarden.MyDateTime.utc_today()
 
     end_date = get_end_date(sq, bed, start_date)
 
@@ -151,7 +152,7 @@ defmodule VisualGardenWeb.PlannerLive.Show do
         bed,
         start_date,
         end_date,
-        Date.utc_today()
+        VisualGarden.MyDateTime.utc_today()
       )
 
     socket
@@ -167,7 +168,7 @@ defmodule VisualGardenWeb.PlannerLive.Show do
   def add_params(socket, %{"bed_id" => bid, "square" => sq, "entry" => planner_entry_id} = params) do
     bed = Gardens.get_product!(bid)
     start_date = if params["start_date"], do: Date.from_iso8601!(params["start_date"])
-    start_date = start_date || Date.utc_today()
+    start_date = start_date || VisualGarden.MyDateTime.utc_today()
 
     socket
     |> assign(:bed, Gardens.get_product!(bid))
@@ -183,14 +184,14 @@ defmodule VisualGardenWeb.PlannerLive.Show do
   def add_params(socket, %{"bed_id" => bid, "square" => sq} = params) do
     bed = Gardens.get_product!(bid)
     start_date = if params["start_date"], do: Date.from_iso8601!(params["start_date"])
-    start_date = start_date || Date.utc_today()
+    start_date = start_date || VisualGarden.MyDateTime.utc_today()
 
     plantables =
       Planner.get_plantables_from_garden(
         bed,
         start_date,
         Planner.get_end_date(sq, bed, start_date),
-        Date.utc_today()
+        VisualGarden.MyDateTime.utc_today()
       )
 
     socket
@@ -209,7 +210,7 @@ defmodule VisualGardenWeb.PlannerLive.Show do
 
   def extent_dates(tz) do
     now =
-      DateTime.utc_now()
+      VisualGarden.MyDateTime.utc_now()
       |> Timex.Timezone.convert(tz)
       |> Timex.to_date()
 
@@ -225,7 +226,7 @@ defmodule VisualGardenWeb.PlannerLive.Show do
 
   @impl true
   def handle_info({VisualGardenWeb.PlannerLive.FormComponent, {:saved, _plant}}, socket) do
-    start_date = Date.utc_today()
+    start_date = VisualGarden.MyDateTime.utc_today()
 
     socket =
       socket
@@ -247,14 +248,14 @@ defmodule VisualGardenWeb.PlannerLive.Show do
   @impl true
   def handle_event("plant_combo_update", %{"Square" => squares, "bed_id" => bed_id}, socket) do
     bed = Gardens.get_product!(bed_id)
-    end_date = get_end_date(squares, bed, Date.utc_today())
-    {:noreply, add_plantability(socket, Date.utc_today(), end_date)}
+    end_date = get_end_date(squares, bed, VisualGarden.MyDateTime.utc_today())
+    {:noreply, add_plantability(socket, VisualGarden.MyDateTime.utc_today(), end_date)}
   end
 
   @impl true
   def handle_event("plant_combo_update", %{"bed_id" => _bed_id}, socket) do
     end_date = nil
-    {:noreply, add_plantability(socket, Date.utc_today(), end_date)}
+    {:noreply, add_plantability(socket, VisualGarden.MyDateTime.utc_today(), end_date)}
   end
 
   @impl true
@@ -263,7 +264,7 @@ defmodule VisualGardenWeb.PlannerLive.Show do
     Planner.delete_planner_entry(planner)
 
     start_date = if params["start_date"], do: Date.from_iso8601!(params["start_date"])
-    start_date = start_date || Date.utc_today()
+    start_date = start_date || VisualGarden.MyDateTime.utc_today()
 
     socket =
       socket

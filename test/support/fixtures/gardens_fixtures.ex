@@ -3,7 +3,9 @@ defmodule VisualGarden.GardensFixtures do
   This module defines test helpers for creating
   entities via the `VisualGarden.Gardens` context.
   """
+  alias VisualGarden.Gardens
   alias VisualGarden.LibraryFixtures
+  alias VisualGarden.AccountsFixtures
 
   @doc """
   Generate a garden.
@@ -12,18 +14,26 @@ defmodule VisualGarden.GardensFixtures do
     region =
       if region,
         do: region,
-        else: LibraryFixtures.region_fixture(%{name: "garden region"})
+        else: LibraryFixtures.region_fixture(%{name: "garden region#{System.unique_integer()}"})
+
+      user = AccountsFixtures.user_fixture()
 
     {:ok, garden} =
       attrs
       |> Enum.into(%{
-        name: "My Garden",
+        name: "My Garden#{System.unique_integer()}",
         tz: "America/Chicago",
-        region_id: region.id
+        region_id: region.id,
+        owner_id: user.id,
+        visibility: :private
       })
       |> VisualGarden.Gardens.create_garden()
 
     garden
+  end
+
+  def garden_users_fixture(garden, user) do
+    Gardens.create_garden_user(garden, user)
   end
 
   @doc """
@@ -125,7 +135,7 @@ defmodule VisualGarden.GardensFixtures do
       attrs
       |> Enum.into(%{
         "product_id" => product.id,
-        "event_time" => DateTime.utc_now(),
+        "event_time" => VisualGarden.MyDateTime.utc_now(),
         "event_type" => type,
         "humidity" => 42,
         "mow_depth_in" => "120.5",

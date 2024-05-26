@@ -1,7 +1,7 @@
-<.live_component module={VisualGardenWeb.NavBarLibrary} id="navbar" current={"Species"} />
+<.live_component module={VisualGardenWeb.NavBarLibrary} id="navbar" current="Species" />
 <.header>
   Listing Species
-  <:actions>
+  <:actions :if={@can_modify?}>
     <.link patch={~p"/species/new"}>
       <.button>New Species</.button>
     </.link>
@@ -18,9 +18,11 @@
     <div class="sr-only">
       <.link navigate={~p"/species/#{species}"}>Show</.link>
     </div>
-    <.link patch={~p"/species/#{species}/edit"}>Edit</.link>
+    <%= if @can_modify? do %>
+      <.link patch={~p"/species/#{species}/edit"}>Edit</.link>
+    <% end %>
   </:action>
-  <:action :let={{id, species}}>
+  <:action :let={{id, species}} :if={@can_modify?}>
     <.link
       phx-click={JS.push("delete", value: %{id: species.id}) |> hide("##{id}")}
       data-confirm="Are you sure?"
@@ -41,6 +43,7 @@
     id={@species.id || :new}
     title={@page_title}
     action={@live_action}
+    current_user={@current_user}
     species={@species}
     patch={~p"/species"}
   />

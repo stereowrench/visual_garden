@@ -2,7 +2,7 @@
 <.header>
   Schedule <%= @schedule.id %>
   <:subtitle>This is a schedule record from your database.</:subtitle>
-  <:actions>
+  <:actions :if={@can_modify?}>
     <.link patch={~p"/schedules/#{@schedule}/show/edit"} phx-click={JS.push_focus()}>
       <.button>Edit schedule</.button>
     </.link>
@@ -25,6 +25,7 @@
     id={@schedule.id}
     title={@page_title}
     action={@live_action}
+    current_user={@current_user}
     schedule={@schedule}
     patch={~p"/schedules/#{@schedule}"}
   />

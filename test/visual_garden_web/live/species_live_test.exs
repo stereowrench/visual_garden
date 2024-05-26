@@ -1,8 +1,10 @@
 defmodule VisualGardenWeb.SpeciesLiveTest do
+  alias VisualGarden.Accounts
   use VisualGardenWeb.ConnCase
 
   import Phoenix.LiveViewTest
   import VisualGarden.LibraryFixtures
+  import VisualGarden.AccountsFixtures
 
   @create_attrs %{name: "some name 2", genus: "my genus"}
   @update_attrs %{name: "some updated name"}
@@ -10,7 +12,9 @@ defmodule VisualGardenWeb.SpeciesLiveTest do
 
   defp create_species(_) do
     species = species_fixture()
-    %{species: species}
+    user = user_fixture()
+    Accounts.promote_role(user, :admin)
+    %{species: species, user: user}
   end
 
   describe "Index" do
@@ -23,7 +27,8 @@ defmodule VisualGardenWeb.SpeciesLiveTest do
       assert html =~ species.name
     end
 
-    test "saves new species", %{conn: conn} do
+    test "saves new species", %{conn: conn, user: user} do
+      conn = log_in_user(conn, user)
       {:ok, index_live, _html} = live(conn, ~p"/species")
 
       assert index_live |> element("a", "New Species") |> render_click() =~
@@ -46,10 +51,13 @@ defmodule VisualGardenWeb.SpeciesLiveTest do
       assert html =~ "some name"
     end
 
-    test "updates species in listing", %{conn: conn, species: species} do
+    test "updates species in listing", %{conn: conn, species: species, user: user} do
+      conn = log_in_user(conn, user)
       {:ok, index_live, _html} = live(conn, ~p"/species")
 
-      assert index_live |> element("#species_collection-#{species.id} a", "Edit") |> render_click() =~
+      assert index_live
+             |> element("#species_collection-#{species.id} a", "Edit")
+             |> render_click() =~
                "Edit Species"
 
       assert_patch(index_live, ~p"/species/#{species}/edit")
@@ -69,10 +77,14 @@ defmodule VisualGardenWeb.SpeciesLiveTest do
       assert html =~ "some updated name"
     end
 
-    test "deletes species in listing", %{conn: conn, species: species} do
+    test "deletes species in listing", %{conn: conn, species: species, user: user} do
+      conn = log_in_user(conn, user)
       {:ok, index_live, _html} = live(conn, ~p"/species")
 
-      assert index_live |> element("#species_collection-#{species.id} a", "Delete") |> render_click()
+      assert index_live
+             |> element("#species_collection-#{species.id} a", "Delete")
+             |> render_click()
+
       refute has_element?(index_live, "#species-#{species.id}")
     end
   end
@@ -87,7 +99,8 @@ defmodule VisualGardenWeb.SpeciesLiveTest do
       assert html =~ species.name
     end
 
-    test "updates species within modal", %{conn: conn, species: species} do
+    test "updates species within modal", %{conn: conn, species: species, user: user} do
+      conn = log_in_user(conn, user)
       {:ok, show_live, _html} = live(conn, ~p"/species/#{species}")
 
       assert show_live |> element("a", "Edit") |> render_click() =~

@@ -4,10 +4,37 @@ defmodule VisualGarden.Gardens do
   """
 
   import Ecto.Query, warn: false
+  alias VisualGarden.Gardens.GardenUser
   alias VisualGarden.Repo
 
   alias VisualGarden.Gardens.Garden
   alias VisualGarden.Planner
+
+  def create_garden_user(garden, user) do
+    params = %{garden_id: garden.id, user_id: user.id}
+
+    %GardenUser{}
+    |> GardenUser.changeset(params)
+    |> Repo.insert()
+  end
+
+  def get_garden_user(garden, user) do
+    Repo.one(
+      from gu in GardenUser,
+        where: gu.garden_id == ^garden.id and gu.user_id == ^user.id
+    )
+  end
+
+  def list_garden_users(garden) do
+    Repo.all(
+      from gu in GardenUser,
+        where: gu.garden_id == ^garden.id
+    ) |> Repo.preload([:user])
+  end
+
+  def delete_garden_user(%GardenUser{} = gu) do
+    Repo.delete(gu)
+  end
 
   @doc """
   Returns the list of gardens.
@@ -18,8 +45,24 @@ defmodule VisualGarden.Gardens do
       [%Garden{}, ...]
 
   """
-  def list_gardens do
-    Repo.all(Garden)
+  def list_gardens(user \\ nil) do
+    if user do
+      Repo.all(
+        from g in Garden,
+          left_join: gu in GardenUser,
+          on: gu.garden_id == g.id,
+          where: g.owner_id == ^user.id or gu.user_id == ^user.id
+      )
+    else
+      []
+    end
+  end
+
+  def list_public_gardens(user \\ nil) do
+    user_garden_ids = list_gardens(user) |> Enum.map(& &1.id)
+
+    Repo.all(from g in Garden, where: g.visibility == :public)
+    |> Enum.reject(&(&1.id in user_garden_ids))
   end
 
   @doc """
@@ -640,7 +683,7 @@ defmodule VisualGarden.Gardens do
 
   def create_event_logs(type = "weed", squares, bed) do
     Repo.transaction(fn ->
-      time = DateTime.utc_now()
+      time = VisualGarden.MyDateTime.utc_now()
 
       for square <- squares do
         {row, column} = Planner.parse_square(square, bed)

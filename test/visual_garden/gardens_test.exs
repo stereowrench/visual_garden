@@ -12,8 +12,8 @@ defmodule VisualGarden.GardensTest do
     @invalid_attrs %{name: nil}
 
     test "list_gardens/0 returns all gardens" do
-      garden = garden_fixture()
-      assert Gardens.list_gardens() == [garden]
+      garden = garden_fixture(%{visibility: :public})
+      assert Gardens.list_public_gardens() == [garden]
     end
 
     test "get_garden!/1 returns the garden with given id" do
@@ -23,7 +23,14 @@ defmodule VisualGarden.GardensTest do
 
     test "create_garden/1 with valid data creates a garden" do
       region = LibraryFixtures.region_fixture()
-      valid_attrs = %{name: "My Other Garden", tz: "America/Chicago", region_id: region.id}
+      user = VisualGarden.AccountsFixtures.user_fixture()
+
+      valid_attrs = %{
+        name: "My Other Garden",
+        tz: "America/Chicago",
+        region_id: region.id,
+        owner_id: user.id
+      }
 
       assert {:ok, %Garden{} = garden} = Gardens.create_garden(valid_attrs)
     end
@@ -356,7 +363,7 @@ defmodule VisualGarden.GardensTest do
       valid_attrs = %{
         "product_id" => product.id,
         "event_type" => "till",
-        "event_time" => DateTime.utc_now(),
+        "event_time" => VisualGarden.MyDateTime.utc_now(),
         "till_depth_in" => "120.5"
       }
 
@@ -371,7 +378,7 @@ defmodule VisualGarden.GardensTest do
       valid_attrs = %{
         "product_id" => product.id,
         "event_type" => "water",
-        "event_time" => DateTime.utc_now()
+        "event_time" => VisualGarden.MyDateTime.utc_now()
       }
 
       assert {:ok, %EventLog{} = event_log} = Gardens.create_event_log("water", valid_attrs)
@@ -387,7 +394,7 @@ defmodule VisualGarden.GardensTest do
         "plant_id" => plant.id,
         "product_id" => product.id,
         "event_type" => "plant",
-        "event_time" => DateTime.utc_now()
+        "event_time" => VisualGarden.MyDateTime.utc_now()
       }
 
       assert {:ok, %EventLog{} = event_log} = Gardens.create_event_log("plant", valid_attrs)
@@ -402,7 +409,7 @@ defmodule VisualGarden.GardensTest do
       valid_attrs = %{
         "product_id" => product.id,
         "event_type" => "transfer",
-        "event_time" => DateTime.utc_now(),
+        "event_time" => VisualGarden.MyDateTime.utc_now(),
         "transferred_to_id" => product.id,
         "transferred_from_id" => product2.id
       }
@@ -520,9 +527,55 @@ defmodule VisualGarden.GardensTest do
   test "squares_options" do
     length = 3
     width = 4
+
     assert Enum.to_list(0..(3 * 4 - 1)) ==
              Gardens.squares_options(%{length: length, width: width})
              |> Enum.map(fn {_, idx} -> idx end)
              |> Enum.sort()
+  end
+
+  describe "auth" do
+    alias VisualGarden.Gardens.Garden
+
+    import VisualGarden.GardensFixtures
+    import VisualGarden.AccountsFixtures
+
+    test "lists my gardens" do
+      user = user_fixture()
+      garden = garden_fixture(%{owner_id: user.id})
+
+      assert Gardens.list_gardens(user) == [garden]
+    end
+
+    test "list gardens for user" do
+      user1 = user_fixture()
+      user2 = user_fixture()
+      garden = garden_fixture(%{owner_id: user1.id})
+      _ = garden_users_fixture(garden, user2)
+
+      assert Gardens.list_gardens(user2) == [garden]
+    end
+
+    test "doesn't list other user's private gardens" do
+      user1 = user_fixture()
+      user2 = user_fixture()
+      garden = garden_fixture(%{owner_id: user1.id})
+
+      assert Gardens.list_gardens(user2) == []
+    end
+
+    test "lists public visible gardens" do
+      user1 = user_fixture()
+      user2 = user_fixture()
+      user3 = user_fixture()
+      garden1 = garden_fixture(%{owner_id: user1.id, visibility: "public"})
+      garden2 = garden_fixture(%{owner_id: user2.id, visibility: "public"})
+
+      _ = garden_users_fixture(garden2, user3)
+
+      assert Gardens.list_public_gardens(user1) == [garden2]
+      assert Gardens.list_public_gardens(user2) == [garden1]
+      assert Gardens.list_public_gardens(user3) == [garden1]
+    end
   end
 end

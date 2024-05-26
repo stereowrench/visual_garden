@@ -1,4 +1,4 @@
-<.live_component module={VisualGardenWeb.NavBar} id="navbar" garden={@garden} current={"Plants"} />
+<.live_component module={VisualGardenWeb.NavBar} id="navbar" garden={@garden} current="Plants" />
 
 <.header>
   Listing Plants
@@ -27,11 +27,13 @@
         Show
       </.link>
     </div>
-    <.link patch={~p"/gardens/#{@garden.id}/beds/#{plant.product_id}/plants/#{plant}/edit"}>
-      Edit
-    </.link>
+    <%= if @can_modify? do %>
+      <.link patch={~p"/gardens/#{@garden.id}/beds/#{plant.product_id}/plants/#{plant}/edit"}>
+        Edit
+      </.link>
+    <% end %>
   </:action>
-  <:action :let={{id, plant}}>
+  <:action :let={{id, plant}} :if={@can_modify?}>
     <.link
       phx-click={JS.push("delete", value: %{id: plant.id}) |> hide("##{id}")}
       data-confirm="Are you sure?"
@@ -63,6 +65,7 @@
     plant={@plant}
     seeds={@seeds}
     beds={@beds}
+    current_user={@current_user}
     garden={@garden}
     patch={
       unless @product do

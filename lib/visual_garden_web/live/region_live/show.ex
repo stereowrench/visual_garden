@@ -12,6 +12,7 @@ defmodule VisualGardenWeb.RegionLive.Show do
   def handle_params(%{"id" => id}, _, socket) do
     {:noreply,
      socket
+     |> assign(:can_modify?, Authorization.can_modify_library?(socket.assigns.current_user))
      |> assign(:page_title, page_title(socket.assigns.live_action))
      |> assign(:region, Library.get_region!(id))}
   end

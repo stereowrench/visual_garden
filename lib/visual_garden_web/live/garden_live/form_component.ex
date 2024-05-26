@@ -22,6 +22,13 @@ defmodule VisualGardenWeb.GardenLive.FormComponent do
         phx-submit="save"
       >
         <.input field={@form[:name]} label="Name" />
+        <.input
+          field={@form[:visibility]}
+          type="select"
+          label="Visibility"
+          prompt="Choose a value"
+          options={Ecto.Enum.values(VisualGarden.Gardens.Garden, :visibility)}
+        />
         <.live_select
           field={@form[:tz]}
           value_mapper={&to_string(&1)}
@@ -129,7 +136,9 @@ defmodule VisualGardenWeb.GardenLive.FormComponent do
   def handle_event("validate", %{"garden" => garden_params}, socket) do
     changeset =
       socket.assigns.garden
-      |> Gardens.change_garden(garden_params)
+      |> Gardens.change_garden(
+        Map.merge(garden_params, %{"owner_id" => socket.assigns.current_user.id})
+      )
       |> Map.put(:action, :validate)
 
     {:noreply, socket |> assign_form(changeset) |> assign(:changes, garden_params)}
@@ -155,7 +164,9 @@ defmodule VisualGardenWeb.GardenLive.FormComponent do
   end
 
   defp save_garden(socket, :new, garden_params) do
-    case Gardens.create_garden(garden_params) do
+    case Gardens.create_garden(
+           Map.merge(garden_params, %{"owner_id" => socket.assigns.current_user.id})
+         ) do
       {:ok, garden} ->
         notify_parent({:saved, garden})
 

@@ -1,6 +1,7 @@
 defmodule VisualGardenWeb.Router do
   use VisualGardenWeb, :router
-  import PhoenixStorybook.Router
+
+  import VisualGardenWeb.UserAuth
 
   pipeline :browser do
     plug :accepts, ["html"]
@@ -9,21 +10,26 @@ defmodule VisualGardenWeb.Router do
     plug :put_root_layout, html: {VisualGardenWeb.Layouts, :root}
     plug :protect_from_forgery
     plug :put_secure_browser_headers
+    plug :fetch_current_user
   end
 
   pipeline :api do
     plug :accepts, ["json"]
   end
 
-  scope "/" do
-    storybook_assets()
+  scope "/", VisualGardenWeb do
+    pipe_through [:browser, :require_authenticated_user]
 
-    pipe_through :browser
-
-    live_storybook("/storybook/doggo",
-      backend_module: VisualGardenWeb.Storybook.Doggo,
-      session_name: :live_storybook_doggo
-    )
+    live_session :creation,
+      on_mount: [
+        {VisualGardenWeb.UserAuth, :ensure_authenticated},
+        VisualGardenWeb.Nav,
+        Flashy.Hook
+      ] do
+      live "/gardens/new", GardenLive.Index, :new
+      live "/gardens/:id/show/edit", GardenLive.Show, :edit
+      live "/gardens/:id/show/collab", GardenLive.Show, :collab
+    end
   end
 
   scope "/", VisualGardenWeb do
@@ -31,16 +37,18 @@ defmodule VisualGardenWeb.Router do
 
     get "/", PageController, :home
 
-    live_session :routed, on_mount: [VisualGardenWeb.Nav, Flashy.Hook] do
+    live_session :routed,
+      on_mount: [
+        {VisualGardenWeb.UserAuth, :mount_current_user},
+        VisualGardenWeb.Nav,
+        Flashy.Hook
+      ] do
       live "/home", HomeLive.Show, :show
 
       live "/gardens", GardenLive.Index, :index
-      live "/gardens/new", GardenLive.Index, :new
       live "/gardens/:id/edit", GardenLive.Index, :edit
 
       live "/gardens/:id", GardenLive.Show, :show
-      live "/gardens/:id/plant", GardenLive.Show, :plant
-      live "/gardens/:id/show/edit", GardenLive.Show, :edit
 
       live "/gardens/:garden_id/products", ProductLive.Index, :index
       live "/gardens/:garden_id/beds", ProductLive.Index, :beds
@@ -161,6 +169,56 @@ defmodule VisualGardenWeb.Router do
 
       live_dashboard "/dashboard", metrics: VisualGardenWeb.Telemetry
       forward "/mailbox", Plug.Swoosh.MailboxPreview
+    end
+  end
+
+  ## Authentication routes
+
+  scope "/", VisualGardenWeb do
+    pipe_through [:browser, :redirect_if_user_is_authenticated]
+
+    live_session :redirect_if_user_is_authenticated,
+      on_mount: [
+        {VisualGardenWeb.UserAuth, :redirect_if_user_is_authenticated},
+        VisualGardenWeb.Nav,
+        Flashy.Hook
+      ] do
+      live "/users/register", UserRegistrationLive, :new
+      live "/users/log_in", UserLoginLive, :new
+      live "/users/reset_password", UserForgotPasswordLive, :new
+      live "/users/reset_password/:token", UserResetPasswordLive, :edit
+    end
+
+    post "/users/log_in", UserSessionController, :create
+  end
+
+  scope "/", VisualGardenWeb do
+    pipe_through [:browser, :require_authenticated_user]
+
+    live_session :require_authenticated_user,
+      on_mount: [
+        {VisualGardenWeb.UserAuth, :ensure_authenticated},
+        VisualGardenWeb.Nav,
+        Flashy.Hook
+      ] do
+      live "/users/settings", UserSettingsLive, :edit
+      live "/users/settings/confirm_email/:token", UserSettingsLive, :confirm_email
+    end
+  end
+
+  scope "/", VisualGardenWeb do
+    pipe_through [:browser]
+
+    delete "/users/log_out", UserSessionController, :delete
+
+    live_session :current_user,
+      on_mount: [
+        {VisualGardenWeb.UserAuth, :mount_current_user},
+        VisualGardenWeb.Nav,
+        Flashy.Hook
+      ] do
+      live "/users/confirm/:token", UserConfirmationLive, :edit
+      live "/users/confirm", UserConfirmationInstructionsLive, :new
     end
   end
 end

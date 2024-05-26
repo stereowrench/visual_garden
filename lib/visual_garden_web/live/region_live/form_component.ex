@@ -1,4 +1,5 @@
 defmodule VisualGardenWeb.RegionLive.FormComponent do
+  alias VisualGarden.Authorization
   use VisualGardenWeb, :live_component
 
   alias VisualGarden.Library
@@ -30,6 +31,7 @@ defmodule VisualGardenWeb.RegionLive.FormComponent do
 
   @impl true
   def update(%{region: region} = assigns, socket) do
+    Authorization.authorize_library(assigns.current_user)
     changeset = Library.change_region(region)
 
     {:ok,
@@ -49,6 +51,7 @@ defmodule VisualGardenWeb.RegionLive.FormComponent do
   end
 
   def handle_event("save", %{"region" => region_params}, socket) do
+    Authorization.authorize_library(socket.assigns.current_user)
     save_region(socket, socket.assigns.action, region_params)
   end
 
