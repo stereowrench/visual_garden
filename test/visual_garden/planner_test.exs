@@ -365,6 +365,75 @@ defmodule VisualGarden.PlannerTest do
              ]
     end
 
+    test "planted plants don't appear", %{garden: garden, bed: bed, seed: seed, user: user} do
+      plants = ~D[2023-06-05]
+      plante = ~D[2023-06-15]
+
+      {:ok, pe} =
+        Planner.create_planner_entry(
+          %{
+            start_plant_date: plants,
+            end_plant_date: plante,
+            days_to_maturity: 30,
+            days_to_refuse: 15,
+            common_name: "Mine",
+            bed_id: bed.id,
+            seed_id: seed.id,
+            row: 1,
+            column: 1
+          },
+          garden
+        )
+
+      {:ok, plant} =
+        Gardens.create_plant(%{name: "My plant", qty: 1, row: 1, column: 1, product_id: bed.id})
+
+      {:ok, _} = Planner.set_planner_entry_plant(pe, plant.id, garden)
+
+      assert Planner.get_todo_items(user) == []
+    end
+
+    test "nursed plants don't appear", %{garden: garden, bed: bed, seed: seed, user: user} do
+      ns = ~D[2023-06-05]
+      ne = ~D[2023-06-15]
+      min_lead = 2
+      max_lead = 4
+
+      {:ok, pe} =
+        Planner.create_planner_entry(
+          %{
+            nursery_start: ns,
+            nursery_end: ne,
+            start_plant_date: Timex.shift(ns, weeks: min_lead),
+            end_plant_date: Timex.shift(ne, weeks: max_lead),
+            days_to_maturity: 30,
+            days_to_refuse: 15,
+            common_name: "Mine",
+            bed_id: bed.id,
+            seed_id: seed.id,
+            row: 1,
+            column: 1
+          },
+          garden
+        )
+
+      Gardens.create_nursery_entry(%{
+        sow_date: ns,
+        planner_entry_id: pe.id,
+        seed_id: seed.id,
+        garden_id: garden.id
+      })
+
+      assert Planner.get_todo_items(user) == [
+               %{
+                 type: "plant",
+                 date: ~D[2023-06-19],
+                 end_date: ~D[2023-07-13],
+                 planner_entry_id: pe.id
+               }
+             ]
+    end
+
     test "water" do
     end
   end

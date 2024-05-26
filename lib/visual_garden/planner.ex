@@ -14,6 +14,12 @@ defmodule VisualGarden.Planner do
     |> Repo.insert()
   end
 
+  def set_planner_entry_plant(entry, plant_id, garden) do
+    entry
+    |> PlannerEntry.changeset(%{"plant_id" => plant_id}, garden)
+    |> Repo.update()
+  end
+
   def change_planner_entry(%PlannerEntry{} = entry, garden, attrs \\ %{}) do
     entry
     |> PlannerEntry.changeset(attrs, garden)
@@ -379,7 +385,7 @@ defmodule VisualGarden.Planner do
         |> Repo.preload([:nursery_entry])
 
       nursery_filter_fn = fn entry ->
-        entry.nursery_start != nil and entry.nursery_end != nil
+        entry.nursery_start != nil and entry.nursery_end != nil and entry.nursery_entry == nil
       end
 
       nursery_entries =
@@ -431,6 +437,7 @@ defmodule VisualGarden.Planner do
       planting_entries =
         entries
         |> Enum.reject(nursery_filter_fn)
+        |> Enum.reject(& &1.plant_id != nil)
 
       current_plant_entries =
         planting_entries
