@@ -213,6 +213,17 @@
   </main>
 
   <aside class="fixed inset-y-0 right-0 hidden w-96 overflow-y-auto border-l border-eagle-200 px-4 py-6 sm:px-6 lg:px-8 xl:block">
-    <!-- Secondary column (hidden on smaller screens) -->
+    <%= if assigns[:page_tip] && assigns[:page_tip_title] do %>
+      <div class="divide-y divide-gray-200 overflow-hidden rounded-lg bg-white shadow">
+        <div class="px-4 py-5 sm:px-6 prose">
+          <h3>
+            <%= assigns[:page_tip_title] %>
+          </h3>
+        </div>
+        <div class="px-4 py-5 sm:p-6 prose">
+          <%= assigns[:page_tip] %>
+        </div>
+      </div>
+    <% end %>
   </aside>
 </div>

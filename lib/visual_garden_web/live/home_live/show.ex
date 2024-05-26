@@ -10,6 +10,8 @@ defmodule VisualGardenWeb.HomeLive.Show do
   def handle_params(params, _, socket) do
     {:noreply,
      socket
+     |> assign(:page_tip, "Lorme ipsum")
+     |> assign(:page_tip_title, "Using the task list")
      |> assign(:page_title, page_title(socket.assigns.live_action))}
   end
 
