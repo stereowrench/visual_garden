@@ -203,6 +203,21 @@
     </a> --%>
   </div>
 
+  <aside class="hidden sm:block md:hidden">
+    <%= if assigns[:page_tip] && assigns[:page_tip_title] do %>
+      <div class="divide-y divide-gray-200 overflow-hidden rounded-lg bg-white shadow">
+        <div class="px-4 py-5 sm:px-6 prose">
+          <h3>
+            <%= assigns[:page_tip_title] %>
+          </h3>
+        </div>
+        <div class="px-4 py-5 sm:p-6 prose">
+          <%= assigns[:page_tip] %>
+        </div>
+      </div>
+    <% end %>
+  </aside>
+
   <main class="lg:pl-72">
     <div class="xl:pr-96">
       <div class="px-4 py-10 sm:px-6 lg:px-8 lg:py-6">

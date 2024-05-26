@@ -79,14 +79,13 @@ defmodule VisualGardenWeb.HomeLive.Show do
       |> assign(entry: assigns.planner_entries[assigns.item.planner_entry_id])
 
     # IO.inspect(assigns.planner_entries[assigns.item.planner_entry_id])
-    IO.inspect(assigns.item)
 
     ~H"""
     <div>
       (<%= Timex.format(@item.date, "{relative}", :relative) |> elem(1) %>)
       Plant <%= @entry.seed.name %> (<%= @remaining_days %> days left) in <%= @entry.bed.name %> (<%= @entry.row %>, <%= @entry.column %>)
       <.button
-        phx-click={JS.push("nurse", value: %{planner_entry_id: @entry.id})}
+        phx-click={JS.push("plant", value: %{planner_entry_id: @entry.id})}
         data-confirm="Are you sure?"
       >
         Plant
@@ -101,23 +100,29 @@ defmodule VisualGardenWeb.HomeLive.Show do
     """
   end
 
-  # def handle_event("plant", %{"planner_entry_id" => peid}, socket) do
-  #   Repo.transaction(fn ->
-  #     entry = Planner.get_planner_entry!(peid)
-  #     garden = Gardens.get_garden!(entry.garden_id)
-  #     Authorization.authorize_garden_modify(garden.id, socket.assigns.current_user)
+  def handle_event("plant", %{"planner_entry_id" => peid}, socket) do
+    Repo.transaction(fn ->
+      entry = Planner.get_planner_entry!(peid)
+      garden = Gardens.get_garden!(entry.bed.garden_id)
+      Authorization.authorize_garden_modify(garden.id, socket.assigns.current_user)
 
-  #     {:ok, plant} = Gardens.create_plant(%{
-  #       name: "#{entry.seed.name} - #{entry.seed.type}",
-  #       qty: 1,
-  #     })
+      {:ok, plant} =
+        Gardens.create_plant(%{
+          name: "#{entry.seed.name} - #{entry.seed.type}",
+          qty: 1,
+          row: entry.row,
+          column: entry.column,
+          seed_id: entry.seed_id,
+          product_id: entry.bed_id
+        })
 
-  #     {:ok, _} = Planner.set_planner_entry_plant(entry, plant.id, socket.assigns.garden)
-  #   end)
+      {:ok, _} = Planner.set_planner_entry_plant(entry, plant.id, garden)
+    end)
 
-  #   {:noreply, assign_assigns(socket)}
-  # end
+    {:noreply, assign_assigns(socket)}
+  end
 
+  @impl true
   def handle_event("nurse", %{"planner_entry_id" => peid}, socket) do
     Repo.transaction(fn ->
       entry = Planner.get_planner_entry!(peid)
