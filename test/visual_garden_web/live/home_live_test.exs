@@ -1,4 +1,4 @@
-defmodule VisualGardenWeb.HarvestLiveTest do
+defmodule VisualGardenWeb.HomeLiveTest do
   alias VisualGarden.Planner
   alias VisualGarden.Gardens
   use VisualGardenWeb.ConnCase
