@@ -57,12 +57,14 @@ defmodule VisualGardenWeb.HomeLive.Show do
     <div>
       (<%= Timex.format(@item.date, "{relative}", :relative) |> elem(1) %>)
       Nurse <%= @entry.seed.name %> (<%= @remaining_days %> days left) in <%= @entry.bed.name %> (<%= @entry.row %>, <%= @entry.column %>)
+      <%= unless Timex.after?(@item.date, MyDateTime.utc_today) do %>
       <.button
         phx-click={JS.push("nurse", value: %{planner_entry_id: @entry.id})}
         data-confirm="Are you sure?"
       >
         Nurse
       </.button>
+      <% end %>
     </div>
     """
   end
@@ -79,17 +81,18 @@ defmodule VisualGardenWeb.HomeLive.Show do
       |> assign(entry: assigns.planner_entries[assigns.item.planner_entry_id])
 
     # IO.inspect(assigns.planner_entries[assigns.item.planner_entry_id])
-
     ~H"""
     <div>
       (<%= Timex.format(@item.date, "{relative}", :relative) |> elem(1) %>)
       Plant <%= @entry.seed.name %> (<%= @remaining_days %> days left) in <%= @entry.bed.name %> (<%= @entry.row %>, <%= @entry.column %>)
-      <.button
-        phx-click={JS.push("plant", value: %{planner_entry_id: @entry.id})}
-        data-confirm="Are you sure?"
-      >
-        Plant
-      </.button>
+      <%= unless Timex.after?(@item.date, MyDateTime.utc_today) do %>
+        <.button
+          phx-click={JS.push("plant", value: %{planner_entry_id: @entry.id})}
+          data-confirm="Are you sure?"
+        >
+          Plant
+        </.button>
+      <% end %>
     </div>
     """
   end

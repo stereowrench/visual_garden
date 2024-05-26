@@ -16,7 +16,14 @@ defmodule VisualGarden.Planner do
 
   def set_planner_entry_plant(entry, plant_id, garden) do
     entry
-    |> PlannerEntry.changeset(%{"plant_id" => plant_id}, garden)
+    |> PlannerEntry.changeset(
+      %{
+        "plant_id" => plant_id,
+        "start_plant_date" => MyDateTime.utc_today(),
+        "end_plant_date" => MyDateTime.utc_today()
+      },
+      garden
+    )
     |> Repo.update()
   end
 
