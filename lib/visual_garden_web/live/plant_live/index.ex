@@ -6,20 +6,35 @@ defmodule VisualGardenWeb.PlantLive.Index do
 
   @impl true
   def mount(%{"garden_id" => garden_id, "product_id" => product_id}, _session, socket) do
+    garden = Gardens.get_garden!(garden_id)
+    Authorization.authorize_garden_view(garden.id, socket.assigns.current_user)
+
     {:ok,
      socket
+     |> assign(
+       :can_modify?,
+       Authorization.can_modify_garden?(garden, socket.assigns.current_user)
+     )
      |> assign(:product, Gardens.get_product!(product_id))
      |> assign(:seeds, Gardens.list_seeds(garden_id))
      |> assign(:beds, Gardens.list_beds(garden_id))
-     |> assign(:garden, Gardens.get_garden!(garden_id))
+     |> assign(:garden, garden)
      |> stream(:plants, Gardens.list_plants(garden_id, product_id))}
   end
 
   def mount(%{"garden_id" => garden_id}, _session, socket) do
+    garden = Gardens.get_garden!(garden_id)
+
+    Authorization.authorize_garden_view(garden.id, socket.assigns.current_user)
+
     {:ok,
      socket
+     |> assign(
+       :can_modify?,
+       Authorization.can_modify_garden?(garden, socket.assigns.current_user)
+     )
      |> assign(:product, nil)
-     |> assign(:garden, Gardens.get_garden!(garden_id))
+     |> assign(:garden, garden)
      |> assign(:seeds, Gardens.list_seeds(garden_id))
      |> assign(:beds, Gardens.list_beds(garden_id))
      |> stream(:plants, Gardens.list_plants(garden_id))}
@@ -56,6 +71,7 @@ defmodule VisualGardenWeb.PlantLive.Index do
 
   @impl true
   def handle_event("delete", %{"id" => id}, socket) do
+    Authorization.authorize_garden_modify(socket.assigns.garden.id, socket.assigns.current_user)
     plant = Gardens.get_plant!(id)
     {:ok, _} = Gardens.delete_plant(plant)
 
