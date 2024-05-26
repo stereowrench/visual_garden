@@ -46,7 +46,7 @@
 }
 
 .square-label.selected span:before {
-  @apply border-purple-400;
+  @apply border-mojo-400;
   border-width: 3px;
 }
 
