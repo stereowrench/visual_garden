@@ -20,6 +20,31 @@ defmodule VisualGarden.Planner do
     |> Repo.update()
   end
 
+  def set_entry_nurse_date(entry, garden) do
+    date = MyDateTime.utc_today()
+
+    entry
+    |> PlannerEntry.changeset(
+      %{
+        nursery_start: date,
+        nursery_end: date,
+        start_plant_date:
+          clamp_date(
+            entry.start_plant_date,
+            entry.end_plant_date,
+            Timex.shift(date, weeks: entry.min_lead)
+          ),
+        end_plant_date:
+          clamp_date(
+            entry.start_plant_date,
+            entry.end_plant_date,
+            Timex.shift(date, weeks: entry.max_lead)
+          )
+      },
+      garden
+    )
+  end
+
   def change_planner_entry(%PlannerEntry{} = entry, garden, attrs \\ %{}) do
     entry
     |> PlannerEntry.changeset(attrs, garden)
@@ -31,6 +56,7 @@ defmodule VisualGarden.Planner do
 
   def get_planner_entry!(id) do
     Repo.get!(PlannerEntry, id)
+    |> Repo.preload([:bed, :seed])
   end
 
   def get_end_date(square, bed, start_date) do
@@ -365,7 +391,9 @@ defmodule VisualGarden.Planner do
     bed_ids = beds |> Enum.map(& &1.id)
 
     Repo.all(
-      from pe in PlannerEntry, where: pe.bed_id in ^bed_ids, preload: [:nursery_entry, :seed, :bed]
+      from pe in PlannerEntry,
+        where: pe.bed_id in ^bed_ids,
+        preload: [:nursery_entry, :seed, :bed]
     )
   end
 
