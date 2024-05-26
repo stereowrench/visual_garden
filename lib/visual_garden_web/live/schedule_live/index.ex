@@ -6,7 +6,10 @@ defmodule VisualGardenWeb.ScheduleLive.Index do
 
   @impl true
   def mount(_params, _session, socket) do
-    {:ok, stream(socket, :schedules, Library.list_schedules())}
+    {:ok,
+     socket
+     |> assign(:can_modify?, Authorization.can_modify_library?(socket.assigns.current_user))
+     |> stream(:schedules, Library.list_schedules())}
   end
 
   @impl true

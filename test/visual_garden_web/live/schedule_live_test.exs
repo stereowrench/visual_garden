@@ -1,8 +1,10 @@
 defmodule VisualGardenWeb.ScheduleLiveTest do
+  alias VisualGarden.Accounts
   use VisualGardenWeb.ConnCase
 
   import Phoenix.LiveViewTest
   import VisualGarden.LibraryFixtures
+  import VisualGarden.AccountsFixtures
 
   @create_attrs %{start_month: 42, start_day: 42, end_month: 42, end_day: 42}
   @update_attrs %{start_month: 43, start_day: 43, end_month: 43, end_day: 42}
@@ -12,7 +14,9 @@ defmodule VisualGardenWeb.ScheduleLiveTest do
     region = region_fixture(%{name: "my region"})
     species = species_fixture()
     schedule = schedule_fixture(%{region_id: region.id, species_id: species.id})
-    %{schedule: schedule}
+    user = user_fixture()
+    Accounts.promote_role(user, :admin)
+    %{schedule: schedule, user: user}
   end
 
   describe "Index" do
@@ -24,7 +28,8 @@ defmodule VisualGardenWeb.ScheduleLiveTest do
       assert html =~ "Listing Schedules"
     end
 
-    test "saves new schedule", %{conn: conn} do
+    test "saves new schedule", %{conn: conn, user: user} do
+      conn = log_in_user(conn, user)
       {:ok, index_live, _html} = live(conn, ~p"/schedules")
 
       assert index_live |> element("a", "New Schedule") |> render_click() =~
@@ -51,7 +56,8 @@ defmodule VisualGardenWeb.ScheduleLiveTest do
       assert html =~ "Schedule created successfully"
     end
 
-    test "updates schedule in listing", %{conn: conn, schedule: schedule} do
+    test "updates schedule in listing", %{conn: conn, schedule: schedule, user: user} do
+      conn = log_in_user(conn, user)
       {:ok, index_live, _html} = live(conn, ~p"/schedules")
 
       assert index_live |> element("#schedules-#{schedule.id} a", "Edit") |> render_click() =~
@@ -73,7 +79,8 @@ defmodule VisualGardenWeb.ScheduleLiveTest do
       assert html =~ "Schedule updated successfully"
     end
 
-    test "deletes schedule in listing", %{conn: conn, schedule: schedule} do
+    test "deletes schedule in listing", %{conn: conn, schedule: schedule, user: user} do
+      conn = log_in_user(conn, user)
       {:ok, index_live, _html} = live(conn, ~p"/schedules")
 
       assert index_live |> element("#schedules-#{schedule.id} a", "Delete") |> render_click()
@@ -90,7 +97,8 @@ defmodule VisualGardenWeb.ScheduleLiveTest do
       assert html =~ "Show Schedule"
     end
 
-    test "updates schedule within modal", %{conn: conn, schedule: schedule} do
+    test "updates schedule within modal", %{conn: conn, schedule: schedule, user: user} do
+      conn = log_in_user(conn, user)
       {:ok, show_live, _html} = live(conn, ~p"/schedules/#{schedule}")
 
       assert show_live |> element("a", "Edit") |> render_click() =~

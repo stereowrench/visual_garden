@@ -1,4 +1,5 @@
 defmodule VisualGardenWeb.ScheduleLive.FormComponent do
+  alias VisualGarden.Authorization
   use VisualGardenWeb, :live_component
   alias VisualGarden.Library
 
@@ -56,6 +57,7 @@ defmodule VisualGardenWeb.ScheduleLive.FormComponent do
 
   @impl true
   def update(%{schedule: schedule} = assigns, socket) do
+    Authorization.authorize_library(assigns.current_user)
     changeset = Library.change_schedule(schedule)
 
     {:ok,
@@ -108,6 +110,7 @@ defmodule VisualGardenWeb.ScheduleLive.FormComponent do
   end
 
   def handle_event("save", %{"schedule" => schedule_params}, socket) do
+    Authorization.authorize_library(socket.assigns.current_user)
     save_schedule(socket, socket.assigns.action, schedule_params)
   end
 
