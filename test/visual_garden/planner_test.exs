@@ -203,7 +203,8 @@ defmodule VisualGarden.PlannerTest do
                %{
                  type: "nursery_plant",
                  planner_entry_id: pe.id,
-                 date: ~D[2023-06-06]
+                 date: ~D[2023-06-06],
+                 end_date: ne
                }
              ]
     end
@@ -236,7 +237,8 @@ defmodule VisualGarden.PlannerTest do
                %{
                  type: "nursery_plant",
                  planner_entry_id: pe.id,
-                 date: ~D[2023-07-05]
+                 date: ~D[2023-07-05],
+                 end_date: ne
                }
              ]
     end
@@ -274,13 +276,93 @@ defmodule VisualGarden.PlannerTest do
              ]
     end
 
-    test "plant todo current" do
+    test "plant todo current", %{garden: garden, bed: bed, seed: seed, user: user} do
+      plants = ~D[2023-06-05]
+      plante = ~D[2023-06-15]
+
+      {:ok, pe} =
+        Planner.create_planner_entry(
+          %{
+            start_plant_date: plants,
+            end_plant_date: plante,
+            days_to_maturity: 30,
+            days_to_refuse: 15,
+            common_name: "Mine",
+            bed_id: bed.id,
+            seed_id: seed.id,
+            row: 1,
+            column: 1
+          },
+          garden
+        )
+
+      assert Planner.get_todo_items(user) == [
+               %{
+                 type: "plant",
+                 planner_entry_id: pe.id,
+                 date: ~D[2023-06-06],
+                 end_date: plante
+               }
+             ]
     end
 
-    test "plant todo future" do
+    test "plant todo future", %{garden: garden, bed: bed, seed: seed, user: user} do
+      plants = ~D[2023-07-05]
+      plante = ~D[2023-07-15]
+
+      {:ok, pe} =
+        Planner.create_planner_entry(
+          %{
+            start_plant_date: plants,
+            end_plant_date: plante,
+            days_to_maturity: 30,
+            days_to_refuse: 15,
+            common_name: "Mine",
+            bed_id: bed.id,
+            seed_id: seed.id,
+            row: 1,
+            column: 1
+          },
+          garden
+        )
+
+      assert Planner.get_todo_items(user) == [
+               %{
+                 type: "plant",
+                 planner_entry_id: pe.id,
+                 date: ~D[2023-07-05],
+                 end_date: plante
+               }
+             ]
     end
 
-    test "plant todo overdue" do
+    test "plant todo overdue", %{garden: garden, bed: bed, seed: seed, user: user} do
+      plants = ~D[2023-05-05]
+      plante = ~D[2023-05-15]
+
+      {:ok, pe} =
+        Planner.create_planner_entry(
+          %{
+            start_plant_date: plants,
+            end_plant_date: plante,
+            days_to_maturity: 30,
+            days_to_refuse: 15,
+            common_name: "Mine",
+            bed_id: bed.id,
+            seed_id: seed.id,
+            row: 1,
+            column: 1
+          },
+          garden
+        )
+
+      assert Planner.get_todo_items(user) == [
+               %{
+                 type: "plant_overdue",
+                 planner_entry_id: pe.id,
+                 date: ~D[2023-05-15]
+               }
+             ]
     end
 
     test "water" do

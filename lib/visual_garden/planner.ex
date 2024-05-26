@@ -408,7 +408,8 @@ defmodule VisualGarden.Planner do
           %{
             type: "nursery_plant",
             planner_entry_id: ne.id,
-            date: date
+            date: date,
+            end_date: ne.nursery_end
           }
         end)
 
@@ -423,20 +424,48 @@ defmodule VisualGarden.Planner do
           }
         end)
 
-      # nursery entires that end before today
+      current_p_fn = fn entry ->
+        Timex.diff(today, entry.end_plant_date, :days) <= 0
+      end
 
       planting_entries =
         entries
         |> Enum.reject(nursery_filter_fn)
 
-      # to_plant =
-      #   entries
-      #   |> Enum.map()
+      current_plant_entries =
+        planting_entries
+        |> Enum.filter(current_p_fn)
+        |> Enum.map(fn entry ->
+          today = MyDateTime.utc_today()
 
-      # TODO to plant:
-      # If
+          date =
+            if Timex.after?(entry.start_plant_date, today) do
+              entry.start_plant_date
+            else
+              today
+            end
 
-      current_nursery_entries ++ overdue_nursery_entries
+          %{
+            type: "plant",
+            planner_entry_id: entry.id,
+            date: date,
+            end_date: entry.end_plant_date
+          }
+        end)
+
+      overdue_plant_entries =
+        planting_entries
+        |> Enum.reject(current_p_fn)
+        |> Enum.map(fn entry ->
+          %{
+            type: "plant_overdue",
+            date: entry.end_plant_date,
+            planner_entry_id: entry.id
+          }
+        end)
+
+      current_nursery_entries ++
+        overdue_nursery_entries ++ current_plant_entries ++ overdue_plant_entries
     end
     |> List.flatten()
   end
