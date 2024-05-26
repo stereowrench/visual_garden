@@ -1,8 +1,8 @@
-<.live_component module={VisualGardenWeb.NavBarLibrary} id="navbar" current={"Regions"} />
+<.live_component module={VisualGardenWeb.NavBarLibrary} id="navbar" current="Regions" />
 
 <.header>
   Listing Regions
-  <:actions>
+  <:actions :if={@can_modify?}>
     <.link patch={~p"/regions/new"}>
       <.button>New Region</.button>
     </.link>
@@ -19,9 +19,11 @@
     <div class="sr-only">
       <.link navigate={~p"/regions/#{region}"}>Show</.link>
     </div>
-    <.link patch={~p"/regions/#{region}/edit"}>Edit</.link>
+    <%= if @can_modify? do %>
+      <.link patch={~p"/regions/#{region}/edit"}>Edit</.link>
+    <% end %>
   </:action>
-  <:action :let={{id, region}}>
+  <:action :let={{id, region}} :if={@can_modify?}>
     <.link
       phx-click={JS.push("delete", value: %{id: region.id}) |> hide("##{id}")}
       data-confirm="Are you sure?"
@@ -31,12 +33,18 @@
   </:action>
 </.table>
 
-<.modal :if={@live_action in [:new, :edit]} id="region-modal" show on_cancel={JS.patch(~p"/regions")}>
+<.modal
+  :if={@live_action in [:new, :edit]}
+  id="region-modal"
+  show
+  on_cancel={JS.patch(~p"/regions")}
+>
   <.live_component
     module={VisualGardenWeb.RegionLive.FormComponent}
     id={@region.id || :new}
     title={@page_title}
     action={@live_action}
+    current_user={@current_user}
     region={@region}
     patch={~p"/regions"}
   />

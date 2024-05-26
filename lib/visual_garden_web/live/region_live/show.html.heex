@@ -2,7 +2,7 @@
 <.header>
   Region <%= @region.id %>
   <:subtitle>This is a region record from your database.</:subtitle>
-  <:actions>
+  <:actions :if={@can_modify?}>
     <.link patch={~p"/regions/#{@region}/show/edit"} phx-click={JS.push_focus()}>
       <.button>Edit region</.button>
     </.link>
@@ -21,6 +21,7 @@
     id={@region.id}
     title={@page_title}
     action={@live_action}
+    current_user={@current_user}
     region={@region}
     patch={~p"/regions/#{@region}"}
   />
