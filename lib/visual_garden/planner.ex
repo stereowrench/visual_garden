@@ -365,7 +365,7 @@ defmodule VisualGarden.Planner do
     bed_ids = beds |> Enum.map(& &1.id)
 
     Repo.all(
-      from pe in PlannerEntry, where: pe.bed_id in ^bed_ids, preload: [:nursery_entry, :seed]
+      from pe in PlannerEntry, where: pe.bed_id in ^bed_ids, preload: [:nursery_entry, :seed, :bed]
     )
   end
 
@@ -374,7 +374,15 @@ defmodule VisualGarden.Planner do
     |> Enum.group_by(& &1.bed_id)
   end
 
-  # TODO scope to user's gardens
+  def list_planner_entries_for_user(user) do
+    gardens = Gardens.list_gardens(user)
+
+    for garden <- gardens do
+      list_planner_entries_ungrouped(garden.id)
+    end
+    |> List.flatten()
+  end
+
   def get_todo_items(user) do
     gardens = Gardens.list_gardens(user)
     today = VisualGarden.MyDateTime.utc_today()
@@ -437,7 +445,7 @@ defmodule VisualGarden.Planner do
       planting_entries =
         entries
         |> Enum.reject(nursery_filter_fn)
-        |> Enum.reject(& &1.plant_id != nil)
+        |> Enum.reject(&(&1.plant_id != nil))
 
       current_plant_entries =
         planting_entries
