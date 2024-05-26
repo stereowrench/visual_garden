@@ -1,5 +1,6 @@
 defmodule VisualGarden.Planner do
   import Ecto.Query, warn: false
+  alias VisualGarden.MyDateTime
   alias VisualGarden.Gardens.PlannerEntry
   alias VisualGarden.Library.Schedule
   alias VisualGarden.Library
@@ -353,28 +354,32 @@ defmodule VisualGarden.Planner do
     end
   end
 
-  def list_planner_entries(garden_id) do
+  def list_planner_entries_ungrouped(garden_id) do
     beds = Gardens.list_beds(garden_id)
     bed_ids = beds |> Enum.map(& &1.id)
 
     Repo.all(
       from pe in PlannerEntry, where: pe.bed_id in ^bed_ids, preload: [:nursery_entry, :seed]
     )
+  end
+
+  def list_planner_entries(garden_id) do
+    list_planner_entries_ungrouped(garden_id)
     |> Enum.group_by(& &1.bed_id)
   end
 
   # TODO scope to user's gardens
-  def get_todo_items() do
-    gardens = Gardens.list_gardens()
+  def get_todo_items(user) do
+    gardens = Gardens.list_gardens(user)
     today = VisualGarden.MyDateTime.utc_today()
 
     for garden <- gardens do
       entries =
-        list_planner_entries(garden.id)
+        list_planner_entries_ungrouped(garden.id)
         |> Repo.preload([:nursery_entry])
 
       nursery_filter_fn = fn entry ->
-        entry.nursery_start != nil and entry.nursery_end != nil and entry.nursery_entry != nil
+        entry.nursery_start != nil and entry.nursery_end != nil
       end
 
       nursery_entries =
@@ -390,10 +395,33 @@ defmodule VisualGarden.Planner do
       current_nursery_entries =
         nursery_entries
         |> Enum.filter(current_n_fn)
+        |> Enum.map(fn ne ->
+          today = MyDateTime.utc_today()
+
+          date =
+            if Timex.after?(ne.nursery_start, today) do
+              ne.nursery_start
+            else
+              today
+            end
+
+          %{
+            type: "nursery_plant",
+            planner_entry_id: ne.id,
+            date: date
+          }
+        end)
 
       overdue_nursery_entries =
         nursery_entries
         |> Enum.reject(current_n_fn)
+        |> Enum.map(fn ne ->
+          %{
+            type: "nursery_overdue",
+            date: ne.nursery_end,
+            planner_entry_id: ne.id
+          }
+        end)
 
       # nursery entires that end before today
 
@@ -407,6 +435,9 @@ defmodule VisualGarden.Planner do
 
       # TODO to plant:
       # If
+
+      current_nursery_entries ++ overdue_nursery_entries
     end
+    |> List.flatten()
   end
 end

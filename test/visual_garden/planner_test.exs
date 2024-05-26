@@ -1,9 +1,13 @@
 defmodule VisualGarden.PlannerTest do
+  alias VisualGarden.Gardens
   alias VisualGarden.LibraryFixtures
   alias VisualGarden.GardensFixtures
   use VisualGarden.DataCase
 
   alias VisualGarden.Planner
+  import VisualGarden.GardensFixtures
+  import VisualGarden.AccountsFixtures
+  import VisualGarden.LibraryFixtures
 
   describe "date finagling" do
     @today ~D[2024-06-06]
@@ -155,6 +159,131 @@ defmodule VisualGarden.PlannerTest do
                    )
         end
       end
+    end
+  end
+
+  def setup_garden(_) do
+    garden = garden_fixture()
+    user = user_fixture()
+    Gardens.create_garden_user(garden, user)
+    seed = seed_fixture(%{}, garden)
+    bed = product_fixture(%{type: :bed, length: 3, width: 4}, garden)
+
+    %{garden: garden, user: user, seed: seed, bed: bed}
+  end
+
+  describe "todo list" do
+    setup [:setup_garden]
+
+    test "nursery todo current", %{garden: garden, bed: bed, seed: seed, user: user} do
+      ns = ~D[2023-06-05]
+      ne = ~D[2023-06-15]
+      min_lead = 2
+      max_lead = 4
+
+      {:ok, pe} =
+        Planner.create_planner_entry(
+          %{
+            nursery_start: ns,
+            nursery_end: ne,
+            start_plant_date: Timex.shift(ns, weeks: min_lead),
+            end_plant_date: Timex.shift(ne, weeks: max_lead),
+            days_to_maturity: 30,
+            days_to_refuse: 15,
+            common_name: "Mine",
+            bed_id: bed.id,
+            seed_id: seed.id,
+            row: 1,
+            column: 1
+          },
+          garden
+        )
+
+      assert Planner.get_todo_items(user) == [
+               %{
+                 type: "nursery_plant",
+                 planner_entry_id: pe.id,
+                 date: ~D[2023-06-06]
+               }
+             ]
+    end
+
+    test "nursery todo future", %{garden: garden, bed: bed, seed: seed, user: user} do
+      ns = ~D[2023-07-05]
+      ne = ~D[2023-07-15]
+      min_lead = 2
+      max_lead = 4
+
+      {:ok, pe} =
+        Planner.create_planner_entry(
+          %{
+            nursery_start: ns,
+            nursery_end: ne,
+            start_plant_date: Timex.shift(ns, weeks: min_lead),
+            end_plant_date: Timex.shift(ne, weeks: max_lead),
+            days_to_maturity: 30,
+            days_to_refuse: 15,
+            common_name: "Mine",
+            bed_id: bed.id,
+            seed_id: seed.id,
+            row: 1,
+            column: 1
+          },
+          garden
+        )
+
+      assert Planner.get_todo_items(user) == [
+               %{
+                 type: "nursery_plant",
+                 planner_entry_id: pe.id,
+                 date: ~D[2023-07-05]
+               }
+             ]
+    end
+
+    test "nursery todo overdue", %{garden: garden, bed: bed, seed: seed, user: user} do
+      ns = ~D[2023-05-05]
+      ne = ~D[2023-05-15]
+      min_lead = 2
+      max_lead = 4
+
+      {:ok, pe} =
+        Planner.create_planner_entry(
+          %{
+            nursery_start: ns,
+            nursery_end: ne,
+            start_plant_date: Timex.shift(ns, weeks: min_lead),
+            end_plant_date: Timex.shift(ne, weeks: max_lead),
+            days_to_maturity: 30,
+            days_to_refuse: 15,
+            common_name: "Mine",
+            bed_id: bed.id,
+            seed_id: seed.id,
+            row: 1,
+            column: 1
+          },
+          garden
+        )
+
+      assert Planner.get_todo_items(user) == [
+               %{
+                 type: "nursery_overdue",
+                 planner_entry_id: pe.id,
+                 date: ~D[2023-05-15]
+               }
+             ]
+    end
+
+    test "plant todo current" do
+    end
+
+    test "plant todo future" do
+    end
+
+    test "plant todo overdue" do
+    end
+
+    test "water" do
     end
   end
 end
