@@ -22,7 +22,9 @@ defmodule VisualGardenWeb.HomeLive.Show do
   end
 
   defp assign_assigns(socket) do
-    todo_items = Planner.get_todo_items(socket.assigns.current_user)
+    todo_items =
+      Planner.get_todo_items(socket.assigns.current_user)
+      |> Enum.sort_by(& &1.date, Date)
 
     planner_entries =
       Planner.list_planner_entries_for_user(socket.assigns.current_user)
@@ -53,6 +55,7 @@ defmodule VisualGardenWeb.HomeLive.Show do
 
     ~H"""
     <div>
+      (<%= Timex.format(@item.date, "{relative}", :relative) |> elem(1) %>)
       Nurse <%= @entry.seed.name %> (<%= @remaining_days %> days left) in <%= @entry.bed.name %> (<%= @entry.row %>, <%= @entry.column %>)
       <.button
         phx-click={JS.push("nurse", value: %{planner_entry_id: @entry.id})}
@@ -71,8 +74,24 @@ defmodule VisualGardenWeb.HomeLive.Show do
   end
 
   def render_plant(assigns) do
-    ~H"""
+    assigns =
+      assign(assigns, remaining_days: Timex.diff(assigns.item.end_date, assigns.item.date, :days))
+      |> assign(entry: assigns.planner_entries[assigns.item.planner_entry_id])
 
+    # IO.inspect(assigns.planner_entries[assigns.item.planner_entry_id])
+    IO.inspect(assigns.item)
+
+    ~H"""
+    <div>
+      (<%= Timex.format(@item.date, "{relative}", :relative) |> elem(1) %>)
+      Plant <%= @entry.seed.name %> (<%= @remaining_days %> days left) in <%= @entry.bed.name %> (<%= @entry.row %>, <%= @entry.column %>)
+      <.button
+        phx-click={JS.push("nurse", value: %{planner_entry_id: @entry.id})}
+        data-confirm="Are you sure?"
+      >
+        Plant
+      </.button>
+    </div>
     """
   end
 
