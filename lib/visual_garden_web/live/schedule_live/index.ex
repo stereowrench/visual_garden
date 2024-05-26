@@ -42,6 +42,7 @@ defmodule VisualGardenWeb.ScheduleLive.Index do
 
   @impl true
   def handle_event("delete", %{"id" => id}, socket) do
+    Authorization.authorize_library(socket.assigns.current_user)
     schedule = Library.get_schedule!(id)
     {:ok, _} = Library.delete_schedule(schedule)
 

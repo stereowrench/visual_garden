@@ -4,7 +4,7 @@
   <%= species_display_string(@species) %>
   <i><%= @species.genus %> <%= @species.name %></i> <%= cultivar(@species) %>
   <:subtitle>This is a species record from your database.</:subtitle>
-  <:actions>
+  <:actions :if={@can_modify?}>
     <.link patch={~p"/species/#{@species}/show/edit"} phx-click={JS.push_focus()}>
       <.button>Edit species</.button>
     </.link>
@@ -19,6 +19,7 @@
     id={@species.id}
     title={@page_title}
     action={@live_action}
+    current_user={@current_user}
     species={@species}
     patch={~p"/species/#{@species}"}
   />

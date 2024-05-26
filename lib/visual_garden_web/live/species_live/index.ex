@@ -6,7 +6,10 @@ defmodule VisualGardenWeb.SpeciesLive.Index do
 
   @impl true
   def mount(_params, _session, socket) do
-    {:ok, stream(socket, :species_collection, Library.list_species())}
+    {:ok,
+     socket
+     |> assign(:can_modify?, Authorization.can_modify_library?(socket.assigns.current_user))
+     |> stream(:species_collection, Library.list_species())}
   end
 
   @impl true
@@ -39,6 +42,7 @@ defmodule VisualGardenWeb.SpeciesLive.Index do
 
   @impl true
   def handle_event("delete", %{"id" => id}, socket) do
+    Authorization.authorize_library(socket.assigns.current_user)
     species = Library.get_species!(id)
     {:ok, _} = Library.delete_species(species)
 
