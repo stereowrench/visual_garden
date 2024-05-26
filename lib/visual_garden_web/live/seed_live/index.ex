@@ -1,4 +1,5 @@
 defmodule VisualGardenWeb.SeedLive.Index do
+  alias VisualGarden.Authorization.UnauthorizedError
   use VisualGardenWeb, :live_view
 
   alias VisualGarden.Gardens
@@ -51,6 +52,11 @@ defmodule VisualGardenWeb.SeedLive.Index do
   def handle_event("delete", %{"id" => id}, socket) do
     Authorization.authorize_garden_modify(socket.assigns.garden.id, socket.assigns.current_user)
     seed = Gardens.get_seed!(id)
+
+    unless seed.garden_id == socket.assigns.garden.id do
+      raise UnauthorizedError
+    end
+
     {:ok, _} = Gardens.delete_seed(seed)
 
     {:noreply, stream_delete(socket, :seeds, seed)}

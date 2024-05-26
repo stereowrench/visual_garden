@@ -1,4 +1,5 @@
 defmodule VisualGardenWeb.ProductLive.Index do
+  alias VisualGarden.Authorization.UnauthorizedError
   use VisualGardenWeb, :live_view
 
   alias VisualGarden.Gardens
@@ -93,6 +94,11 @@ defmodule VisualGardenWeb.ProductLive.Index do
   def handle_event("delete", %{"id" => id}, socket) do
     Authorization.authorize_garden_modify(socket.assigns.garden_id, socket.assigns.current_user)
     product = Gardens.get_product!(id)
+
+    unless product.garden_id == socket.assigns.garden.id do
+      raise UnauthorizedError
+    end
+
     {:ok, _} = Gardens.delete_product(product)
 
     {:noreply, assign_products(socket)}
