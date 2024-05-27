@@ -118,7 +118,7 @@
         class={"square-label" <> selected?(val, @row, @column, @product)}
         style={["--content: '#{VisualGarden.Gardens.content_for_cell(@grouped_plants, val)}'"]}
       >
-        <.link navigate={~p"/gardens/#{@garden.id}/beds/#{@product.id}/#{idx}"}>
+        <.link patch={~p"/gardens/#{@garden.id}/beds/#{@product.id}/#{idx}"}>
           <input
             class="square-check"
             phx-update="ignore"
