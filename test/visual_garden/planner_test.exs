@@ -436,5 +436,28 @@ defmodule VisualGarden.PlannerTest do
 
     test "water" do
     end
+
+    test "scheduling an orphaned nursery", %{garden: garden, bed: bed, seed: seed, user: user} do
+      nursery_entry =
+        nursery_entry_fixture(garden, %{
+          sow_date: ~D[2023-04-01],
+          seed_id: seed.id
+        })
+
+      [%{bed_id: bid, row: r, col: c, end_date: end_date} | _] =
+        Planner.get_open_slots(
+          garden,
+          Timex.shift(nursery_entry.sow_date, days: seed.days_to_maturation)
+        )
+
+      refuse_date =
+        Planner.clamp_date(
+          nursery_entry.sow_date,
+          end_date,
+          Timex.shift(nursery_entry.sow_date, days: seed.days_to_maturation + 20)
+        )
+
+      Planner.create_planner_entry_for_orphaned_nursery(nursery_entry, r, c, bid, refuse_date)
+    end
   end
 end

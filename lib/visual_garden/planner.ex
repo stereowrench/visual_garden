@@ -519,4 +519,64 @@ defmodule VisualGarden.Planner do
     end
     |> List.flatten()
   end
+
+  def create_planner_entry_for_orphaned_nursery(nursery, row, column, bed_id, refuse_date) do
+    nursery = Repo.preload(nursery, [:seed])
+    days_to_refuse = Timex.diff(refuse_date, MyDateTime.utc_today(), :days)
+
+    {_, common_name} =
+      Library.list_species_with_common_names()
+      |> Enum.find(fn {a, _name} -> a.id == nursery.seed.species_id end)
+
+    create_planner_entry(%{
+      nursery_start: nursery.sow_date,
+      nursery_end: nursery.sow_date,
+      days_to_maturity: nursery.seed.days_to_maturation,
+      start_plant_date: MyDateTime.utc_today(),
+      end_plant_date: MyDateTime.utc_today(),
+      common_name: common_name,
+      days_to_refuse: days_to_refuse,
+      row: row,
+      column: column,
+      bed_id: bed_id
+    })
+  end
+
+  def get_open_slots(garden, date) do
+    for bed <- Gardens.list_beds(garden.id) do
+      for square <- 0..(bed.width * bed.length) do
+        end_date = get_end_date(square, bed, MyDateTime.utc_today())
+
+        case end_date do
+          :error ->
+            []
+
+          nil ->
+            {r, c} = parse_square(to_string(square), bed)
+
+            %{
+              bed_id: bed.id,
+              row: r,
+              col: c,
+              end_date: end_date
+            }
+
+          _ ->
+            if Timex.before?(end_date, date) do
+              []
+            else
+              {r, c} = parse_square(to_string(square), bed)
+
+              %{
+                bed_id: bed.id,
+                row: r,
+                col: c,
+                end_date: end_date
+              }
+            end
+        end
+      end
+    end
+    |> List.flatten()
+  end
 end
