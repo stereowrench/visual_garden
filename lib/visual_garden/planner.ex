@@ -1,5 +1,6 @@
 defmodule VisualGarden.Planner do
   import Ecto.Query, warn: false
+  alias VisualGarden.Gardens.NurseryEntry
   alias VisualGarden.MyDateTime
   alias VisualGarden.Gardens.PlannerEntry
   alias VisualGarden.Library.Schedule
@@ -418,6 +419,14 @@ defmodule VisualGarden.Planner do
     |> List.flatten()
   end
 
+  def get_orphaned_plants(garden) do
+    Repo.all(
+      from ne in NurseryEntry,
+        where: is_nil(ne.planner_entry_id) and ne.garden_id == ^garden.id,
+        preload: [:seed]
+    )
+  end
+
   def get_todo_items(user) do
     gardens = Gardens.list_gardens(user)
     today = VisualGarden.MyDateTime.utc_today()
@@ -514,13 +523,25 @@ defmodule VisualGarden.Planner do
           }
         end)
 
-      current_nursery_entries ++
+      orphaned_plants =
+        get_orphaned_plants(garden)
+        |> Enum.map(fn ne ->
+          %{
+            type: "orphaned_nursery",
+            date: MyDateTime.utc_today(),
+            nursery_entry_id: ne.id,
+            name: ne.seed.name
+          }
+        end)
+
+      orphaned_plants ++
+        current_nursery_entries ++
         overdue_nursery_entries ++ current_plant_entries ++ overdue_plant_entries
     end
     |> List.flatten()
   end
 
-  def create_planner_entry_for_orphaned_nursery(nursery, row, column, bed_id, refuse_date) do
+  def create_planner_entry_for_orphaned_nursery(nursery, garden, row, column, bed_id, refuse_date) do
     nursery = Repo.preload(nursery, [:seed])
     days_to_refuse = Timex.diff(refuse_date, MyDateTime.utc_today(), :days)
 
@@ -538,8 +559,9 @@ defmodule VisualGarden.Planner do
       days_to_refuse: days_to_refuse,
       row: row,
       column: column,
-      bed_id: bed_id
-    })
+      bed_id: bed_id,
+      seed_id: nursery.seed_id
+    }, garden)
   end
 
   def get_open_slots(garden, date) do
@@ -556,6 +578,7 @@ defmodule VisualGarden.Planner do
 
             %{
               bed_id: bed.id,
+              bed_name: bed.name,
               row: r,
               col: c,
               end_date: end_date
@@ -569,6 +592,7 @@ defmodule VisualGarden.Planner do
 
               %{
                 bed_id: bed.id,
+                bed_name: bed.name,
                 row: r,
                 col: c,
                 end_date: end_date

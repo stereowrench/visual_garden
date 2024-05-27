@@ -29,6 +29,8 @@ defmodule VisualGardenWeb.Router do
       live "/gardens/new", GardenLive.Index, :new
       live "/gardens/:id/show/edit", GardenLive.Show, :edit
       live "/gardens/:id/show/collab", GardenLive.Show, :collab
+
+      live "/home/orphaned_nursery/:nursery_entry", HomeLive.Show, :orphaned_nursery
     end
   end
 

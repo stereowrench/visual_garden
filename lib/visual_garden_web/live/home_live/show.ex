@@ -1,4 +1,5 @@
 defmodule VisualGardenWeb.HomeLive.Show do
+  alias VisualGarden.Gardens.Garden
   alias VisualGarden.MyDateTime
   alias VisualGarden.Gardens
   alias VisualGarden.Repo
@@ -9,6 +10,15 @@ defmodule VisualGardenWeb.HomeLive.Show do
   @impl true
   def mount(_params, _session, socket) do
     {:ok, socket}
+  end
+
+  @impl true
+  def handle_params(%{"nursery_entry" => neid}, _, socket) do
+    {:noreply,
+     socket
+     |> assign_assigns()
+     |> assign(:entry, Gardens.get_nursery_entry!(neid))
+     |> assign(:page_title, page_title(socket.assigns.live_action))}
   end
 
   @impl true
@@ -43,7 +53,21 @@ defmodule VisualGardenWeb.HomeLive.Show do
       "nursery_overdue" -> render_nursery_overdue(assigns)
       "plant" -> render_plant(assigns)
       "plant_overdue" -> render_plant_overdue(assigns)
+      "orphaned_nursery" -> render_orphaned_nursery(assigns)
     end
+  end
+
+  def render_orphaned_nursery(assigns) do
+    ~H"""
+    <div>
+      Orphaned Seedling <%= @item.name %>
+      <.link navigate={~p"/home/orphaned_nursery/#{@item.nursery_entry_id}"}>
+        <.button>
+          Plant orphan
+        </.button>
+      </.link>
+    </div>
+    """
   end
 
   def render_nursery_plant(assigns) do
@@ -196,4 +220,5 @@ defmodule VisualGardenWeb.HomeLive.Show do
   end
 
   defp page_title(:show), do: "Show Nursery entry"
+  defp page_title(:orphaned_nursery), do: "Plant Orphaned Nursery"
 end

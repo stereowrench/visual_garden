@@ -796,7 +796,7 @@ defmodule VisualGarden.Gardens do
       ** (Ecto.NoResultsError)
 
   """
-  def get_nursery_entry!(id), do: Repo.get!(NurseryEntry, id)
+  def get_nursery_entry!(id), do: Repo.get!(NurseryEntry, id) |> Repo.preload([:seed])
 
   @doc """
   Creates a nursery_entry.
