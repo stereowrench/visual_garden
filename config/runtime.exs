@@ -57,8 +57,8 @@ if config_env() == :prod do
     dsn: System.get_env("SENTRY_DSN")
 
   config :visual_garden, VisualGardenWeb.Endpoint,
-    # url: [host: host, port: 443, scheme: "https"],
-    url: [host: host, port: 80, scheme: "http"],
+    url: [host: host, port: 443, scheme: "https"],
+    # url: [host: host, port: 80, scheme: "http"],
     http: [
       # Enable IPv6 and bind on all interfaces.
       # Set it to  {0, 0, 0, 0, 0, 0, 0, 1} for local network only access.

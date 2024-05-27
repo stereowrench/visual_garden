@@ -67,7 +67,8 @@ defmodule VisualGarden.MixProject do
       {:earmark, "~> 1.4"},
       {:seqfuzz, "~> 0.2.0"},
       {:sentry, "~> 10.0"},
-      {:hackney, "~> 1.19"}
+      {:hackney, "~> 1.19"},
+      {:site_encrypt, "~> 0.6"}
     ]
   end
 
