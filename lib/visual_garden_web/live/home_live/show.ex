@@ -58,20 +58,35 @@ defmodule VisualGardenWeb.HomeLive.Show do
       (<%= Timex.format(@item.date, "{relative}", :relative) |> elem(1) %>)
       Nurse <%= @entry.seed.name %> (<%= @remaining_days %> days left) in <%= @entry.bed.name %> (<%= @entry.row %>, <%= @entry.column %>)
       <%= unless Timex.after?(@item.date, MyDateTime.utc_today) do %>
-      <.button
-        phx-click={JS.push("nurse", value: %{planner_entry_id: @entry.id})}
-        data-confirm="Are you sure?"
-      >
-        Nurse
-      </.button>
+        <.button
+          phx-click={JS.push("nurse", value: %{planner_entry_id: @entry.id})}
+          data-confirm="Are you sure?"
+        >
+          Nurse
+        </.button>
       <% end %>
     </div>
     """
   end
 
   def render_nursery_overdue(assigns) do
-    ~H"""
+    assigns =
+      assigns
+      |> assign(entry: assigns.planner_entries[assigns.item.planner_entry_id])
 
+    ~H"""
+    <div>
+      (<%= Timex.format(@item.date, "{relative}", :relative) |> elem(1) %>)
+      Overdue Nursery <%= @entry.seed.name %> in <%= @entry.bed.name %> (<%= @entry.row %>, <%= @entry.column %>)
+      <%= unless Timex.after?(@item.date, MyDateTime.utc_today) do %>
+        <.button
+          phx-click={JS.push("delete_planner", value: %{planner_entry_id: @entry.id})}
+          data-confirm="Are you sure?"
+        >
+          Delete Planner Entry
+        </.button>
+      <% end %>
+    </div>
     """
   end
 
@@ -98,9 +113,43 @@ defmodule VisualGardenWeb.HomeLive.Show do
   end
 
   def render_plant_overdue(assigns) do
-    ~H"""
+    assigns =
+      assigns
+      |> assign(entry: assigns.planner_entries[assigns.item.planner_entry_id])
 
+    ~H"""
+    <div>
+      (<%= Timex.format(@item.date, "{relative}", :relative) |> elem(1) %>)
+      Overdue Plant <%= @entry.seed.name %> in <%= @entry.bed.name %> (<%= @entry.row %>, <%= @entry.column %>)
+      <%= unless Timex.after?(@item.date, MyDateTime.utc_today) do %>
+        <.button
+          phx-click={JS.push("delete_planner", value: %{planner_entry_id: @entry.id})}
+          data-confirm="Are you sure?"
+        >
+          Delete Planner Entry
+          <%= if @entry.nursery_entry do %>
+            (Has nursery entry)
+          <% end %>
+        </.button>
+      <% end %>
+    </div>
     """
+  end
+
+  def handle_event("delete_planner", %{"planner_entry_id" => peid}, socket) do
+    Repo.transaction(fn ->
+      entry = Planner.get_planner_entry!(peid)
+      garden = Gardens.get_garden!(entry.bed.garden_id)
+      Authorization.authorize_garden_modify(garden.id, socket.assigns.current_user)
+
+      if entry.nursery_entry do
+        Gardens.update_nursery_entry(entry.nursery_entry, %{planner_entry_id: nil})
+      end
+
+      Planner.delete_planner_entry(entry)
+    end)
+
+    {:noreply, assign_assigns(socket)}
   end
 
   def handle_event("plant", %{"planner_entry_id" => peid}, socket) do
