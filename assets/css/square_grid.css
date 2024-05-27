@@ -1,6 +1,7 @@
 /* https://stackoverflow.com/a/24517881/1905235 */
 
 .square-grid {
+  overflow-x: scroll;
   display: grid;
   grid-template-rows: repeat(var(--width), 100px);
   grid-template-columns: repeat(var(--length), 100px);
