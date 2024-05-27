@@ -91,6 +91,10 @@
   <% end %>
 <% end %>
 
+<%= if @row do %>
+  <.link patch={~p"/gardens/#{@garden.id}/beds/#{@product.id}"}>&#8592; Back to bed</.link>
+<% end %>
+
 <dl class="mx-auto grid grid-cols-1 gap-px bg-gray-900/5 sm:grid-cols-2 lg:grid-cols-4">
   <div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-2 bg-white px-4 py-10 sm:px-6 xl:px-8">
     <dt class="text-sm font-medium leading-6 text-gray-500">Last watered</dt>
@@ -165,7 +169,12 @@
   <.back navigate={~p"/gardens/#{@garden.id}/products"}>Back to products</.back>
 <% end %>
 
-<.modal :if={@live_action == :edit && @can_modify?} id="product-modal" show on_cancel={modal_cancel(@product)}>
+<.modal
+  :if={@live_action == :edit && @can_modify?}
+  id="product-modal"
+  show
+  on_cancel={modal_cancel(@product)}
+>
   <.live_component
     module={VisualGardenWeb.ProductLive.FormComponent}
     id={@product.id}
