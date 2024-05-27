@@ -81,7 +81,7 @@ defmodule VisualGardenWeb.HomeLiveTest do
       assert length(Gardens.list_plants(garden.id)) == 1
     end
 
-    test "planting an orphaned nursery", %{garden: garden, bed: bed, seed: seed, user: user} do
+    test "planting an orphaned nursery", %{garden: garden, bed: bed, seed: seed, user: user, conn: conn} do
       nursery_entry =
         nursery_entry_fixture(garden, %{
           sow_date: ~D[2023-04-01],
