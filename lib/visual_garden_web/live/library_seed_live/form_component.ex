@@ -21,6 +21,7 @@ defmodule VisualGardenWeb.LibrarySeedLive.FormComponent do
         phx-change="validate"
         phx-submit="save"
       >
+        <.input field={@form[:name]} type="text" label="Name" />
         <.input
           field={@form[:type]}
           type="select"

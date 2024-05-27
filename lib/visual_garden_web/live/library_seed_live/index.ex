@@ -43,7 +43,7 @@ defmodule VisualGardenWeb.LibrarySeedLive.Index do
     else
       {:ok, _} = Gardens.create_seed(%{
         garden_id: socket.assigns.garden.id,
-        name: "#{lseed.species.name} - #{lseed.manufacturer}",
+        name: "#{lseed.name} - #{lseed.species.name} - #{lseed.manufacturer}",
         description: "A seed from #{lseed.manufacturer}",
         days_to_maturation: lseed.days_to_maturation,
         species_id: lseed.species_id,
