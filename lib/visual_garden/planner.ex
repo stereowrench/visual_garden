@@ -140,7 +140,8 @@ defmodule VisualGarden.Planner do
         species \\ nil,
         schedules_map \\ nil,
         seeds \\ nil,
-        garden \\ nil
+        garden \\ nil,
+        species_names \\ nil
       ) do
     # get seeds in garden from bed.garden_id
     # get species -> schedule map
@@ -150,7 +151,10 @@ defmodule VisualGarden.Planner do
     region_id = garden.region_id
     tz = garden.tz
 
-    species = if species, do: species, else: Library.list_species_with_schedule(region_id)
+    species = if species, do: species, else: Library.list_species()
+
+    species_names =
+      if species_names, do: species_names, else: Library.list_species_with_common_names()
 
     schedules_map =
       if schedules_map do
@@ -159,7 +163,17 @@ defmodule VisualGarden.Planner do
         schedules_map(region_id)
       end
 
-    get_plantables(seeds, region_id, tz, start_date, end_date, today, species, schedules_map)
+    get_plantables(
+      seeds,
+      region_id,
+      tz,
+      start_date,
+      end_date,
+      today,
+      species,
+      schedules_map,
+      species_names
+    )
   end
 
   # def get_plantables_from_garden_ignore_schedule(bed, start_date, end_date \\ nil, today \\ nil) do
@@ -204,7 +218,44 @@ defmodule VisualGarden.Planner do
   #   |> List.flatten()
   # end
 
-  defp get_plantables(seeds, _region_id, tz, start_date, end_date, today, species, schedules_map) do
+  defp map_species_to_schedules(schedules_map, species) do
+    collected =
+      species
+      |> Enum.group_by(fn s -> {s.id, {s.genus, s.name, s.variant, s.cultivar}} end)
+      |> Enum.map(fn {{id, key}, _group} -> {key, schedules_map[id]} end)
+      |> Enum.into(%{})
+
+    for specy <- species do
+      species_bubble(collected, specy)
+    end
+    |> Enum.reject(&is_nil/1)
+    |> Enum.into(%{})
+  end
+
+  def species_bubble(
+        collected,
+        species = %{genus: genus, name: name, variant: variant, cultivar: cultivar}
+      ) do
+    with nil <- collected[{genus, name, variant, cultivar}],
+         nil <- collected[{genus, name, variant, nil}],
+         nil <- collected[{genus, name, nil, nil}] do
+      nil
+    else
+      map -> {species.id, map}
+    end
+  end
+
+  defp get_plantables(
+         seeds,
+         _region_id,
+         tz,
+         start_date,
+         end_date,
+         today,
+         species,
+         schedules_map,
+         species_names
+       ) do
     today =
       if today do
         today
@@ -228,17 +279,17 @@ defmodule VisualGarden.Planner do
         {spid, Enum.map(schedules, fn {_, sched} -> sched end)}
       end)
       |> Enum.into(%{})
+      |> map_species_to_schedules(species)
 
     species_map =
       species
-      |> Enum.map(fn {sp, _common_name, _} -> sp end)
       |> Enum.group_by(& &1.id)
       |> Enum.map(fn {a, b} -> {a, Enum.uniq(b)} end)
       |> Enum.into(%{})
 
     species_name_map =
-      species
-      |> Enum.map(fn {sp, common_name, _} -> {sp.id, common_name} end)
+      species_names
+      |> Enum.map(fn {sp, common_name} -> {sp.id, common_name} end)
       |> Enum.into(%{})
 
     for seed <- seeds do
@@ -549,19 +600,22 @@ defmodule VisualGarden.Planner do
       Library.list_species_with_common_names()
       |> Enum.find(fn {a, _name} -> a.id == nursery.seed.species_id end)
 
-    create_planner_entry(%{
-      nursery_start: nursery.sow_date,
-      nursery_end: nursery.sow_date,
-      days_to_maturity: nursery.seed.days_to_maturation,
-      start_plant_date: MyDateTime.utc_today(),
-      end_plant_date: MyDateTime.utc_today(),
-      common_name: common_name,
-      days_to_refuse: days_to_refuse,
-      row: row,
-      column: column,
-      bed_id: bed_id,
-      seed_id: nursery.seed_id
-    }, garden)
+    create_planner_entry(
+      %{
+        nursery_start: nursery.sow_date,
+        nursery_end: nursery.sow_date,
+        days_to_maturity: nursery.seed.days_to_maturation,
+        start_plant_date: MyDateTime.utc_today(),
+        end_plant_date: MyDateTime.utc_today(),
+        common_name: common_name,
+        days_to_refuse: days_to_refuse,
+        row: row,
+        column: column,
+        bed_id: bed_id,
+        seed_id: nursery.seed_id
+      },
+      garden
+    )
   end
 
   def get_open_slots(garden, date) do

@@ -28,7 +28,11 @@ defmodule VisualGardenWeb.PlannerLive.Show do
 
   def add_plantability(socket, start_date, end_date \\ nil) do
     beds = socket.assigns.beds
-    species = VisualGarden.Library.list_species_with_schedule(socket.assigns.garden.region_id)
+    species = VisualGarden.Library.list_species()
+
+    species_names =
+      VisualGarden.Library.list_species_with_common_names()
+
     schedules_map = Planner.schedules_map(socket.assigns.garden.region_id)
     seeds = Gardens.list_seeds(socket.assigns.garden.id)
 
