@@ -209,7 +209,7 @@ defmodule VisualGarden.LibraryTest do
     end
 
     test "get_library_seed!/1 returns the library_seed with given id" do
-      library_seed = library_seed_fixture()
+      library_seed = library_seed_fixture() |> Repo.preload([:species])
       assert Library.get_library_seed!(library_seed.id) == library_seed
     end
 
@@ -251,7 +251,7 @@ defmodule VisualGarden.LibraryTest do
     end
 
     test "update_library_seed/2 with invalid data returns error changeset" do
-      library_seed = library_seed_fixture()
+      library_seed = library_seed_fixture() |> Repo.preload([:species])
 
       assert {:error, %Ecto.Changeset{}} =
                Library.update_library_seed(library_seed, @invalid_attrs)

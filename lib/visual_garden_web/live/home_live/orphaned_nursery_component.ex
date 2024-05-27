@@ -125,7 +125,6 @@ defmodule VisualGardenWeb.HomeLive.OrphanedNurseryComponent do
 
       squares =
         for_bed
-        |> IO.inspect()
         |> Enum.map(fn
           %{row: row, col: column} ->
             [

@@ -465,7 +465,7 @@ defmodule VisualGarden.Library do
 
   """
   def list_library_seeds do
-    Repo.all(LibrarySeed) |> Repo.preload([:species])
+    Repo.all(LibrarySeed)
   end
 
   @doc """
