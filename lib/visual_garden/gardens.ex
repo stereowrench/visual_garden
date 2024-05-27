@@ -886,7 +886,8 @@ defmodule VisualGarden.Gardens do
   def content_for_cell(plants, idx) do
     if p = plants[idx] do
       if q = hd(p) do
-        q.name
+        Phoenix.HTML.html_escape(q.name)
+        |> Phoenix.HTML.safe_to_string()
       else
         ""
       end

@@ -80,7 +80,8 @@ defmodule VisualGardenWeb.PlannerLive.Show do
   end
 
   def content_for_cell(plants, val) do
-    plants[val]
+    {:safe, foo} = plants[val] |> html_escape() |> safe_to_string()
+    foo
   end
 
   defp add_current_plants(socket, today) do
