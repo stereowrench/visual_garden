@@ -1,12 +1,28 @@
 defmodule VisualGardenWeb.LibrarySeedLive.Index do
+  alias VisualGarden.Gardens
   use VisualGardenWeb, :live_view
 
   alias VisualGarden.Library
   alias VisualGarden.Library.LibrarySeed
 
   @impl true
+  def mount(%{"id" => seed_id, "garden_id" => garden_id}, _session, socket) do
+    Authorization.authorize_garden_modify(garden_id, socket.assigns.current_user)
+
+    {:ok,
+     socket
+     |> assign(:gardens, Gardens.list_gardens(socket.assigns.current_user))
+     |> assign(:garden, Gardens.get_garden!(garden_id))
+     |> assign(:library_seed, Library.get_library_seed!(seed_id))
+     |> stream(:library_seeds, Library.list_library_seeds())}
+  end
+
+  @impl true
   def mount(_params, _session, socket) do
-    {:ok, stream(socket, :library_seeds, Library.list_library_seeds())}
+    {:ok,
+     socket
+     |> assign(:gardens, Gardens.list_gardens(socket.assigns.current_user))
+     |> stream(:library_seeds, Library.list_library_seeds())}
   end
 
   @impl true
@@ -15,6 +31,30 @@ defmodule VisualGardenWeb.LibrarySeedLive.Index do
      socket
      |> assign(:can_edit?, Authorization.can_modify_library?(socket.assigns.current_user))
      |> apply_action(socket.assigns.live_action, params)}
+  end
+
+  defp apply_action(socket, :copy, %{"id" => id}) do
+    lseed = Library.get_library_seed!(id)
+
+    if Gardens.get_seed_by_library_seed(lseed.id, socket.assigns.garden.id) do
+      socket
+      |> put_notification(Normal.new(:warning, "Seed already in garden"))
+      |> push_patch(to: ~p"/library_seeds")
+    else
+      {:ok, _} = Gardens.create_seed(%{
+        garden_id: socket.assigns.garden.id,
+        name: "#{lseed.species.name} - #{lseed.manufacturer}",
+        description: "A seed from #{lseed.manufacturer}",
+        days_to_maturation: lseed.days_to_maturation,
+        species_id: lseed.species_id,
+        type: lseed.type,
+        library_seed_id: lseed.id
+      })
+
+      socket
+      |> put_notification(Normal.new(:success, "Added seed to garden!"))
+      |> push_patch(to: ~p"/library_seeds")
+    end
   end
 
   defp apply_action(socket, :edit, %{"id" => id}) do

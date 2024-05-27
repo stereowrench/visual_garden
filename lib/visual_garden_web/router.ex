@@ -139,6 +139,7 @@ defmodule VisualGardenWeb.Router do
       live "/library_seeds", LibrarySeedLive.Index, :index
       live "/library_seeds/new", LibrarySeedLive.Index, :new
       live "/library_seeds/:id/edit", LibrarySeedLive.Index, :edit
+      live "/library_seeds/:id/copy/:garden_id", LibrarySeedLive.Index, :copy
 
       live "/library_seeds/:id", LibrarySeedLive.Show, :show
       live "/library_seeds/:id/show/edit", LibrarySeedLive.Show, :edit

@@ -482,7 +482,7 @@ defmodule VisualGarden.Library do
       ** (Ecto.NoResultsError)
 
   """
-  def get_library_seed!(id), do: Repo.get!(LibrarySeed, id)
+  def get_library_seed!(id), do: Repo.get!(LibrarySeed, id) |> Repo.preload([:species])
 
   @doc """
   Creates a library_seed.

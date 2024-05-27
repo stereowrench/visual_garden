@@ -578,4 +578,8 @@ defmodule VisualGarden.GardensTest do
       assert Gardens.list_public_gardens(user3) == [garden1]
     end
   end
+
+  describe "refuse and concurrency" do
+
+  end
 end

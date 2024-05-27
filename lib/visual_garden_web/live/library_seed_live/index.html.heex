@@ -18,6 +18,20 @@
     <%= library_seed.days_to_maturation %>
   </:col>
   <:col :let={{_id, library_seed}} label="Manufacturer"><%= library_seed.manufacturer %></:col>
+  <:action :let={{_id, library_seed}} :if={@current_user}>
+    <PC.dropdown>
+      <:trigger_element>
+        <.icon name="hero-plus" />
+      </:trigger_element>
+      <%= for garden <- @gardens do %>
+        <PetalComponents.Dropdown.dropdown_menu_item
+          label={garden.name}
+          link_type="a"
+          to={~p"/library_seeds/#{library_seed.id}/copy/#{garden.id}"}
+        />
+      <% end %>
+    </PC.dropdown>
+  </:action>
   <:action :let={{_id, library_seed}}>
     <div class="sr-only">
       <.link navigate={~p"/library_seeds/#{library_seed}"}>Show</.link>

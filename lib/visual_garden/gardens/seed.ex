@@ -8,6 +8,7 @@ defmodule VisualGarden.Gardens.Seed do
     field :type, Ecto.Enum, values: [:seed, :set, :slip, :transplant]
     belongs_to :garden, VisualGarden.Gardens.Garden
     belongs_to :species, VisualGarden.Library.Species
+    belongs_to :library_seed, VisualGarden.Library.LibrarySeed
 
     field :days_to_maturation, :integer
 
@@ -17,7 +18,7 @@ defmodule VisualGarden.Gardens.Seed do
   @doc false
   def changeset(seed, attrs) do
     seed
-    |> cast(attrs, [:type, :name, :description, :garden_id, :days_to_maturation, :species_id])
+    |> cast(attrs, [:library_seed_id, :type, :name, :description, :garden_id, :days_to_maturation, :species_id])
     |> validate_required([
       :type,
       :name,
