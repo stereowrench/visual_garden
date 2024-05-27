@@ -81,7 +81,13 @@ defmodule VisualGardenWeb.HomeLiveTest do
       assert length(Gardens.list_plants(garden.id)) == 1
     end
 
-    test "planting an orphaned nursery", %{garden: garden, bed: bed, seed: seed, user: user, conn: conn} do
+    test "planting an orphaned nursery", %{
+      garden: garden,
+      bed: bed,
+      seed: seed,
+      user: user,
+      conn: conn
+    } do
       nursery_entry =
         nursery_entry_fixture(garden, %{
           sow_date: ~D[2023-04-01],
@@ -96,15 +102,27 @@ defmodule VisualGardenWeb.HomeLiveTest do
 
       conn = log_in_user(conn, user)
       {:ok, index_live, _html} = live(conn, ~p"/home")
-      index_live |> element("button", "Plant") |> render_click()
+      index_live |> element(".orphan-link") |> render_click()
 
       assert_patch(index_live, ~p"/home/orphaned_nursery/#{nursery_entry.id}")
 
       assert index_live
-             |> form("#nursery-form",
-               nursery_entry: %{refuse_date: ~D[2023-06-01], row: r, column: c}
+             |> form("#orphan-form",
+               orphan_schema: %{bed_id: bid}
              )
-             |> render_submit(%{bed_id: bid})
+             |> render_change()
+
+      assert index_live
+             |> form("#orphan-form",
+               orphan_schema: %{square: 1}
+             )
+             |> render_change()
+
+      assert index_live
+             |> form("#orphan-form",
+               orphan_schema: %{refuse_date: ~D[2023-06-01]}
+             )
+             |> render_submit()
     end
   end
 end

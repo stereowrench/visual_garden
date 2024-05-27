@@ -137,8 +137,6 @@ defmodule VisualGardenWeb.HomeLive.OrphanedNurseryComponent do
       end_date =
         if oschema["square"] not in [nil, ""] do
           {row, col} = Planner.parse_square(oschema["square"], bed)
-          dbg({row, col})
-          dbg(for_bed)
           en = for_bed |> Enum.find(&(&1.row == row && &1.col == col))
           en.end_date
         else

@@ -61,7 +61,7 @@ defmodule VisualGardenWeb.HomeLive.Show do
     ~H"""
     <div>
       Orphaned Seedling <%= @item.name %>
-      <.link navigate={~p"/home/orphaned_nursery/#{@item.nursery_entry_id}"}>
+      <.link patch={~p"/home/orphaned_nursery/#{@item.nursery_entry_id}"} class="orphan-link">
         <.button>
           Plant orphan
         </.button>
