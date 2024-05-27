@@ -29,7 +29,8 @@ defmodule VisualGarden.Gardens do
     Repo.all(
       from gu in GardenUser,
         where: gu.garden_id == ^garden.id
-    ) |> Repo.preload([:user])
+    )
+    |> Repo.preload([:user])
   end
 
   def delete_garden_user(%GardenUser{} = gu) do

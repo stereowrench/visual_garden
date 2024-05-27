@@ -1,6 +1,5 @@
 defmodule VisualGarden.Gardens.PlannerEntry do
   alias VisualGarden.Gardens
-  alias VisualGarden.Gardens.Garden
   use Ecto.Schema
   import Ecto.Changeset
 
@@ -56,6 +55,7 @@ defmodule VisualGarden.Gardens.PlannerEntry do
     ])
     |> validate_change(:bed_id, fn :bed_id, bid ->
       bed = Gardens.get_product!(bid)
+
       if bed.garden_id != garden.id do
         [bed_id: "Bed is not in the garden"]
       else
@@ -64,6 +64,7 @@ defmodule VisualGarden.Gardens.PlannerEntry do
     end)
     |> validate_change(:seed_id, fn :seed_id, sid ->
       seed = Gardens.get_seed!(sid)
+
       if seed.garden_id != garden.id do
         [seed_id: "Seed not in the garden"]
       else

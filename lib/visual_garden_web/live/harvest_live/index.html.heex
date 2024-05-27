@@ -30,7 +30,12 @@
   </:action>
 </.table>
 
-<.modal :if={@live_action in [:new, :edit]} id="harvest-modal" show on_cancel={JS.patch(~p"/harvests")}>
+<.modal
+  :if={@live_action in [:new, :edit]}
+  id="harvest-modal"
+  show
+  on_cancel={JS.patch(~p"/harvests")}
+>
   <.live_component
     module={VisualGardenWeb.HarvestLive.FormComponent}
     id={@harvest.id || :new}

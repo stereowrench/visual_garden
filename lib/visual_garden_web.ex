@@ -54,7 +54,8 @@ defmodule VisualGardenWeb do
     quote do
       use Phoenix.LiveView,
         layout: {VisualGardenWeb.Layouts, :app}
-        alias VisualGarden.Authorization
+
+      alias VisualGarden.Authorization
       unquote(html_helpers())
     end
   end

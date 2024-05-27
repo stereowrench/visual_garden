@@ -3,6 +3,7 @@ defmodule VisualGarden.Repo.Migrations.FixSpeciesUnique do
 
   def up do
     drop unique_index(:species, [:name, :genus, :variant, :cultivar])
+
     execute """
       CREATE UNIQUE INDEX unique_species ON species (name, genus, coalesce(variant, ''), coalesce(cultivar, ''))
     """

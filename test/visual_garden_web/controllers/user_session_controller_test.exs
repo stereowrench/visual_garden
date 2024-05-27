@@ -93,7 +93,11 @@ defmodule VisualGardenWeb.UserSessionControllerTest do
           "user" => %{"email" => "invalid@email.com", "password" => "invalid_password"}
         })
 
-      assert unwrap_flash(conn.assigns.flash) in ["Invalid email or password", "invalid@email.com"]
+      assert unwrap_flash(conn.assigns.flash) in [
+               "Invalid email or password",
+               "invalid@email.com"
+             ]
+
       assert redirected_to(conn) == ~p"/users/log_in"
     end
   end

@@ -1,5 +1,4 @@
 defmodule VisualGardenWeb.LibrarySeedLive.Show do
-  alias Hex.API.Auth
   use VisualGardenWeb, :live_view
 
   alias VisualGarden.Library

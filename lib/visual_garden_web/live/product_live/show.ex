@@ -5,7 +5,7 @@ defmodule VisualGardenWeb.ProductLive.Show do
   alias VisualGarden.Planner
 
   @impl true
-  def mount(%{"id" => id}, _session, socket) do
+  def mount(%{"id" => _id}, _session, socket) do
     {:ok, socket}
   end
 

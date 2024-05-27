@@ -134,18 +134,6 @@ defmodule VisualGardenWeb.EventLogLive.FormComponent do
     {:noreply, socket}
   end
 
-  defp merge_attrs(params, action, product) do
-    Map.merge(
-      %{
-        "event_type" => event_type_for_action(action),
-        "product_id" => product.id,
-        "transferred_to_id" => product.id
-      },
-      params
-    )
-  end
-
-  @impl true
   def handle_event("validate", %{"event_log" => event_log_params}, socket) do
     changeset =
       socket.assigns.event_log
@@ -159,6 +147,17 @@ defmodule VisualGardenWeb.EventLogLive.FormComponent do
 
   def handle_event("save", %{"event_log" => event_log_params}, socket) do
     save_event_log(socket, socket.assigns.action, event_log_params)
+  end
+
+  defp merge_attrs(params, action, product) do
+    Map.merge(
+      %{
+        "event_type" => event_type_for_action(action),
+        "product_id" => product.id,
+        "transferred_to_id" => product.id
+      },
+      params
+    )
   end
 
   # defp save_event_log(socket, :edit, event_log_params) do

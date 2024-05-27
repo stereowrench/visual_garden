@@ -1,4 +1,4 @@
-<.live_component module={VisualGardenWeb.NavBarLibrary} id="navbar" current={"Species"} />
+<.live_component module={VisualGardenWeb.NavBarLibrary} id="navbar" current="Species" />
 
 <.header>
   <%= species_display_string(@species) %>
@@ -13,7 +13,12 @@
 
 <.back navigate={~p"/species"}>Back to species</.back>
 
-<.modal :if={@live_action == :edit} id="species-modal" show on_cancel={JS.patch(~p"/species/#{@species}")}>
+<.modal
+  :if={@live_action == :edit}
+  id="species-modal"
+  show
+  on_cancel={JS.patch(~p"/species/#{@species}")}
+>
   <.live_component
     module={VisualGardenWeb.SpeciesLive.FormComponent}
     id={@species.id}

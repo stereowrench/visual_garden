@@ -7,6 +7,5 @@ defmodule VisualGarden.Repo.Migrations.AddEventTimeToEventLogs do
       remove :watered
       remove :tilled
     end
-
   end
 end

@@ -165,7 +165,12 @@
   <.back navigate={~p"/gardens/#{@garden.id}/products"}>Back to products</.back>
 <% end %>
 
-<.modal :if={@live_action == :edit && @can_modify?} id="product-modal" show on_cancel={modal_cancel(@product)}>
+<.modal
+  :if={@live_action == :edit && @can_modify?}
+  id="product-modal"
+  show
+  on_cancel={modal_cancel(@product)}
+>
   <.live_component
     module={VisualGardenWeb.ProductLive.FormComponent}
     id={@product.id}

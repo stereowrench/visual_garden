@@ -257,7 +257,10 @@ defmodule VisualGarden.Library do
     |> with_cte("squery", as: fragment(@species_cte))
     |> join(:inner, [s], q in "squery", on: s.id == q.species_id)
     |> where([s, q], coalesce(q.region_id0, q.region_id1) |> coalesce(q.region_id2) == ^region_id)
-    |> select([s, q], {s, coalesce(q.n0, q.n1) |> coalesce(q.n2), coalesce(q.l0, q.l1) |> coalesce(q.l2)})
+    |> select(
+      [s, q],
+      {s, coalesce(q.n0, q.n1) |> coalesce(q.n2), coalesce(q.l0, q.l1) |> coalesce(q.l2)}
+    )
     |> Repo.all()
   end
 
