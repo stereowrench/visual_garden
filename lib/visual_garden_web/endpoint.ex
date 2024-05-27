@@ -1,6 +1,12 @@
 defmodule VisualGardenWeb.Endpoint do
   use Sentry.PlugCapture
-  use SiteEncrypt.Phoenix.Endpoint, otp_app: :visual_garden
+
+  use SiteEncrypt.Phoenix.Endpoint,
+    otp_app: :visual_garden,
+    endpoint_opts: [
+      http: [port: 80],
+      https: [port: 443]
+    ]
 
   # The session will be stored in the cookie and signed,
   # this means its contents can be read but not tampered with.
@@ -60,8 +66,8 @@ defmodule VisualGardenWeb.Endpoint do
       # provide `:certbot` instead. Note that in this case certbot needs to be installed on the
       # host machine.
       client: :native,
-      domains: [System.get_env("SITE_ENCRYPT_DOMAIN")], # "garden.stereowrench.com"
-      emails: [System.get_env("SITE_ENCRYPT_EMAIL")], # "theron@theronb.me"
+      domains: [System.get_env("SITE_ENCRYPT_DOMAIN")],
+      emails: [System.get_env("SITE_ENCRYPT_EMAIL")],
 
       # By default the certs will be stored in tmp/site_encrypt_db, which is convenient for
       # local development. Make sure that tmp folder is gitignored.
