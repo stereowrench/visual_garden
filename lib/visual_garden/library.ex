@@ -29,13 +29,27 @@ defmodule VisualGarden.Library do
   			SPECIES."name",
   			GENUS,
         VARIANT,
+        SEASON,
         CULTIVAR
   		ORDER BY
   			"name" DESC,
   			GENUS DESC,
   			VARIANT DESC,
-  			CULTIVAR DESC
+  			CULTIVAR DESC,
+        SEASON DESC
   	) AS n0,
+    first_value(SPECIES."common_name") OVER (
+  		PARTITION BY
+  			SPECIES."name",
+  			GENUS,
+        VARIANT,
+        SEASON
+  		ORDER BY
+  			"name" DESC,
+  			GENUS DESC,
+  			VARIANT DESC,
+        SEASON DESC
+  	) AS n1,
   	first_value(SPECIES."common_name") OVER (
   		PARTITION BY
   			SPECIES."name",
@@ -45,8 +59,9 @@ defmodule VisualGarden.Library do
   			"name" DESC,
   			GENUS DESC,
   			VARIANT DESC,
-  			CULTIVAR DESC
-  	) AS n1,
+  			CULTIVAR DESC,
+        SEASON DESC
+  	) AS n2,
   	first_value(SPECIES."common_name") OVER (
   		PARTITION BY
   			SPECIES."name",
@@ -55,8 +70,9 @@ defmodule VisualGarden.Library do
   			"name" DESC,
   			GENUS DESC,
   			VARIANT DESC,
-  			CULTIVAR DESC
-  	) AS n2
+  			CULTIVAR DESC,
+        SEASON DESC
+  	) AS n3
   FROM
   	SPECIES
   """
@@ -64,7 +80,7 @@ defmodule VisualGarden.Library do
     Species
     |> with_cte("squery", as: fragment(@common_name_cte))
     |> join(:inner, [s], q in "squery", on: s.id == q.species_id)
-    |> select([s, q], {s, coalesce(q.n0, q.n1) |> coalesce(q.n2)})
+    |> select([s, q], {s, coalesce(q.n0, q.n1) |> coalesce(q.n2) |> coalesce(q.n3)})
     |> Repo.all()
   end
 
