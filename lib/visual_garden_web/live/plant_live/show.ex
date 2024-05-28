@@ -28,8 +28,8 @@ defmodule VisualGardenWeb.PlantLive.Show do
     {:noreply,
      socket
      |> assign(:page_title, page_title(socket.assigns.live_action))
-    #  |> assign(:page_tip_title, "Gardening recommendations")
-    #  |> assign(:page_tip, page_tip())
+     #  |> assign(:page_tip_title, "Gardening recommendations")
+     #  |> assign(:page_tip, page_tip())
      |> assign(
        :can_modify?,
        Authorization.can_modify_garden?(garden, socket.assigns.current_user)
