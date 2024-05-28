@@ -236,6 +236,7 @@ defmodule VisualGarden.Planner do
         collected,
         species = %{genus: genus, name: name, variant: variant, cultivar: cultivar}
       ) do
+    # dbg(collected)
     with nil <- collected[{genus, name, variant, cultivar}],
          nil <- collected[{genus, name, variant, nil}],
          nil <- collected[{genus, name, nil, nil}] do
