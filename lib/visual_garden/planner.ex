@@ -85,7 +85,7 @@ defmodule VisualGarden.Planner do
       |> Enum.map(fn
         %{start_plant_date: spd, end_plant_date: epd, days_to_refuse: dtr} ->
           if Timex.between?(start_date, spd, Timex.shift(epd, days: dtr)) do
-            :error
+            []
           else
             if Timex.before?(Timex.shift(epd, days: dtr), start_date) do
               []
