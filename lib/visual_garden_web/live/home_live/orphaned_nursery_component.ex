@@ -11,7 +11,6 @@ defmodule VisualGardenWeb.HomeLive.OrphanedNurseryComponent do
   import Ecto.Changeset
 
   defmodule OrphanSchema do
-    alias VisualGarden.Accounts
     use Ecto.Schema
     import Ecto.Changeset
 
