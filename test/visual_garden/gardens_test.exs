@@ -478,7 +478,7 @@ defmodule VisualGarden.GardensTest do
 
     test "get_nursery_entry!/1 returns the nursery_entry with given id" do
       nursery_entry = nursery_entry_fixture()
-      assert Gardens.get_nursery_entry!(nursery_entry.id) == nursery_entry
+      assert Gardens.get_nursery_entry!(nursery_entry.id) == Repo.preload(nursery_entry, [:seed])
     end
 
     test "create_nursery_entry/1 with valid data creates a nursery_entry" do
@@ -509,7 +509,7 @@ defmodule VisualGarden.GardensTest do
       assert {:error, %Ecto.Changeset{}} =
                Gardens.update_nursery_entry(nursery_entry, @invalid_attrs)
 
-      assert nursery_entry == Gardens.get_nursery_entry!(nursery_entry.id)
+      assert Repo.preload(nursery_entry, [:seed]) == Gardens.get_nursery_entry!(nursery_entry.id)
     end
 
     test "delete_nursery_entry/1 deletes the nursery_entry" do
@@ -577,5 +577,9 @@ defmodule VisualGarden.GardensTest do
       assert Gardens.list_public_gardens(user2) == [garden1]
       assert Gardens.list_public_gardens(user3) == [garden1]
     end
+  end
+
+  describe "refuse and concurrency" do
+
   end
 end

@@ -29,6 +29,8 @@ defmodule VisualGardenWeb.Router do
       live "/gardens/new", GardenLive.Index, :new
       live "/gardens/:id/show/edit", GardenLive.Show, :edit
       live "/gardens/:id/show/collab", GardenLive.Show, :collab
+
+      live "/home/orphaned_nursery/:nursery_entry", HomeLive.Show, :orphaned_nursery
     end
   end
 
@@ -137,6 +139,7 @@ defmodule VisualGardenWeb.Router do
       live "/library_seeds", LibrarySeedLive.Index, :index
       live "/library_seeds/new", LibrarySeedLive.Index, :new
       live "/library_seeds/:id/edit", LibrarySeedLive.Index, :edit
+      live "/library_seeds/:id/copy/:garden_id", LibrarySeedLive.Index, :copy
 
       live "/library_seeds/:id", LibrarySeedLive.Show, :show
       live "/library_seeds/:id/show/edit", LibrarySeedLive.Show, :edit

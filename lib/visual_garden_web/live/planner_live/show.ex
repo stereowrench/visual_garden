@@ -28,7 +28,11 @@ defmodule VisualGardenWeb.PlannerLive.Show do
 
   def add_plantability(socket, start_date, end_date \\ nil) do
     beds = socket.assigns.beds
-    species = VisualGarden.Library.list_species_with_schedule(socket.assigns.garden.region_id)
+    species = VisualGarden.Library.list_species()
+
+    species_names =
+      VisualGarden.Library.list_species_with_common_names()
+
     schedules_map = Planner.schedules_map(socket.assigns.garden.region_id)
     seeds = Gardens.list_seeds(socket.assigns.garden.id)
 
@@ -80,7 +84,7 @@ defmodule VisualGardenWeb.PlannerLive.Show do
   end
 
   def content_for_cell(plants, val) do
-    plants[val]
+    plants[val] |> html_escape() |> safe_to_string()
   end
 
   defp add_current_plants(socket, today) do
@@ -96,7 +100,7 @@ defmodule VisualGardenWeb.PlannerLive.Show do
             num = VisualGardenWeb.PlannerLive.GraphComponent.bed_square(entry, bed)
 
             cond do
-              Timex.diff(en, today, :days) <= 0 ->
+              Timex.diff(en, today, :days) < 0 ->
                 {num, nil}
 
               Timex.diff(start, today, :days) <= 0 and Timex.diff(en, today, :days) >= 0 ->

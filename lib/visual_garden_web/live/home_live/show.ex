@@ -1,4 +1,5 @@
 defmodule VisualGardenWeb.HomeLive.Show do
+  alias VisualGarden.Gardens.Garden
   alias VisualGarden.MyDateTime
   alias VisualGarden.Gardens
   alias VisualGarden.Repo
@@ -11,7 +12,16 @@ defmodule VisualGardenWeb.HomeLive.Show do
   end
 
   @impl true
-  def handle_params(_params, _, socket) do
+  def handle_params(%{"nursery_entry" => neid}, _, socket) do
+    {:noreply,
+     socket
+     |> assign_assigns()
+     |> assign(:entry, Gardens.get_nursery_entry!(neid))
+     |> assign(:page_title, page_title(socket.assigns.live_action))}
+  end
+
+  @impl true
+  def handle_params(params, _, socket) do
     {:noreply,
      socket
      |> assign_assigns()
@@ -42,7 +52,21 @@ defmodule VisualGardenWeb.HomeLive.Show do
       "nursery_overdue" -> render_nursery_overdue(assigns)
       "plant" -> render_plant(assigns)
       "plant_overdue" -> render_plant_overdue(assigns)
+      "orphaned_nursery" -> render_orphaned_nursery(assigns)
     end
+  end
+
+  def render_orphaned_nursery(assigns) do
+    ~H"""
+    <div>
+      Orphaned Seedling <%= @item.name %>
+      <.link patch={~p"/home/orphaned_nursery/#{@item.nursery_entry_id}"} class="orphan-link">
+        <.button>
+          Plant orphan
+        </.button>
+      </.link>
+    </div>
+    """
   end
 
   def render_nursery_plant(assigns) do
@@ -69,8 +93,23 @@ defmodule VisualGardenWeb.HomeLive.Show do
   end
 
   def render_nursery_overdue(assigns) do
-    ~H"""
+    assigns =
+      assigns
+      |> assign(entry: assigns.planner_entries[assigns.item.planner_entry_id])
 
+    ~H"""
+    <div>
+      (<%= Timex.format(@item.date, "{relative}", :relative) |> elem(1) %>)
+      Overdue Nursery <%= @entry.seed.name %> in <%= @entry.bed.name %> (<%= @entry.row %>, <%= @entry.column %>)
+      <%= unless Timex.after?(@item.date, MyDateTime.utc_today) do %>
+        <.button
+          phx-click={JS.push("delete_planner", value: %{planner_entry_id: @entry.id})}
+          data-confirm="Are you sure?"
+        >
+          Delete Planner Entry
+        </.button>
+      <% end %>
+    </div>
     """
   end
 
@@ -97,9 +136,43 @@ defmodule VisualGardenWeb.HomeLive.Show do
   end
 
   def render_plant_overdue(assigns) do
-    ~H"""
+    assigns =
+      assigns
+      |> assign(entry: assigns.planner_entries[assigns.item.planner_entry_id])
 
+    ~H"""
+    <div>
+      (<%= Timex.format(@item.date, "{relative}", :relative) |> elem(1) %>)
+      Overdue Plant <%= @entry.seed.name %> in <%= @entry.bed.name %> (<%= @entry.row %>, <%= @entry.column %>)
+      <%= unless Timex.after?(@item.date, MyDateTime.utc_today) do %>
+        <.button
+          phx-click={JS.push("delete_planner", value: %{planner_entry_id: @entry.id})}
+          data-confirm="Are you sure?"
+        >
+          Delete Planner Entry
+          <%= if @entry.nursery_entry do %>
+            (Has nursery entry)
+          <% end %>
+        </.button>
+      <% end %>
+    </div>
     """
+  end
+
+  def handle_event("delete_planner", %{"planner_entry_id" => peid}, socket) do
+    Repo.transaction(fn ->
+      entry = Planner.get_planner_entry!(peid)
+      garden = Gardens.get_garden!(entry.bed.garden_id)
+      Authorization.authorize_garden_modify(garden.id, socket.assigns.current_user)
+
+      if entry.nursery_entry do
+        Gardens.update_nursery_entry(entry.nursery_entry, %{planner_entry_id: nil})
+      end
+
+      Planner.delete_planner_entry(entry)
+    end)
+
+    {:noreply, assign_assigns(socket)}
   end
 
   def handle_event("plant", %{"planner_entry_id" => peid}, socket) do
@@ -146,4 +219,5 @@ defmodule VisualGardenWeb.HomeLive.Show do
   end
 
   defp page_title(:show), do: "Show Nursery entry"
+  defp page_title(:orphaned_nursery), do: "Plant Orphaned Nursery"
 end

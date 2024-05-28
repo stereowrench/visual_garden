@@ -41,9 +41,12 @@ defmodule VisualGarden.Authorization do
     if user == nil do
       false
     else
-      if garden.owner_id != user.id && user.role not in [:admin, :moderator] &&
-           !Gardens.get_garden_user(garden, user) do
-        false
+      if garden.owner_id != user.id && user.role not in [:admin, :moderator] do
+        if Gardens.get_garden_user(garden, user) do
+          true
+        else
+          false
+        end
       else
         true
       end

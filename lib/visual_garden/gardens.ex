@@ -279,6 +279,13 @@ defmodule VisualGarden.Gardens do
   """
   def get_seed!(id), do: Repo.get!(Seed, id)
 
+  def get_seed_by_library_seed(lseed_id, garden_id) do
+    Repo.one(
+      from s in Seed,
+        where: s.library_seed_id == ^lseed_id and s.garden_id == ^garden_id
+    )
+  end
+
   @doc """
   Creates a seed.
 
@@ -797,7 +804,7 @@ defmodule VisualGarden.Gardens do
       ** (Ecto.NoResultsError)
 
   """
-  def get_nursery_entry!(id), do: Repo.get!(NurseryEntry, id)
+  def get_nursery_entry!(id), do: Repo.get!(NurseryEntry, id) |> Repo.preload([:seed])
 
   @doc """
   Creates a nursery_entry.
@@ -879,7 +886,8 @@ defmodule VisualGarden.Gardens do
   def content_for_cell(plants, idx) do
     if p = plants[idx] do
       if q = hd(p) do
-        q.name
+        Phoenix.HTML.html_escape(q.name)
+        |> Phoenix.HTML.safe_to_string()
       else
         ""
       end

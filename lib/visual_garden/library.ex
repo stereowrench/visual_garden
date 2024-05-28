@@ -154,116 +154,6 @@ defmodule VisualGarden.Library do
     Species.changeset(species, attrs)
   end
 
-  @species_cte """
-  SELECT
-  	species.id as species_id,
-    schedules.region_id as region_id0,
-    first_value(schedules.region_id)
-  OVER (
-  		PARTITION BY
-  			SPECIES."name",
-  			GENUS,
-        VARIANT
-      ORDER BY
-        "name" DESC,
-        GENUS DESC,
-        VARIANT DESC,
-        CULTIVAR DESC
-  )
-    as region_id1,
-    first_value(schedules.region_id)
-  OVER (
-  		PARTITION BY
-  			SPECIES."name",
-  			GENUS
-      ORDER BY
-        "name" DESC,
-        GENUS DESC,
-        VARIANT DESC
-  )
-    as region_id2,
-    first_value(SPECIES."common_name") OVER (
-  		PARTITION BY
-  			SPECIES."name",
-  			GENUS,
-        VARIANT,
-        CULTIVAR
-  		ORDER BY
-  			"name" DESC,
-  			GENUS DESC,
-  			VARIANT DESC,
-  			CULTIVAR DESC
-  	) AS n0,
-  	first_value(SPECIES."common_name") OVER (
-  		PARTITION BY
-  			SPECIES."name",
-  			GENUS,
-        VARIANT
-  		ORDER BY
-  			"name" DESC,
-  			GENUS DESC,
-  			VARIANT DESC,
-  			CULTIVAR DESC
-  	) AS n1,
-  	first_value(SPECIES."common_name") OVER (
-  		PARTITION BY
-  			SPECIES."name",
-  			GENUS
-  		ORDER BY
-  			"name" DESC,
-  			GENUS DESC,
-  			VARIANT DESC,
-  			CULTIVAR DESC
-  	) AS n2,
-  	first_value(SCHEDULES.ID) OVER (
-  		PARTITION BY
-  			SPECIES."name",
-  			GENUS,
-        VARIANT,
-        CULTIVAR
-  		ORDER BY
-  			"name" DESC,
-  			GENUS DESC,
-  			VARIANT DESC,
-  			CULTIVAR DESC
-  	) AS l0,
-  	first_value(SCHEDULES.ID) OVER (
-  		PARTITION BY
-  			SPECIES."name",
-  			GENUS,
-        VARIANT
-  		ORDER BY
-  			"name" DESC,
-  			GENUS DESC,
-  			VARIANT DESC,
-  			CULTIVAR DESC
-  	) AS l1,
-  	first_value(SCHEDULES.ID) OVER (
-  		PARTITION BY
-  			SPECIES."name",
-  			GENUS
-  		ORDER BY
-  			"name" DESC,
-  			GENUS DESC,
-  			VARIANT DESC,
-  			CULTIVAR DESC
-  	) AS l2
-  FROM
-  	SPECIES
-  	LEFT JOIN SCHEDULES ON SPECIES.ID = SCHEDULES.SPECIES_ID
-  """
-  def list_species_with_schedule(region_id) do
-    Species
-    |> with_cte("squery", as: fragment(@species_cte))
-    |> join(:inner, [s], q in "squery", on: s.id == q.species_id)
-    |> where([s, q], coalesce(q.region_id0, q.region_id1) |> coalesce(q.region_id2) == ^region_id)
-    |> select(
-      [s, q],
-      {s, coalesce(q.n0, q.n1) |> coalesce(q.n2), coalesce(q.l0, q.l1) |> coalesce(q.l2)}
-    )
-    |> Repo.all()
-  end
-
   alias VisualGarden.Library.Region
 
   @doc """
@@ -485,7 +375,7 @@ defmodule VisualGarden.Library do
       ** (Ecto.NoResultsError)
 
   """
-  def get_library_seed!(id), do: Repo.get!(LibrarySeed, id)
+  def get_library_seed!(id), do: Repo.get!(LibrarySeed, id) |> Repo.preload([:species])
 
   @doc """
   Creates a library_seed.

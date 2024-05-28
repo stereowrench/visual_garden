@@ -61,13 +61,14 @@ defmodule VisualGarden.MixProject do
       {:dns_cluster, "~> 0.1.1"},
       {:bandit, "~> 1.2"},
       {:flashy, "~> 0.2.5"},
-      {:petal_components, "~> 1.9.2"},
+      {:petal_components, "~> 1.9.3"},
       {:timex, "~> 3.7"},
       {:live_select, "~> 1.0"},
       {:earmark, "~> 1.4"},
       {:seqfuzz, "~> 0.2.0"},
       {:sentry, "~> 10.0"},
-      {:hackney, "~> 1.19"}
+      {:hackney, "~> 1.19"},
+      {:site_encrypt, "~> 0.6"}
     ]
   end
 
