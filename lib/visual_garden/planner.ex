@@ -221,7 +221,7 @@ defmodule VisualGarden.Planner do
   defp map_species_to_schedules(schedules_map, species) do
     collected =
       species
-      |> Enum.group_by(fn s -> {s.id, {s.genus, s.name, s.variant, s.cultivar}} end)
+      |> Enum.group_by(fn s -> {s.id, {s.genus, s.name, s.variant, s.season, s.cultivar}} end)
       |> Enum.map(fn {{id, key}, _group} -> {key, schedules_map[id]} end)
       |> Enum.into(%{})
 
@@ -234,12 +234,18 @@ defmodule VisualGarden.Planner do
 
   def species_bubble(
         collected,
-        species = %{genus: genus, name: name, variant: variant, cultivar: cultivar}
+        species = %{
+          genus: genus,
+          name: name,
+          variant: variant,
+          cultivar: cultivar,
+          season: season
+        }
       ) do
-    # dbg(collected)
-    with nil <- collected[{genus, name, variant, cultivar}],
-         nil <- collected[{genus, name, variant, nil}],
-         nil <- collected[{genus, name, nil, nil}] do
+    with nil <- collected[{genus, name, variant, season, cultivar}],
+         nil <- collected[{genus, name, variant, season, nil}],
+         nil <- collected[{genus, name, variant, nil, nil}],
+         nil <- collected[{genus, name, nil, nil, nil}] do
       nil
     else
       map -> {species.id, map}
