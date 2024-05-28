@@ -95,6 +95,7 @@ defmodule VisualGardenWeb.PlantLive.FormComponent do
   @impl true
   def update(assigns, socket) do
     Authorization.authorize_garden_modify(assigns.garden.id, assigns.current_user)
+
     plant =
       case assigns[:plant] do
         nil -> %Plant{}

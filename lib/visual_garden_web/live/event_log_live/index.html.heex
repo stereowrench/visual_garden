@@ -19,7 +19,9 @@
   <:col :let={{_id, event_log}} label="Mow depth in"><%= event_log.mow_depth_in %></:col>
   <:col :let={{_id, event_log}} label="Tilled"><%= event_log.tilled %></:col>
   <:col :let={{_id, event_log}} label="Till depth in"><%= event_log.till_depth_in %></:col>
-  <:col :let={{_id, event_log}} label="Transferred amount"><%= event_log.transferred_amount %></:col>
+  <:col :let={{_id, event_log}} label="Transferred amount">
+    <%= event_log.transferred_amount %>
+  </:col>
   <:col :let={{_id, event_log}} label="Trimmed"><%= event_log.trimmed %></:col>
   <:col :let={{_id, event_log}} label="Transfer units"><%= event_log.transfer_units %></:col>
   <:action :let={{_id, event_log}}>

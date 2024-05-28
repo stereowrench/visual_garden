@@ -30,7 +30,7 @@ defmodule VisualGardenWeb.ConnCase do
       import VisualGardenWeb.ConnCase
 
       def unwrap_flash(flash) do
-        [key = ("flashy-" <> _rest)|_] = Map.keys(flash)
+        [key = "flashy-" <> _rest | _] = Map.keys(flash)
         flash[key].message
       end
     end

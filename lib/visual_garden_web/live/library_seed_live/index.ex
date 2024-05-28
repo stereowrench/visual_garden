@@ -41,15 +41,16 @@ defmodule VisualGardenWeb.LibrarySeedLive.Index do
       |> put_notification(Normal.new(:warning, "Seed already in garden"))
       |> push_patch(to: ~p"/library_seeds")
     else
-      {:ok, _} = Gardens.create_seed(%{
-        garden_id: socket.assigns.garden.id,
-        name: "#{lseed.name} - #{lseed.species.name} - #{lseed.manufacturer}",
-        description: "A seed from #{lseed.manufacturer}",
-        days_to_maturation: lseed.days_to_maturation,
-        species_id: lseed.species_id,
-        type: lseed.type,
-        library_seed_id: lseed.id
-      })
+      {:ok, _} =
+        Gardens.create_seed(%{
+          garden_id: socket.assigns.garden.id,
+          name: "#{lseed.name} - #{lseed.species.name} - #{lseed.manufacturer}",
+          description: "A seed from #{lseed.manufacturer}",
+          days_to_maturation: lseed.days_to_maturation,
+          species_id: lseed.species_id,
+          type: lseed.type,
+          library_seed_id: lseed.id
+        })
 
       socket
       |> put_notification(Normal.new(:success, "Added seed to garden!"))

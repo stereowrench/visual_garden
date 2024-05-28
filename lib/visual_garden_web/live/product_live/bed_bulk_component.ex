@@ -49,7 +49,11 @@ defmodule VisualGardenWeb.ProductLive.BedBulkComponent do
   end
 
   def handle_event("save", %{"Square" => squares}, socket) do
-    Authorization.authorize_garden_modify(socket.assigns.bed.garden_id, socket.assigns.current_user)
+    Authorization.authorize_garden_modify(
+      socket.assigns.bed.garden_id,
+      socket.assigns.current_user
+    )
+
     case socket.assigns.action do
       :bulk_weed ->
         Gardens.create_event_logs("weed", squares, socket.assigns.bed)

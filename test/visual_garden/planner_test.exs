@@ -457,7 +457,14 @@ defmodule VisualGarden.PlannerTest do
           Timex.shift(nursery_entry.sow_date, days: seed.days_to_maturation + 20)
         )
 
-      Planner.create_planner_entry_for_orphaned_nursery(nursery_entry, garden, r, c, bid, refuse_date)
+      Planner.create_planner_entry_for_orphaned_nursery(
+        nursery_entry,
+        garden,
+        r,
+        c,
+        bid,
+        refuse_date
+      )
     end
   end
 end

@@ -108,8 +108,15 @@ defmodule VisualGardenWeb.PlantLiveTest do
   describe "Show" do
     setup [:create_plant]
 
-    test "displays plant", %{conn: conn, plant: plant, garden: garden, product: product, user: user} do
+    test "displays plant", %{
+      conn: conn,
+      plant: plant,
+      garden: garden,
+      product: product,
+      user: user
+    } do
       conn = log_in_user(conn, user)
+
       {:ok, _show_live, html} =
         live(conn, ~p"/gardens/#{garden.id}/beds/#{product.id}/plants/#{plant}")
 
@@ -124,6 +131,7 @@ defmodule VisualGardenWeb.PlantLiveTest do
       user: user
     } do
       conn = log_in_user(conn, user)
+
       {:ok, show_live, _html} =
         live(conn, ~p"/gardens/#{garden.id}/beds/#{product.id}/plants/#{plant}")
 

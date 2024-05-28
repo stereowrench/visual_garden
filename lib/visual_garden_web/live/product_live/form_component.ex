@@ -75,8 +75,14 @@ defmodule VisualGardenWeb.ProductLive.FormComponent do
 
         {:noreply,
          socket
-         |> put_notification(Normal.new(:info, "Products updated successfully", Flashy.Normal.Options.new(dismiss_time: :timer.seconds(10))))
-        #  |> put_notification(Normal.new(:info, "Products updated successfully"))
+         |> put_notification(
+           Normal.new(
+             :info,
+             "Products updated successfully",
+             Flashy.Normal.Options.new(dismiss_time: :timer.seconds(10))
+           )
+         )
+         #  |> put_notification(Normal.new(:info, "Products updated successfully"))
          |> push_patch(to: socket.assigns.patch)}
 
       {:error, %Ecto.Changeset{} = changeset} ->

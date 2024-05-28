@@ -119,13 +119,13 @@ defmodule VisualGarden.Gardens.EventLog do
       :event_type,
       :product_id,
       :plant_id,
-      :event_time,
+      :event_time
     ])
     |> validate_required([
       :product_id,
       :plant_id,
       :event_type,
-      :event_time,
+      :event_time
     ])
     |> validate_inclusion(:event_type, [:plant])
   end
