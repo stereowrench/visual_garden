@@ -18,7 +18,15 @@ defmodule VisualGarden.Gardens.Seed do
   @doc false
   def changeset(seed, attrs) do
     seed
-    |> cast(attrs, [:library_seed_id, :type, :name, :description, :garden_id, :days_to_maturation, :species_id])
+    |> cast(attrs, [
+      :library_seed_id,
+      :type,
+      :name,
+      :description,
+      :garden_id,
+      :days_to_maturation,
+      :species_id
+    ])
     |> validate_required([
       :type,
       :name,

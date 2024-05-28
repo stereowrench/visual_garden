@@ -580,6 +580,5 @@ defmodule VisualGarden.GardensTest do
   end
 
   describe "refuse and concurrency" do
-
   end
 end

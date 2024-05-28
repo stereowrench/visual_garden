@@ -1,5 +1,4 @@
 defmodule VisualGardenWeb.GardenLive.CollabComponent do
-  alias Swoosh.Email
   alias VisualGarden.Authorization
   alias VisualGarden.Accounts
   use VisualGardenWeb, :live_component

@@ -1,9 +1,7 @@
 defmodule VisualGardenWeb.HomeLive.Show do
-  alias VisualGarden.Gardens.Garden
   alias VisualGarden.MyDateTime
   alias VisualGarden.Gardens
   alias VisualGarden.Repo
-  alias VisualGarden.Gardens.Plant
   alias VisualGarden.Planner
   use VisualGardenWeb, :live_view
 
@@ -22,7 +20,7 @@ defmodule VisualGardenWeb.HomeLive.Show do
   end
 
   @impl true
-  def handle_params(params, _, socket) do
+  def handle_params(_params, _, socket) do
     {:noreply,
      socket
      |> assign_assigns()

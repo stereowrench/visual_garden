@@ -12,8 +12,7 @@ defmodule VisualGarden.Gardens.Garden do
     belongs_to :owner, VisualGarden.Accounts.User
     field :visibility, Ecto.Enum, values: [:public, :private], default: :private
 
-    many_to_many :users, VisualGarden.Accounts.User,
-      join_through: VisualGarden.Gardens.GardenUser
+    many_to_many :users, VisualGarden.Accounts.User, join_through: VisualGarden.Gardens.GardenUser
 
     timestamps(type: :utc_datetime)
   end

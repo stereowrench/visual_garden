@@ -1,4 +1,4 @@
-<.live_component module={VisualGardenWeb.NavBarLibrary} id="navbar" current={"Schedules"} />
+<.live_component module={VisualGardenWeb.NavBarLibrary} id="navbar" current="Schedules" />
 <.header>
   Schedule <%= @schedule.id %>
   <:subtitle>This is a schedule record from your database.</:subtitle>
@@ -19,7 +19,12 @@
 
 <.back navigate={~p"/schedules"}>Back to schedules</.back>
 
-<.modal :if={@live_action == :edit} id="schedule-modal" show on_cancel={JS.patch(~p"/schedules/#{@schedule}")}>
+<.modal
+  :if={@live_action == :edit}
+  id="schedule-modal"
+  show
+  on_cancel={JS.patch(~p"/schedules/#{@schedule}")}
+>
   <.live_component
     module={VisualGardenWeb.ScheduleLive.FormComponent}
     id={@schedule.id}

@@ -30,7 +30,7 @@ defmodule VisualGardenWeb.PlannerLive.Show do
     beds = socket.assigns.beds
     species = VisualGarden.Library.list_species()
 
-    species_names =
+    _species_names =
       VisualGarden.Library.list_species_with_common_names()
 
     schedules_map = Planner.schedules_map(socket.assigns.garden.region_id)

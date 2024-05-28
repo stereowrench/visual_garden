@@ -1,4 +1,4 @@
-<.live_component module={VisualGardenWeb.NavBarLibrary} id="navbar" current={"Plantables"} />
+<.live_component module={VisualGardenWeb.NavBarLibrary} id="navbar" current="Plantables" />
 <.header>
   Library seed <%= @library_seed.id %>
   <:subtitle>This is a library_seed record from your database.</:subtitle>
@@ -17,7 +17,12 @@
 
 <.back navigate={~p"/library_seeds"}>Back to library_seeds</.back>
 
-<.modal :if={@live_action == :edit} id="library_seed-modal" show on_cancel={JS.patch(~p"/library_seeds/#{@library_seed}")}>
+<.modal
+  :if={@live_action == :edit}
+  id="library_seed-modal"
+  show
+  on_cancel={JS.patch(~p"/library_seeds/#{@library_seed}")}
+>
   <.live_component
     module={VisualGardenWeb.LibrarySeedLive.FormComponent}
     id={@library_seed.id}

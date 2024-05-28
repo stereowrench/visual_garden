@@ -41,6 +41,12 @@ defmodule VisualGardenWeb.GardenLive.Show do
     {:noreply, assign_plants(socket)}
   end
 
+  def handle_info({VisualGardenWeb.GardenLive.CollabComponent, {:saved, _}}, socket) do
+    {:noreply,
+     socket
+     |> assign(:users, Gardens.list_garden_users(socket.assigns.garden))}
+  end
+
   defp assign_plants(socket) do
     plants = Gardens.list_plants(socket.assigns.garden.id)
 
@@ -63,13 +69,6 @@ defmodule VisualGardenWeb.GardenLive.Show do
       Gardens.delete_garden_user(gu)
     end
 
-    {:noreply,
-     socket
-     |> assign(:users, Gardens.list_garden_users(socket.assigns.garden))}
-  end
-
-  @impl true
-  def handle_info({VisualGardenWeb.GardenLive.CollabComponent, {:saved, _}}, socket) do
     {:noreply,
      socket
      |> assign(:users, Gardens.list_garden_users(socket.assigns.garden))}

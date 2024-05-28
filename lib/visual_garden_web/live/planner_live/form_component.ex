@@ -138,7 +138,7 @@ defmodule VisualGardenWeb.PlannerLive.FormComponent do
     """
   end
 
-  def get_start_refuse_date(epd, nursery_end, days, pm) do
+  def get_start_refuse_date(epd, nursery_end, days, _pm) do
     if epd == nil do
       Timex.shift(nursery_end, days: days)
     else
@@ -387,7 +387,7 @@ defmodule VisualGardenWeb.PlannerLive.FormComponent do
               notify_parent({:saved, planner_entry})
               :ok
 
-            {:error, %Ecto.Changeset{} = changeset} ->
+            {:error, %Ecto.Changeset{} = _changeset} ->
               VisualGarden.Repo.rollback(:error)
           end
         end

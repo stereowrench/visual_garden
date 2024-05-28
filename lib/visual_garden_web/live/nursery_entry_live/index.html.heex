@@ -12,7 +12,11 @@
 <.table
   id="nursery_entries"
   rows={@streams.nursery_entries}
-  row_click={fn {_id, nursery_entry} -> JS.navigate(~p"/gardens/#{@garden.id}/nursery_entries/#{nursery_entry}") end}
+  row_click={
+    fn {_id, nursery_entry} ->
+      JS.navigate(~p"/gardens/#{@garden.id}/nursery_entries/#{nursery_entry}")
+    end
+  }
 >
   <:col :let={{_id, nursery_entry}} label="Sow date"><%= nursery_entry.sow_date %></:col>
   <:action :let={{_id, nursery_entry}}>

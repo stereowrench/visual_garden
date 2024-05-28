@@ -16,7 +16,7 @@ defmodule VisualGarden.GardensFixtures do
         do: region,
         else: LibraryFixtures.region_fixture(%{name: "garden region#{System.unique_integer()}"})
 
-      user = AccountsFixtures.user_fixture()
+    user = AccountsFixtures.user_fixture()
 
     {:ok, garden} =
       attrs

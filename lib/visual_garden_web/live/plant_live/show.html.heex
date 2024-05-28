@@ -1,4 +1,4 @@
-<.live_component module={VisualGardenWeb.NavBar} id="navbar" garden={@garden} current={"Plants"} />
+<.live_component module={VisualGardenWeb.NavBar} id="navbar" garden={@garden} current="Plants" />
 
 <.header>
   Plant <%= @plant.id %>
@@ -19,7 +19,7 @@
 
 <.back navigate={~p"/gardens/#{@garden.id}/products/#{@product.id}"}>Back to bed</.back>
 
-<VisualGardenWeb.EventLogLive.Show.render_events events={@events} garden={@garden} bed={@product}/>
+<VisualGardenWeb.EventLogLive.Show.render_events events={@events} garden={@garden} bed={@product} />
 
 <.modal
   :if={@live_action == :edit}
