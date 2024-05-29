@@ -8,7 +8,8 @@ defmodule VisualGardenWeb.DisplayHelpers do
       variant: species.variant,
       name: species.name,
       cultivar: species.cultivar,
-      common_name: species.common_name
+      common_name: species.common_name,
+      season: species.season
     }
 
     var_str =
@@ -29,8 +30,15 @@ defmodule VisualGardenWeb.DisplayHelpers do
         cn -> " (#{cn})"
       end
 
+    season_str =
+      case assigns.season do
+        nil -> ""
+        cn -> "[#{cn}] "
+      end
+
     assigns = put_in(assigns[:var_str], var_str)
     assigns = put_in(assigns[:cultivar_str], cultivar_str)
+    assigns = put_in(assigns[:season_str], season_str)
     put_in(assigns[:common_str], common_str)
   end
 
@@ -39,7 +47,7 @@ defmodule VisualGardenWeb.DisplayHelpers do
     assigns = species_assigns(species)
 
     ~H"""
-    <i><%= @genus %> <%= @name %> <%= @var_str %></i> <%= @cultivar_str %> <%= @common_str %>
+    <%= @season_str %><i><%= @genus %> <%= @name %> <%= @var_str %></i> <%= @cultivar_str %> <%= @common_str %>
     """
   end
 
@@ -54,7 +62,7 @@ defmodule VisualGardenWeb.DisplayHelpers do
     assigns = species_assigns(species)
 
     """
-    #{assigns.genus} #{assigns.name}#{assigns.var_str}#{assigns.cultivar_str}#{assigns.common_str}
+    #{assigns.season_str} #{assigns.genus} #{assigns.name}#{assigns.var_str}#{assigns.cultivar_str}#{assigns.common_str}
     """
   end
 

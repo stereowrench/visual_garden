@@ -1,6 +1,6 @@
 <.live_component module={VisualGardenWeb.NavBarLibrary} id="navbar" current="Regions" />
 <.header>
-  Region <%= @region.id %>
+  Region <%= @region.name %>
   <:subtitle>This is a region record from your database.</:subtitle>
   <:actions :if={@can_modify?}>
     <.link patch={~p"/regions/#{@region}/show/edit"} phx-click={JS.push_focus()}>
@@ -12,6 +12,20 @@
 <.list>
   <:item title="Name"><%= @region.name %></:item>
 </.list>
+
+<h3>Schedule Graphic</h3>
+<svg viewBox={"0 0 730 #{60 * (length(@schedules))}"} xmlns="http://www.w3.org/2000/svg">
+  <%= for {{sp, dates}, idx} <- Enum.with_index(@schedules) do %>
+    <.rect_for dates={dates} idx={idx} species={sp} />
+  <% end %>
+  <line
+    x1={Timex.diff(VisualGarden.MyDateTime.utc_now(), Date.new!(2024, 1, 1), :days) * 2}
+    y1={0}
+    x2={Timex.diff(VisualGarden.MyDateTime.utc_now(), Date.new!(2024, 1, 1), :days) * 2}
+    y2={60 * length(@schedules)}
+    stroke="blue"
+  />
+</svg>
 
 <.back navigate={~p"/regions"}>Back to regions</.back>
 

@@ -281,6 +281,10 @@ defmodule VisualGarden.Library do
     Repo.all(Schedule) |> Repo.preload([:region, :species])
   end
 
+  def list_schedules(region_id) do
+    Repo.all(from s in Schedule, where: s.region_id == ^region_id, preload: [:region, :species])
+  end
+
   @doc """
   Gets a single schedule.
 
