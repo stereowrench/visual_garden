@@ -36,9 +36,10 @@ defmodule VisualGardenWeb.LibrarySeedLive.FormComponent do
           label="Species"
           phx-target={@myself}
           options={@species}
+          value_mapper={&to_string(&1)}
         >
           <:option :let={opt}>
-            <.highlight matches={@highlights[opt.label]} string={opt.label} />
+            <.highlight matches={opt.matches} string={opt.label} />
           </:option>
         </.live_select>
         <:actions>
@@ -59,13 +60,12 @@ defmodule VisualGardenWeb.LibrarySeedLive.FormComponent do
 
     species =
       Library.list_common_species()
-      |> Enum.map(&%{label: &1.common_name, value: &1.id})
+      |> Enum.map(&%{label: &1.common_name, value: to_string(&1.id), matches: []})
 
     {:ok,
      socket
      |> assign(assigns)
      |> assign(:species, species)
-     |> assign(:highlights, %{})
      |> assign_form(changeset)}
   end
 
@@ -88,16 +88,16 @@ defmodule VisualGardenWeb.LibrarySeedLive.FormComponent do
     matches =
       Seqfuzz.matches(socket.assigns.species, text, & &1.label, filter: true, sort: true)
 
-    opts = Enum.map(matches, fn {m, _} -> m end) |> Enum.take(10)
-
-    highlights =
+    opts =
       matches
-      |> Enum.map(fn {species, c} -> {species.label, c.matches} end)
+      |> Enum.map(fn {species, c} ->
+        %{value: species.value, label: species.label, matches: c.matches}
+      end)
       |> Enum.take(10)
       |> Enum.into(%{})
 
     send_update(LiveSelect.Component, id: live_select_id, options: opts)
-    {:noreply, assign(socket, :highlights, highlights)}
+    {:noreply, socket}
   end
 
   defp save_library_seed(socket, :edit, library_seed_params) do
