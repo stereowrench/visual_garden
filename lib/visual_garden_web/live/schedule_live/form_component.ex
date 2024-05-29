@@ -36,6 +36,12 @@ defmodule VisualGardenWeb.ScheduleLive.FormComponent do
             <.highlight matches={opt.matches} string={opt.label} />
           </:option>
         </.live_select>
+        <.input field={@form[:label]} type="text" label="Label" />
+        <PC.field
+          field={@form[:plantable_types]}
+          type="checkbox-group"
+          options={[{"Transplant", "transplant"}, {"Seed", "seed"}, {"Slip", "slip"}, ["Set", "set"]]}
+        />
         <.input field={@form[:start_month]} type="number" label="Start month" />
         <.input field={@form[:start_day]} type="number" label="Start day" />
         <.input field={@form[:end_month]} type="number" label="End month" />
