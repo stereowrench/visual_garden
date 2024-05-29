@@ -12,6 +12,8 @@ defmodule VisualGarden.Library.Schedule do
     field :nursery_lead_weeks_min, :integer
     field :nursery_lead_weeks_max, :integer
 
+    field :plantable_types, {:array, :string}
+
     belongs_to :region, VisualGarden.Library.Region
     belongs_to :species, VisualGarden.Library.Species
 
@@ -24,6 +26,7 @@ defmodule VisualGarden.Library.Schedule do
     |> cast(attrs, [
       :start_month,
       :label,
+      :plantable_types,
       :start_day,
       :end_month,
       :end_day,
@@ -33,6 +36,7 @@ defmodule VisualGarden.Library.Schedule do
       :nursery_lead_weeks_max
     ])
     |> validate_required([:start_month, :start_day, :end_month, :end_day, :region_id, :species_id])
+    |> validate_subset(:plantable_types, ["transplant", "seed", "slip", "set"])
     |> add_end_month_adjusted()
   end
 
