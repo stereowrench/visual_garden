@@ -41,7 +41,9 @@ defmodule VisualGardenWeb.UserRegistrationLive do
         />
 
         <:actions>
-          <.button phx-disable-with="Creating account..." class="w-full">Create an account</.button>
+          <.button phx-disable-with="Creating account..." class="w-full" color="eagle">
+            Create an account
+          </.button>
         </:actions>
       </.simple_form>
     </div>

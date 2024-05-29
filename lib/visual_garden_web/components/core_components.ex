@@ -222,6 +222,7 @@ defmodule VisualGardenWeb.CoreComponents do
   """
   attr :type, :string, default: nil
   attr :class, :string, default: nil
+  attr :color, :string, default: "mojo", values: ~w(mojo eagle)
   attr :rest, :global, include: ~w(disabled form name value)
 
   slot :inner_block, required: true
@@ -231,8 +232,9 @@ defmodule VisualGardenWeb.CoreComponents do
     <button
       type={@type}
       class={[
-        "phx-submit-loading:opacity-75 rounded-lg bg-mojo-900 hover:bg-mojo-700 py-2 px-3",
-        "text-sm font-semibold leading-6 text-mojo-50 active:text-mojo/80",
+        "phx-submit-loading:opacity-75 rounded-lg py-2 px-3",
+        "text-sm font-semibold leading-6 active:text-white/80",
+        button_color(@color),
         @class
       ]}
       {@rest}
@@ -241,6 +243,9 @@ defmodule VisualGardenWeb.CoreComponents do
     </button>
     """
   end
+
+  defp button_color("mojo"), do: "bg-mojo-900 hover:bg-mojo-700 text-mojo-50"
+  defp button_color("eagle"), do: "bg-eagle-700 hover:bg-eagle-400 text-eagle-50"
 
   @doc """
   Renders an input with label and error messages.
