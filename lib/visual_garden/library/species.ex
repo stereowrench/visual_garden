@@ -9,6 +9,7 @@ defmodule VisualGarden.Library.Species do
     field :genus, :string
     field :variant, :string
     field :season, :string
+    field :uuid, Ecto.UUID
 
     has_many :schedules, VisualGarden.Library.Schedule
 
@@ -18,7 +19,7 @@ defmodule VisualGarden.Library.Species do
   @doc false
   def changeset(species, attrs) do
     species
-    |> cast(attrs, [:name, :genus, :variant, :cultivar, :common_name, :season])
+    |> cast(attrs, [:uuid, :name, :genus, :variant, :cultivar, :common_name, :season])
     |> validate_required([:name, :genus])
     |> unique_constraint([:name, :genus, :variant, :cultivar, :season], name: "unique_species")
     |> unique_constraint([:common_name])
