@@ -22,7 +22,21 @@
       fill="url(#0787a7c5-978c-4f66-83c7-11c213f99cb7)"
     />
   </svg>
-  <div class="mx-auto max-w-7xl px-6 pb-24 pt-10 sm:pb-32 lg:flex lg:px-8 lg:py-40">
+  <div class="mx-auto max-w-7xl px-6 mt-10 flex items-center gap-x-6">
+    <.link
+      class="rounded-md bg-mojo-900/5 ring-1 ring-inset ring-mojo-900/10 px-3.5 py-2.5 text-sm font-semibold text-mojo-600 shadow-md hover:shadow-sm hover:text-mojo-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mojo-600"
+      navigate={~p"/users/log_in"}
+    >
+      Login
+    </.link>
+    <.link
+      class="rounded-md bg-mojo-900/5 ring-1 ring-inset ring-mojo-900/10 px-3.5 py-2.5 text-sm font-semibold text-mojo-600 shadow-md hover:shadow-sm hover:text-mojo-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mojo-600"
+      navigate={~p"/users/register"}
+    >
+      Register
+    </.link>
+  </div>
+  <div class="mx-auto max-w-7xl px-6 pb-24 pt-10 sm:pb-32 lg:flex lg:px-8 lg:py-24">
     <div class="mx-auto max-w-2xl lg:mx-0 lg:max-w-xl lg:flex-shrink-0 lg:pt-8">
       <div class="flex items-center gap-4">
         <img class="h-16 w-auto" src={~p"/images/logo.jpeg"} alt="StereoWrench VisualGarden" />
