@@ -59,7 +59,10 @@ defmodule VisualGarden.GardensFixtures do
   Generate a seed.
   """
   def seed_fixture(attrs \\ %{}, garden \\ nil) do
-    species = LibraryFixtures.species_fixture(%{common_name: "cn#{System.unique_integer()}"})
+    species =
+      LibraryFixtures.species_fixture(%{
+        common_name: "cn#{System.unique_integer()}"
+      })
 
     garden =
       if garden == nil do

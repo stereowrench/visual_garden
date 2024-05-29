@@ -303,89 +303,35 @@ defmodule VisualGarden.Planner do
       species = species_map[seed.species_id]
 
       for schedule <- schedules_map[seed.species_id] || [] do
-        {sched_start, sched_end} =
-          unwrwap_dates(
-            schedule.start_month,
-            schedule.start_day,
-            schedule.end_month,
-            schedule.end_day,
-            today
-          )
+        if to_string(seed.type) in (schedule.plantable_types || [])do
+          {sched_start, sched_end} =
+            unwrwap_dates(
+              schedule.start_month,
+              schedule.start_day,
+              schedule.end_month,
+              schedule.end_day,
+              today
+            )
 
-        days = seed.days_to_maturation
+          days = seed.days_to_maturation
 
-        a = Timex.shift(sched_start, days: days)
-        b = Timex.shift(sched_end, days: days)
-        a = clamp_date(start_date, end_date, a)
-        b = clamp_date(start_date, end_date, b)
+          a = Timex.shift(sched_start, days: days)
+          b = Timex.shift(sched_end, days: days)
+          a = clamp_date(start_date, end_date, a)
+          b = clamp_date(start_date, end_date, b)
 
-        direct =
-          if Timex.diff(b, a, :days) < 14 do
-            []
-          else
-            sow_start = Timex.shift(a, days: -days)
-            sow_end = Timex.shift(b, days: -days)
-
-            sow_start = clamp_date(start_date, end_date, sow_start)
-            sow_end = clamp_date(start_date, end_date, sow_end)
-
-            %{
-              type: seed.type,
-              sow_start: sow_start,
-              sow_end: sow_end,
-              days: days,
-              seed: seed,
-              species: species,
-              schedule: schedule,
-              common_name: species_name_map[seed.species_id]
-            }
-          end
-
-        if schedule.nursery_lead_weeks_max && schedule.nursery_lead_weeks_min &&
-             seed.type == :seed do
-          clamped_start = clamp_date(start_date, end_date, sched_start)
-          clamped_end = clamp_date(start_date, end_date, sched_end)
-
-          if Timex.diff(clamped_end, clamped_start, :days) < 14 do
-            [direct]
-          else
-            # the latest nursery date is sow_end - days to maturation, clamped to start/end
-            # the first nursery date is sow_start - 7 * lead_weeks_max, clamped to start/end
-            # sow_end doesn't change
-            # sow_start becomes clamped nursery start + 7 * lead_weeks_min, clamped to start/end
-            sow_start = Timex.shift(a, days: -days)
-            sow_end = Timex.shift(b, days: -days)
-
-            nursery_end =
-              clamp_date(
-                start_date,
-                end_date,
-                Timex.shift(sow_end, weeks: -schedule.nursery_lead_weeks_min)
-              )
-
-            nursery_start =
-              clamp_date(
-                start_date,
-                end_date,
-                Timex.shift(sow_start, weeks: -schedule.nursery_lead_weeks_max)
-              )
-
-            sow_start =
-              clamp_date(
-                start_date,
-                end_date,
-                Timex.shift(nursery_start, weeks: schedule.nursery_lead_weeks_min)
-              )
-
-            if Timex.diff(nursery_end, nursery_start, :days) < 1 do
-              [direct]
+          direct =
+            if Timex.diff(b, a, :days) < 14 do
+              []
             else
-              nursery = %{
-                type: "nursery",
-                nursery_start: nursery_start,
-                nursery_end: nursery_end,
-                min_lead: schedule.nursery_lead_weeks_min,
-                max_lead: schedule.nursery_lead_weeks_max,
+              sow_start = Timex.shift(a, days: -days)
+              sow_end = Timex.shift(b, days: -days)
+
+              sow_start = clamp_date(start_date, end_date, sow_start)
+              sow_end = clamp_date(start_date, end_date, sow_end)
+
+              %{
+                type: seed.type,
                 sow_start: sow_start,
                 sow_end: sow_end,
                 days: days,
@@ -394,12 +340,70 @@ defmodule VisualGarden.Planner do
                 schedule: schedule,
                 common_name: species_name_map[seed.species_id]
               }
-
-              [direct, nursery]
             end
+
+          if schedule.nursery_lead_weeks_max && schedule.nursery_lead_weeks_min &&
+               seed.type == :seed do
+            clamped_start = clamp_date(start_date, end_date, sched_start)
+            clamped_end = clamp_date(start_date, end_date, sched_end)
+
+            if Timex.diff(clamped_end, clamped_start, :days) < 14 do
+              [direct]
+            else
+              # the latest nursery date is sow_end - days to maturation, clamped to start/end
+              # the first nursery date is sow_start - 7 * lead_weeks_max, clamped to start/end
+              # sow_end doesn't change
+              # sow_start becomes clamped nursery start + 7 * lead_weeks_min, clamped to start/end
+              sow_start = Timex.shift(a, days: -days)
+              sow_end = Timex.shift(b, days: -days)
+
+              nursery_end =
+                clamp_date(
+                  start_date,
+                  end_date,
+                  Timex.shift(sow_end, weeks: -schedule.nursery_lead_weeks_min)
+                )
+
+              nursery_start =
+                clamp_date(
+                  start_date,
+                  end_date,
+                  Timex.shift(sow_start, weeks: -schedule.nursery_lead_weeks_max)
+                )
+
+              sow_start =
+                clamp_date(
+                  start_date,
+                  end_date,
+                  Timex.shift(nursery_start, weeks: schedule.nursery_lead_weeks_min)
+                )
+
+              if Timex.diff(nursery_end, nursery_start, :days) < 1 do
+                [direct]
+              else
+                nursery = %{
+                  type: "nursery",
+                  nursery_start: nursery_start,
+                  nursery_end: nursery_end,
+                  min_lead: schedule.nursery_lead_weeks_min,
+                  max_lead: schedule.nursery_lead_weeks_max,
+                  sow_start: sow_start,
+                  sow_end: sow_end,
+                  days: days,
+                  seed: seed,
+                  species: species,
+                  schedule: schedule,
+                  common_name: species_name_map[seed.species_id]
+                }
+
+                [direct, nursery]
+              end
+            end
+          else
+            [direct]
           end
         else
-          [direct]
+          []
         end
       end
     end

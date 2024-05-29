@@ -45,7 +45,8 @@ defmodule VisualGarden.PlannerTest do
           start_month: 7,
           start_day: 1,
           end_month: 1,
-          end_day: 1
+          end_day: 1,
+          plantable_types: ["seed"]
         })
 
       schedule2 =
@@ -58,7 +59,8 @@ defmodule VisualGarden.PlannerTest do
           end_month: 6,
           end_day: 1,
           nursery_lead_weeks_max: 4,
-          nursery_lead_weeks_min: 2
+          nursery_lead_weeks_min: 2,
+          plantable_types: ["seed"]
         })
 
       today = ~D[2024-06-06]
@@ -110,7 +112,8 @@ defmodule VisualGarden.PlannerTest do
           end_month: 6,
           end_day: 30,
           nursery_lead_weeks_max: 4,
-          nursery_lead_weeks_min: 1
+          nursery_lead_weeks_min: 1,
+          plantable_types: ["seed"]
         })
 
       today = ~D[2024-06-06]
