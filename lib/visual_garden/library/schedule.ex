@@ -36,7 +36,7 @@ defmodule VisualGarden.Library.Schedule do
       :nursery_lead_weeks_max
     ])
     |> validate_required([:start_month, :start_day, :end_month, :end_day, :region_id, :species_id])
-    |> validate_subset(:plantable_types, ["transplant", "seed", "slip", "set"])
+    |> validate_subset(:plantable_types, ["transplant", "seed", "slip", "set", "seed_potato"])
     |> add_end_month_adjusted()
   end
 

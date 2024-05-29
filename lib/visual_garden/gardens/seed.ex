@@ -5,7 +5,7 @@ defmodule VisualGarden.Gardens.Seed do
   schema "seeds" do
     field :name, :string
     field :description, :string
-    field :type, Ecto.Enum, values: [:seed, :set, :slip, :transplant]
+    field :type, Ecto.Enum, values: [:seed, :set, :slip, :transplant, :seed_potato]
     belongs_to :garden, VisualGarden.Gardens.Garden
     belongs_to :species, VisualGarden.Library.Species
     belongs_to :library_seed, VisualGarden.Library.LibrarySeed
