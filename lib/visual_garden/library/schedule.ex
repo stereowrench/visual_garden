@@ -3,6 +3,7 @@ defmodule VisualGarden.Library.Schedule do
   import Ecto.Changeset
 
   schema "schedules" do
+    field :label, :string
     field :start_month, :integer
     field :start_day, :integer
     field :end_month, :integer
@@ -22,6 +23,7 @@ defmodule VisualGarden.Library.Schedule do
     schedule
     |> cast(attrs, [
       :start_month,
+      :label,
       :start_day,
       :end_month,
       :end_day,
