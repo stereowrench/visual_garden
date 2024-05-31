@@ -1,4 +1,5 @@
 defmodule VisualGardenWeb.HomeLive.Show do
+  alias VisualGardenWeb.Tooltips
   alias VisualGarden.MyDateTime
   alias VisualGarden.Gardens
   alias VisualGarden.Repo
@@ -24,8 +25,8 @@ defmodule VisualGardenWeb.HomeLive.Show do
     {:noreply,
      socket
      |> assign_assigns()
-     |> assign(:page_tip, "Lorme ipsum")
-     |> assign(:page_tip_title, "Using the task list")
+     |> assign(:page_tip, Tooltips.home_content())
+     |> assign(:page_tip_title, Tooltips.home_title())
      |> assign(:page_title, page_title(socket.assigns.live_action))}
   end
 
