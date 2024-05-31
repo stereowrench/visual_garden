@@ -42,6 +42,7 @@ defmodule VisualGardenWeb.HomeLive.Show do
 
     socket
     |> assign(:todo_items, todo_items)
+    |> assign(:gardens, Gardens.list_gardens(socket.assigns.current_user))
     |> assign(:planner_entries, planner_entries)
   end
 
@@ -218,5 +219,10 @@ defmodule VisualGardenWeb.HomeLive.Show do
   end
 
   defp page_title(:show), do: "Show Nursery entry"
+  defp page_title(:new_garden), do: "New Garden"
   defp page_title(:orphaned_nursery), do: "Plant Orphaned Nursery"
+
+  def handle_info({VisualGardenWeb.GardenLive.FormComponent, {:saved, garden}}, socket) do
+    {:noreply, socket |> assign(:gardens, Gardens.list_garden_users(socket.assigns.current_user))}
+  end
 end

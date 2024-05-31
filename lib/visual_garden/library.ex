@@ -21,6 +21,10 @@ defmodule VisualGarden.Library do
     Repo.all(Species)
   end
 
+  def get_species_by_common_name(name) do
+    Repo.one(from s in Species, where: s.common_name == ^name)
+  end
+
   @common_name_cte """
   SELECT
   	species.id as species_id,

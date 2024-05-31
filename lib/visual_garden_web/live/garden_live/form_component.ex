@@ -21,7 +21,7 @@ defmodule VisualGardenWeb.GardenLive.FormComponent do
         phx-change="validate"
         phx-submit="save"
       >
-        <.input field={@form[:name]} label="Name" />
+        <.input field={@form[:name]} label="Name" autocomplete="off" />
         <.input
           field={@form[:visibility]}
           type="select"
