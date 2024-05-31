@@ -50,8 +50,8 @@ defmodule VisualGarden.Library.TemplateGardens do
           days_to_maturity: seed.days_to_maturation,
           days_to_refuse: seed.days_to_maturation + 30,
           common_name: "Tomatoes",
-          row: 1,
-          column: 1,
+          row: 0,
+          column: 0,
           bed_id: bed.id,
           seed_id: seed.id
         }
