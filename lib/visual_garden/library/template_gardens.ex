@@ -20,7 +20,8 @@ defmodule VisualGarden.Library.TemplateGardens do
     bed = %{
       length: 1,
       width: 1,
-      type: "bed"
+      type: "bed",
+      name: "My Tomato plant"
     }
 
     sched =
@@ -41,7 +42,7 @@ defmodule VisualGarden.Library.TemplateGardens do
     if execute do
       Repo.transaction(fn ->
         {:ok, seed} = Gardens.create_seed(seed)
-        {:ok, bed} = Gardens.create_product(bed)
+        {:ok, bed} = Gardens.create_product(bed, garden)
 
         planner_entry = %{
           start_plant_date: sched.sow_start,
@@ -51,8 +52,8 @@ defmodule VisualGarden.Library.TemplateGardens do
           common_name: "Tomatoes",
           row: 1,
           column: 1,
-          bed: bed.id,
-          seed: seed.id
+          bed_id: bed.id,
+          seed_id: seed.id
         }
 
         {:ok, _pe} =

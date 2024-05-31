@@ -1,4 +1,6 @@
 defmodule VisualGardenWeb.HomeLive.TemplatePlantComponent do
+  alias VisualGarden.Authorization
+  alias VisualGarden.Library.TemplateGardens
   alias VisualGarden.Gardens.Garden
   alias VisualGarden.Gardens
   use VisualGardenWeb, :live_component
@@ -7,6 +9,21 @@ defmodule VisualGardenWeb.HomeLive.TemplatePlantComponent do
     ~H"""
     <div>
       <%= if @gardens != [] do %>
+        <div class="prose">
+          <%= for garden <- @gardens do %>
+            <h3><%= garden.name %></h3>
+            <%= for {name, template} <- @templates[garden.id] do %>
+              <.link
+                class="underline"
+                phx-target={@myself}
+                phx-click={JS.push("template-#{name}", value: %{garden_id: garden.id})}
+                data-confirm="Are you sure?"
+              >
+                Schedule single tomato in container (<%= Timex.format!(template["start"], "{relative}", :relative) %>)
+              </.link>
+            <% end %>
+          <% end %>
+        </div>
       <% else %>
         <.link patch={~p"/home/new_garden"}>
           <.button>
@@ -33,10 +50,26 @@ defmodule VisualGardenWeb.HomeLive.TemplatePlantComponent do
     {:ok,
      socket
      |> assign(assigns)
-     |> assign(:gardens, Gardens.list_gardens(assigns.current_user))}
+     |> assign_templates()}
   end
 
-  def handle_info({VisualGardenWeb.GardenLive.FormComponent, {:saved, garden}}, socket) do
-    {:noreply, socket |> assign(:gardens, Gardens.list_garden_users(socket.assigns.current_user))}
+  def assign_templates(socket) do
+    templates =
+      for garden <- socket.assigns.gardens, into: %{} do
+        {garden.id, [{"single_tomato", TemplateGardens.single_tomato_plant_from_nursery(garden, false)}]}
+      end
+
+    assign(socket, templates: templates)
   end
+
+  def handle_event("template-single_tomato", %{"garden_id" => garden_id}, socket) do
+    Authorization.authorize_garden_modify(garden_id, socket.assigns.current_user)
+    garden = Gardens.get_garden!(garden_id)
+    TemplateGardens.single_tomato_plant_from_nursery(garden, true)
+    notify_parent(:refresh)
+
+    {:noreply, socket}
+  end
+
+  defp notify_parent(msg), do: send(self(), {__MODULE__, msg})
 end

@@ -222,7 +222,13 @@ defmodule VisualGardenWeb.HomeLive.Show do
   defp page_title(:new_garden), do: "New Garden"
   defp page_title(:orphaned_nursery), do: "Plant Orphaned Nursery"
 
+  @impl true
   def handle_info({VisualGardenWeb.GardenLive.FormComponent, {:saved, garden}}, socket) do
     {:noreply, socket |> assign(:gardens, Gardens.list_garden_users(socket.assigns.current_user))}
+  end
+
+  @impl true
+  def handle_info({VisualGardenWeb.HomeLive.TemplatePlantComponent, :refresh}, socket) do
+    {:noreply, assign_assigns(socket)}
   end
 end
