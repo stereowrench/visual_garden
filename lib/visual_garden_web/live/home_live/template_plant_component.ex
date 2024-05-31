@@ -13,14 +13,20 @@ defmodule VisualGardenWeb.HomeLive.TemplatePlantComponent do
           <%= for garden <- @gardens do %>
             <h3><%= garden.name %></h3>
             <%= for {name, template} <- @templates[garden.id] do %>
-              <.link
-                class="underline"
-                phx-target={@myself}
-                phx-click={JS.push("template-#{name}", value: %{garden_id: garden.id})}
-                data-confirm="Are you sure?"
-              >
-                Schedule single tomato in container (<%= Timex.format!(template["start"], "{relative}", :relative) %>)
-              </.link>
+              <%= unless template == nil do %>
+                <.link
+                  class="underline"
+                  phx-target={@myself}
+                  phx-click={JS.push("template-#{name}", value: %{garden_id: garden.id})}
+                  data-confirm="Are you sure?"
+                >
+                  Schedule single tomato in container (<%= Timex.format!(
+                    template["start"],
+                    "{relative}",
+                    :relative
+                  ) %>)
+                </.link>
+              <% end %>
             <% end %>
           <% end %>
         </div>
@@ -56,7 +62,8 @@ defmodule VisualGardenWeb.HomeLive.TemplatePlantComponent do
   def assign_templates(socket) do
     templates =
       for garden <- socket.assigns.gardens, into: %{} do
-        {garden.id, [{"single_tomato", TemplateGardens.single_tomato_plant_from_nursery(garden, false)}]}
+        {garden.id,
+         [{"single_tomato", TemplateGardens.single_tomato_plant_from_nursery(garden, false)}]}
       end
 
     assign(socket, templates: templates)
