@@ -96,7 +96,11 @@ defmodule VisualGardenWeb.HomeLive.Show do
   def render_orphaned_nursery(assigns) do
     ~H"""
     <div>
-      Orphaned Seedling <%= @item.name %>
+      <div class="border-b border-gray-200 bg-white px-4 py-5 sm:px-6">
+        <h3 class="text-base font-semibold leading-6 text-gray-900">
+          Orphaned Seedling <%= @item.name %>
+        </h3>
+      </div>
       <.link patch={~p"/home/orphaned_nursery/#{@item.nursery_entry_id}"} class="orphan-link">
         <.button>
           Plant orphan
@@ -157,17 +161,38 @@ defmodule VisualGardenWeb.HomeLive.Show do
 
     # IO.inspect(assigns.planner_entries[assigns.item.planner_entry_id])
     ~H"""
-    <div>
-      (<%= Timex.format(@item.date, "{relative}", :relative) |> elem(1) %>)
-      Plant <%= @entry.seed.name %> (<%= @remaining_days %> days left) in <%= @entry.bed.name %> (<%= @entry.row %>, <%= @entry.column %>)
-      <%= unless Timex.after?(@item.date, MyDateTime.utc_today) do %>
-        <.button
-          phx-click={JS.push("plant", value: %{planner_entry_id: @entry.id})}
-          data-confirm="Are you sure?"
-        >
-          Plant
-        </.button>
-      <% end %>
+    <div class="mt-6 border-t border-gray-100">
+      <div class="divide-y divide-gray-200 overflow-hidden rounded-lg bg-white shadow">
+        <div class="border-b border-gray-200 bg-white px-4 py-5 sm:px-6">
+          <h3 class="text-base font-semibold leading-6 text-gray-900">
+            Plant <%= @entry.common_name %>
+          </h3>
+        </div>
+        <dl>
+          <div class="dldiv">
+            <dt>When</dt>
+            <dd>
+              <%= Timex.format(@item.date, "{relative}", :relative) |> elem(1) %> (<%= @remaining_days %> days left)
+            </dd>
+          </div>
+          <div class="dldiv">
+            <dt>What</dt>
+            <dd><%= @entry.seed.name %></dd>
+          </div>
+          <div class="dldiv">
+            <dt>Where</dt>
+            <dd>(<%= @entry.row %>, <%= @entry.column %>) in <%= @entry.bed.name %> </dd>
+          </div>
+        </dl>
+        <%= unless Timex.after?(@item.date, MyDateTime.utc_today) do %>
+          <.button
+            phx-click={JS.push("plant", value: %{planner_entry_id: @entry.id})}
+            data-confirm="Are you sure?"
+          >
+            Plant
+          </.button>
+        <% end %>
+      </div>
     </div>
     """
   end
