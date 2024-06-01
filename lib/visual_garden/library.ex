@@ -4,6 +4,8 @@ defmodule VisualGarden.Library do
   """
 
   import Ecto.Query, warn: false
+  alias VisualGarden.MyDateTime
+  alias VisualGarden.Planner
   alias VisualGarden.Gardens.PlannerEntry
   alias VisualGarden.Library.Species
   alias VisualGarden.Repo
@@ -86,6 +88,36 @@ defmodule VisualGarden.Library do
     |> join(:inner, [s], q in "squery", on: s.id == q.species_id)
     |> select([s, q], {s, coalesce(q.n0, q.n1) |> coalesce(q.n2) |> coalesce(q.n3)})
     |> Repo.all()
+  end
+
+  def list_species_in_order(region_id) do
+    names = list_species_with_common_names() |> Enum.into(%{})
+    schedules = list_schedules(region_id)
+    today = MyDateTime.utc_today()
+
+    for schedule <- schedules do
+      {sd, ed} =
+        Planner.unwrwap_dates(
+          schedule.start_month,
+          schedule.start_day,
+          schedule.end_month,
+          schedule.end_day,
+          today
+        )
+
+      {sd, ed, schedule}
+    end
+    |> Enum.sort_by(&elem(&1, 0), Date)
+    |> Enum.map(fn {sd, _ed, schedule} ->
+      date_str = Timex.format!(sd, "{relative}", :relative)
+
+      %{
+        date_str: date_str,
+        species_name: names[schedule.species]
+      }
+    end)
+    |> Enum.group_by(& &1.date_str)
+    |> Enum.take(3)
   end
 
   @doc """

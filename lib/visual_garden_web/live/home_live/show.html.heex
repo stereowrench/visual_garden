@@ -11,6 +11,23 @@
   current_user={@current_user}
 />
 
+<%!-- Soon to be planted --%>
+<div class="prose">
+  <h2>What's coming up to grow?</h2>
+  <%= for {garden, soon_list} <- @species_in_order do %>
+    <h3><%= garden.name %> (<%= garden.region.name %>)</h3>
+    <ol>
+      <%= for {date_str, strs} <- soon_list do %>
+        <li>
+          (<%= date_str %>) <.render_species strs={strs} />
+        </li>
+      <% end %>
+    </ol>
+  <% end %>
+</div>
+
+<hr />
+
 <ul :for={item <- @todo_items} role="list" class="divide-y divide-gray-100">
   <li class="flex justify-between gap-x-6 py-5">
     <.render_todo_item item={item} planner_entries={@planner_entries} />

@@ -1,4 +1,5 @@
 defmodule VisualGardenWeb.HomeLive.Show do
+  alias VisualGarden.Library
   alias VisualGardenWeb.Tooltips
   alias VisualGarden.MyDateTime
   alias VisualGarden.Gardens
@@ -41,10 +42,45 @@ defmodule VisualGardenWeb.HomeLive.Show do
       |> Enum.map(fn {a, [b]} -> {a, b} end)
       |> Enum.into(%{})
 
+    species_in_order =
+      for garden <- Gardens.list_gardens(socket.assigns.current_user) |> Repo.preload([:region]),
+          into: %{} do
+        soon_list = Library.list_species_in_order(garden.region_id)
+        {garden, soon_list}
+      end
+
     socket
     |> assign(:todo_items, todo_items)
+    |> assign(:species_in_order, species_in_order)
     |> assign(:gardens, Gardens.list_gardens(socket.assigns.current_user))
     |> assign(:planner_entries, planner_entries)
+  end
+
+  def render_species_name(name) do
+    assigns = %{name: name}
+
+    ~H"""
+    <.link phx-no-format navigate={~p"/library_seeds?#{[species: name]}"}><%= @name %></.link>
+    """
+  end
+
+  def render_species(assigns) do
+    strs =
+      Enum.map(assigns.strs, &render_species_name(&1.species_name))
+      |> Enum.intersperse(comma_HEEX())
+
+    assigns = assign(assigns, strs: strs)
+
+    ~H"""
+    <span phx-no-format>
+      <%= for chunk <- @strs do %><%= chunk %><% end %>
+    </span>
+    """
+  end
+
+  def comma_HEEX do
+    assigns = %{}
+    ~H{<span phx-no-format>, </span>}
   end
 
   def render_todo_item(assigns) do
