@@ -370,7 +370,7 @@ defmodule VisualGardenWeb.PlannerLive.FormComponent do
          |> put_notification(Normal.new(:success, "Changed refuse date"))
          |> push_patch(to: socket.assigns.patch)}
 
-      {:error, changeset} ->
+      {:error, _changeset} ->
         {:noreply,
          socket
          |> put_notification(Normal.new(:warning, "Couldn't change date"))
