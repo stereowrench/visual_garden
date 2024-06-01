@@ -1,8 +1,8 @@
 @import "square_grid.css";
 @import "tailwindcss/base";
+@import "../../deps/petal_components/assets/default.css";
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
-@import "../../deps/petal_components/assets/default.css";
 /* @import "roy.css"; */
 /* @import "terminal.css"; */
 
@@ -11,7 +11,7 @@
 @layer base {
   .border {
     /* border-width: 1px; */
-    border: none;
+    /* border: none; */
   }
 
   .border-input {
@@ -106,4 +106,10 @@ dd {
 
 .dldiv {
   @apply px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6
+}
+
+.pc-accordion-item {
+  /* --tw-border-opacity: 1; */
+  /* --tw-bg-opacity: 1; */
+  /* border: solid; */
 }

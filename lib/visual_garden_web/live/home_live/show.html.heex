@@ -12,21 +12,33 @@
 />
 
 <%!-- Soon to be planted --%>
-<div class="prose">
+<div class="prose mt-10">
   <h2>What's coming up to grow?</h2>
-  <%= for {garden, soon_list} <- @species_in_order do %>
-    <h3><%= garden.name %> (<%= garden.region.name %>)</h3>
-    <ol>
-      <%= for {date_str, strs} <- soon_list do %>
-        <li>
-          (<%= date_str %>) <.render_species strs={strs} />
-        </li>
-      <% end %>
-    </ol>
-  <% end %>
 </div>
+<PC.accordion
+  class="w-full"
+  entries={
+    Enum.map(@species_in_order, fn {garden, soon_list} ->
+      %{heading: garden.name, content: soon_list}
+    end)
+  }
+>
+  <:item :let={entry}>
+    <div class="prose">
+      <ol>
+        <%= for {date_str, strs} <- entry.content do %>
+          <li>
+            (<%= date_str %>) <.render_species strs={strs} />
+          </li>
+        <% end %>
+      </ol>
+    </div>
+  </:item>
+</PC.accordion>
 
-<hr />
+<div class="prose mt-10">
+  <h2>Task list</h2>
+</div>
 
 <ul :for={item <- @todo_items} role="list" class="divide-y divide-gray-100">
   <li class="flex justify-between gap-x-6 py-5">
