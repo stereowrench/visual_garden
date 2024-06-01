@@ -125,6 +125,26 @@ defmodule VisualGardenWeb.PlannerLive.FormComponent do
           <%= @planner_entry.days_to_maturity %>
           <h3>Days to refuse</h3>
           <%= @planner_entry.days_to_refuse %>
+
+          <.simple_form
+            for={@form}
+            id="planner-form"
+            phx-target={@myself}
+            phx-change="validate"
+            phx-submit="save"
+          >
+            <.input
+              type="date"
+              name="refuse_date"
+              label="Refuse date"
+              min={Timex.shift(@planner_entry.end_plant_date, days: @planner_entry.days_to_maturity)}
+              max={@edit_end_refuse}
+              value={Timex.shift(@planner_entry.end_plant_date, days: @planner_entry.days_to_refuse)}
+            />
+            <:actions>
+              <.button phx-disable-with="Saving...">Save entry</.button>
+            </:actions>
+          </.simple_form>
         </div>
         <br />
         <.link
@@ -187,6 +207,15 @@ defmodule VisualGardenWeb.PlannerLive.FormComponent do
      |> assign(:nursery_start, nil)
      |> assign(:nursery_end, nil)
      |> assign(:refuse_date, nil)
+     |> assign(
+       :edit_end_refuse,
+       Planner.get_end_date(
+         assigns.square,
+         assigns.bed,
+         assigns.planner_entry.end_plant_date,
+         assigns.planner_entry.id
+       )
+     )
      |> assign(:can_edit?, Authorization.can_modify_garden?(assigns.garden, assigns.current_user))
      |> assign(:end_refuse_date, end_date)
      |> assign(:plantables_parsed, plantables_parsed)
@@ -318,6 +347,35 @@ defmodule VisualGardenWeb.PlannerLive.FormComponent do
       end
 
     save_planner(socket, socket.assigns.action, planner_params, params)
+  end
+
+  def handle_event("save", %{"refuse_date" => rd}, socket) do
+    Authorization.authorize_garden_modify(socket.assigns.garden.id, socket.assigns.current_user)
+    {:ok, rd} = Date.from_iso8601(rd)
+    rd_days = Timex.diff(rd, socket.assigns.planner_entry.end_plant_date, :days)
+
+    val =
+      Planner.update_planner_entry(
+        socket.assigns.planner_entry,
+        socket.assigns.garden,
+        %{"days_to_refuse" => rd_days}
+      )
+
+    case val do
+      {:ok, pe} ->
+        notify_parent({:saved, pe})
+
+        {:noreply,
+         socket
+         |> put_notification(Normal.new(:success, "Changed refuse date"))
+         |> push_patch(to: socket.assigns.patch)}
+
+      {:error, changeset} ->
+        {:noreply,
+         socket
+         |> put_notification(Normal.new(:warning, "Couldn't change date"))
+         |> push_patch(to: socket.assigns.patch)}
+    end
   end
 
   defp calculate_nursery_dates(socket, planner_params) do

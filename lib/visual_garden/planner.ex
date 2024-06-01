@@ -58,6 +58,12 @@ defmodule VisualGarden.Planner do
     |> PlannerEntry.changeset(attrs, garden)
   end
 
+  def update_planner_entry(%PlannerEntry{} = entry, garden, attrs \\ %{}) do
+    entry
+    |> PlannerEntry.changeset(attrs, garden)
+    |> Repo.update()
+  end
+
   def delete_planner_entry(%PlannerEntry{} = planner) do
     Repo.delete(planner)
   end
@@ -67,7 +73,7 @@ defmodule VisualGarden.Planner do
     |> Repo.preload([:nursery_entry, :bed, :seed])
   end
 
-  def get_end_date(square, bed, start_date) do
+  def get_end_date(square, bed, start_date, skip_id \\ nil) do
     start_date =
       if start_date do
         start_date
@@ -82,6 +88,9 @@ defmodule VisualGarden.Planner do
         from pe in PlannerEntry,
           where: pe.row == ^row and pe.column == ^column and pe.bed_id == ^bed.id
       )
+      |> Enum.reject(fn pe ->
+        pe.id == skip_id
+      end)
       |> Enum.map(fn
         %{start_plant_date: spd, end_plant_date: epd, days_to_refuse: dtr} ->
           if Timex.between?(start_date, spd, Timex.shift(epd, days: dtr)) do
@@ -303,7 +312,7 @@ defmodule VisualGarden.Planner do
       species = species_map[seed.species_id]
 
       for schedule <- schedules_map[seed.species_id] || [] do
-        if to_string(seed.type) in (schedule.plantable_types || [])do
+        if to_string(seed.type) in (schedule.plantable_types || []) do
           {sched_start, sched_end} =
             unwrwap_dates(
               schedule.start_month,
