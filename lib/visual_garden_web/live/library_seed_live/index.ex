@@ -1,4 +1,5 @@
 defmodule VisualGardenWeb.LibrarySeedLive.Index do
+  alias VisualGarden.Repo
   alias VisualGarden.Gardens
   use VisualGardenWeb, :live_view
 
@@ -6,7 +7,7 @@ defmodule VisualGardenWeb.LibrarySeedLive.Index do
   alias VisualGarden.Library.LibrarySeed
 
   @impl true
-  def mount(%{"id" => seed_id, "garden_id" => garden_id}, _session, socket) do
+  def mount(%{"id" => seed_id, "garden_id" => garden_id} = params, _session, socket) do
     Authorization.authorize_garden_modify(garden_id, socket.assigns.current_user)
 
     {:ok,
@@ -14,15 +15,29 @@ defmodule VisualGardenWeb.LibrarySeedLive.Index do
      |> assign(:gardens, Gardens.list_gardens(socket.assigns.current_user))
      |> assign(:garden, Gardens.get_garden!(garden_id))
      |> assign(:library_seed, Library.get_library_seed!(seed_id))
-     |> stream(:library_seeds, Library.list_library_seeds())}
+     |> stream(:library_seeds, Library.list_library_seeds() |> filter_species(params))}
   end
 
   @impl true
-  def mount(_params, _session, socket) do
+  def mount(params, _session, socket) do
     {:ok,
      socket
      |> assign(:gardens, Gardens.list_gardens(socket.assigns.current_user))
-     |> stream(:library_seeds, Library.list_library_seeds())}
+     |> stream(:library_seeds, Library.list_library_seeds() |> filter_species(params))}
+  end
+
+  def filter_species(seeds, %{"species" => sp}) do
+    seeds = Repo.preload(seeds, [:species])
+    cs = Library.list_species_with_common_names() |> Enum.into(%{})
+
+    seeds
+    |> Enum.filter(fn seed ->
+      cs[seed.species] == sp
+    end)
+  end
+
+  def filter_species(seeds, _) do
+    seeds
   end
 
   @impl true
