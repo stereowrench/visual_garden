@@ -1,5 +1,6 @@
 defmodule VisualGarden.Planner do
   import Ecto.Query, warn: false
+  alias VisualGardenWeb.DisplayHelpers
   alias VisualGarden.Gardens.NurseryEntry
   alias VisualGarden.MyDateTime
   alias VisualGarden.Gardens.PlannerEntry
@@ -241,6 +242,22 @@ defmodule VisualGarden.Planner do
     |> Enum.into(%{})
   end
 
+  def get_available_species(region_id) do
+    schedules_map = schedules_map(region_id)
+    species = Library.list_species()
+    map = do_map_to_species(schedules_map, species)
+
+    Library.list_species_with_common_names()
+    |> Enum.filter(fn {species, _name} -> map[species.id] end)
+    |> Enum.map(fn {species, name} ->
+      %{
+        label: DisplayHelpers.species_display_string_simple(species, name),
+        matches: [],
+        value: to_string(species.id)
+      }
+    end)
+  end
+
   def species_bubble(
         collected,
         species = %{
@@ -259,6 +276,18 @@ defmodule VisualGarden.Planner do
     else
       map -> {species.id, map}
     end
+  end
+
+  def do_map_to_species(schedules_map, species) do
+    schedules_map
+    |> Enum.group_by(fn {_schedule_id, schedule} ->
+      schedule.species_id
+    end)
+    |> Enum.map(fn {spid, schedules} ->
+      {spid, Enum.map(schedules, fn {_, sched} -> sched end)}
+    end)
+    |> Enum.into(%{})
+    |> map_species_to_schedules(species)
   end
 
   defp get_plantables(
@@ -287,15 +316,7 @@ defmodule VisualGarden.Planner do
       end
 
     schedules_map =
-      schedules_map
-      |> Enum.group_by(fn {_schedule_id, schedule} ->
-        schedule.species_id
-      end)
-      |> Enum.map(fn {spid, schedules} ->
-        {spid, Enum.map(schedules, fn {_, sched} -> sched end)}
-      end)
-      |> Enum.into(%{})
-      |> map_species_to_schedules(species)
+      do_map_to_species(schedules_map, species)
 
     species_map =
       species

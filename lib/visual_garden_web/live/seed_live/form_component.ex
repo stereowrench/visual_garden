@@ -1,4 +1,5 @@
 defmodule VisualGardenWeb.SeedLive.FormComponent do
+  alias VisualGarden.Planner
   alias VisualGarden.Authorization
   alias VisualGarden.Library
   alias VisualGardenWeb.KeywordHighlighter
@@ -60,9 +61,7 @@ defmodule VisualGardenWeb.SeedLive.FormComponent do
     Authorization.authorize_garden_modify(assigns.garden.id, assigns.current_user)
     changeset = Gardens.change_seed(seed)
 
-    species =
-      Library.list_common_species()
-      |> Enum.map(&%{label: &1.common_name, value: to_string(&1.id), matches: []})
+    species = Planner.get_available_species(assigns.garden.region_id)
 
     {:ok,
      socket
@@ -82,7 +81,6 @@ defmodule VisualGardenWeb.SeedLive.FormComponent do
         %{value: species.value, label: species.label, matches: c.matches}
       end)
       |> Enum.take(10)
-      |> Enum.into(%{})
 
     send_update(LiveSelect.Component, id: live_select_id, options: opts)
     {:noreply, socket}
