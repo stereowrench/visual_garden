@@ -209,12 +209,16 @@ defmodule VisualGardenWeb.PlannerLive.FormComponent do
      |> assign(:refuse_date, nil)
      |> assign(
        :edit_end_refuse,
-       Planner.get_end_date(
-         assigns.square,
-         assigns.bed,
-         assigns.planner_entry.end_plant_date,
-         assigns.planner_entry.id
-       )
+       if assigns.planner_entry do
+         Planner.get_end_date(
+           assigns.square,
+           assigns.bed,
+           assigns.planner_entry.end_plant_date,
+           assigns.planner_entry.id
+         )
+       else
+         end_date
+       end
      )
      |> assign(:can_edit?, Authorization.can_modify_garden?(assigns.garden, assigns.current_user))
      |> assign(:end_refuse_date, end_date)
