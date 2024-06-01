@@ -60,7 +60,7 @@ defmodule VisualGardenWeb.HomeLive.Show do
     assigns = %{name: name}
 
     ~H"""
-    <.link phx-no-format navigate={~p"/library_seeds?#{[species: name]}"}><%= @name %></.link>
+    <.link phx-no-format navigate={~p"/library_seeds?#{[species: @name]}"}><%= @name %></.link>
     """
   end
 
