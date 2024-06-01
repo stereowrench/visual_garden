@@ -15,8 +15,8 @@
 
 <h3>Schedule Graphic</h3>
 <svg viewBox={"0 0 730 #{60 * (length(@schedules))}"} xmlns="http://www.w3.org/2000/svg">
-  <%= for {{sp, dates}, idx} <- Enum.with_index(@schedules) do %>
-    <.rect_for dates={dates} idx={idx} species={sp} />
+  <%= for {{sp, {sched, dates}}, idx} <- Enum.with_index(@schedules) do %>
+    <.rect_for dates={dates} idx={idx} species={sp} schedule={sched} />
   <% end %>
   <line
     x1={Timex.diff(VisualGarden.MyDateTime.utc_now(), Date.new!(2024, 1, 1), :days) * 2}

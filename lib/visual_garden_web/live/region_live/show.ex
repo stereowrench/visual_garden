@@ -25,22 +25,24 @@ defmodule VisualGardenWeb.RegionLive.Show do
     Library.list_schedules(id)
     |> Enum.group_by(& &1.species)
     |> Enum.map(fn {sp, scheds} ->
-      days =
+      sched_list =
         scheds
         |> Enum.map(fn sched ->
           s = Date.new!(2024, sched.start_month, sched.start_day)
           e = Date.new!(2024, sched.end_month, sched.end_day)
 
           if Timex.before?(e, s) do
-            [Date.new!(2024, 1, 1), e, s, Date.new!(2024, 12, 31)]
+            {sched, [Date.new!(2024, 1, 1), e, s, Date.new!(2024, 12, 31)]}
           else
-            [s, e]
+            {sched, [s, e]}
           end
         end)
-        |> List.flatten()
 
-      {sp, days}
+      for sched <- sched_list do
+        {sp, sched}
+      end
     end)
+    |> List.flatten()
   end
 
   def rect_for2(assigns = %{dates: [a, b]}) do
@@ -59,9 +61,20 @@ defmodule VisualGardenWeb.RegionLive.Show do
     """
   end
 
+  def types_str(assigns) do
+    ~H"""
+    [<%= for type <- Enum.intersperse(@schedule.plantable_types, ", ") do %>
+      <%= type %>
+    <% end %>]
+    """
+  end
+
   def rect_for(assigns = %{dates: dates}) do
     pairs = Enum.chunk_every(dates, 2)
-    assigns = assign(assigns, pairs: pairs)
+
+    assigns =
+      assign(assigns, pairs: pairs)
+      |> assign(types_str: types_str(%{schedule: assigns.schedule}))
 
     ~H"""
     <g>
@@ -69,7 +82,7 @@ defmodule VisualGardenWeb.RegionLive.Show do
         <.rect_for2 dates={pair} idx={@idx} />
       <% end %>
       <text dominant-baseline="central" text-anchor="middle" x={365} y={30 + 60 * @idx}>
-        <%= DisplayHelpers.species_display_string_simple(@species) %>
+        <%= @types_str %> <%= DisplayHelpers.species_display_string_simple(@species) %>
       </text>
     </g>
     """
