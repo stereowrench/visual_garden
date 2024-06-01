@@ -170,7 +170,7 @@ defmodule VisualGardenWeb.HomeLive.Show do
         </div>
         <dl>
           <div class="dldiv">
-            <dt>When</dt>
+            <dt>In Season</dt>
             <dd>
               <%= Timex.format(@item.date, "{relative}", :relative) |> elem(1) %> (<%= @remaining_days %> days left)
             </dd>
