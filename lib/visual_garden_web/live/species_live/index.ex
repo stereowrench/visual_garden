@@ -9,12 +9,17 @@ defmodule VisualGardenWeb.SpeciesLive.Index do
     {:ok,
      socket
      |> assign(:can_modify?, Authorization.can_modify_library?(socket.assigns.current_user))
+     |> assign(:common_names, Library.list_species_with_common_names() |> Enum.into(%{}))
      |> stream(:species_collection, Library.list_species())}
   end
 
   @impl true
   def handle_params(params, _url, socket) do
     {:noreply, apply_action(socket, socket.assigns.live_action, params)}
+  end
+
+  defp get_common_name(common_names, species) do
+    common_names[species]
   end
 
   defp apply_action(socket, :edit, %{"id" => id}) do
