@@ -401,6 +401,10 @@ defmodule VisualGarden.Library do
   """
   def get_library_seed!(id), do: Repo.get!(LibrarySeed, id) |> Repo.preload([:species])
 
+  def get_library_seed_by_uuid(uuid) do
+    Repo.one(from s in LibrarySeed, where: s.uuid == ^uuid)
+  end
+
   @doc """
   Creates a library_seed.
 

@@ -160,3 +160,56 @@ for region_name <- regions do
   end)
   |> Stream.run()
 end
+
+Path.join([__DIR__, "./seed_data/Plantables.csv"])
+|> File.stream!()
+|> CSV.decode!(headers: true)
+|> Stream.map(fn
+  %{
+    "Name" => name,
+    "Type" => type,
+    "Days To Maturation" => days,
+    "Manufacturer" => mfg,
+    "Genus" => genus,
+    "Species" => species,
+    "Variety" => var,
+    "Cultivar" => cultivar,
+    "Season" => season,
+    "UUID" => uuid
+  } ->
+    var = if var == "", do: nil, else: String.trim(var)
+    cultivar = if cultivar == "", do: nil, else: String.trim(cultivar)
+    season = if season == "", do: nil, else: String.trim(season)
+    {days, ""} = Float.parse(days)
+    days = ceil(days)
+    genus = String.trim(genus)
+    species = String.trim(species)
+
+    species =
+      Repo.one!(
+        from(s in Species,
+          where: s.genus == ^genus and s.name == ^species
+        )
+        |> Query.add_var_query(var)
+        |> Query.add_cultivar_query(cultivar)
+        |> Query.add_season_query(season)
+      )
+
+    attrs = %{
+      name: name,
+      manufacturer: mfg,
+      days_to_maturation: days,
+      type: type,
+      species_id: species.id,
+      uuid: uuid
+    }
+
+    case Library.get_library_seed_by_uuid(uuid) do
+      nil ->
+        {:ok, _} = Library.create_library_seed(attrs)
+
+      seed ->
+        {:ok, _} = Library.update_library_seed(seed, attrs)
+    end
+end)
+|> Stream.run()

@@ -8,6 +8,7 @@ defmodule VisualGarden.Library.LibrarySeed do
     field :manufacturer, :string
     field :name, :string
     belongs_to :species, VisualGarden.Library.Species
+    field :uuid, Ecto.UUID
 
     timestamps(type: :utc_datetime)
   end
@@ -15,7 +16,7 @@ defmodule VisualGarden.Library.LibrarySeed do
   @doc false
   def changeset(seeds, attrs) do
     seeds
-    |> cast(attrs, [:type, :name, :days_to_maturation, :manufacturer, :species_id])
+    |> cast(attrs, [:uuid, :type, :name, :days_to_maturation, :manufacturer, :species_id])
     |> validate_required([:type, :days_to_maturation, :manufacturer, :species_id])
   end
 end
