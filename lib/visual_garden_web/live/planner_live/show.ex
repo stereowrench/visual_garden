@@ -1,4 +1,5 @@
 defmodule VisualGardenWeb.PlannerLive.Show do
+  alias VisualGardenWeb.Tooltips
   alias VisualGarden.Repo
   alias VisualGarden.Library
   alias VisualGarden.Planner
@@ -19,6 +20,8 @@ defmodule VisualGardenWeb.PlannerLive.Show do
     {:noreply,
      socket
      |> add_params(params)
+     |> assign(:page_tip_title, Tooltips.planner_title())
+     |> assign(:page_tip, Tooltips.planner_content(garden))
      |> assign(:page_title, page_title(socket.assigns.live_action))
      |> assign(:garden, garden)
      |> add_entries()
