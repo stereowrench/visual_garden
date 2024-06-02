@@ -1,4 +1,6 @@
 defmodule VisualGardenWeb.HomeLive.Show do
+  alias VisualGarden.Authorization.UnauthorizedError
+  alias Hex.API.Auth
   alias VisualGardenWeb.DisplayHelpers
   alias VisualGarden.Library
   alias VisualGardenWeb.Tooltips
@@ -19,6 +21,29 @@ defmodule VisualGardenWeb.HomeLive.Show do
      socket
      |> assign_assigns()
      |> assign(:entry, Gardens.get_nursery_entry!(neid))
+     |> assign(:page_title, page_title(socket.assigns.live_action))}
+  end
+
+  @impl true
+  def handle_params(%{"garden_id" => neid, "bed_id" => bid}, _, socket) do
+    bed = Gardens.get_product!(bid)
+    garden = Gardens.get_garden!(neid)
+
+    if bed.garden_id != garden.id do
+      raise UnauthorizedError
+    end
+
+    Authorization.authorize_garden_modify(garden.id, socket.assigns.current_user)
+
+    {:noreply,
+     socket
+     |> assign_assigns()
+     |> assign(:garden, garden)
+     |> assign(
+       :products,
+       Gardens.list_products(garden.id) |> Enum.filter(&(&1.type == :growing_media))
+     )
+     |> assign(:bed, bed)
      |> assign(:page_title, page_title(socket.assigns.live_action))}
   end
 
@@ -65,6 +90,7 @@ defmodule VisualGardenWeb.HomeLive.Show do
       "plant_overdue" -> render_plant_overdue(assigns)
       "orphaned_nursery" -> render_orphaned_nursery(assigns)
       "water" -> render_water(assigns)
+      "media" -> render_media(assigns)
     end
   end
 
@@ -81,6 +107,27 @@ defmodule VisualGardenWeb.HomeLive.Show do
           Plant orphan
         </.button>
       </.link>
+    </div>
+    """
+  end
+
+  def render_media(assigns) do
+    ~H"""
+    <div class="mt-6 border-t border-gray-100">
+      <div class="divide-y divide-gray-200 overflow-hidden rounded-lg bg-white shadow">
+        <div class="border-b border-gray-200 bg-white px-4 py-5 sm:px-6">
+          <h3 class="text-base font-semibold leading-6 text-gray-900">
+            🌎 Fill bed with media <%= @item.bed.name %>
+          </h3>
+        </div>
+        <%= unless Timex.after?(@item.date, MyDateTime.utc_today) do %>
+          <.link navigate={~p"/home/#{@item.garden_id}/#{@item.bed.id}/transfer"}>
+            <.button>
+              Add media
+            </.button>
+          </.link>
+        <% end %>
+      </div>
     </div>
     """
   end
@@ -325,6 +372,7 @@ defmodule VisualGardenWeb.HomeLive.Show do
   defp page_title(:show), do: "Show Nursery entry"
   defp page_title(:new_garden), do: "New Garden"
   defp page_title(:orphaned_nursery), do: "Plant Orphaned Nursery"
+  defp page_title(:transfer), do: "Fill bed"
 
   @impl true
   def handle_info({VisualGardenWeb.GardenLive.FormComponent, {:saved, garden}}, socket) do
@@ -333,6 +381,11 @@ defmodule VisualGardenWeb.HomeLive.Show do
 
   @impl true
   def handle_info({VisualGardenWeb.HomeLive.TemplatePlantComponent, :refresh}, socket) do
+    {:noreply, assign_assigns(socket)}
+  end
+
+  @impl true
+  def handle_info({VisualGardenWeb.EventLogLive.FormComponent, {:saved, _event_log}}, socket) do
     {:noreply, assign_assigns(socket)}
   end
 end

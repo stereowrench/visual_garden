@@ -676,18 +676,25 @@ defmodule VisualGarden.Planner do
         end
         |> List.flatten()
 
-      # media_entries =
-      #   for bed <- Gardens.list_beds(garden.id) do
-      #     bed_last = Gardens.get_last_media_for_bed(bed.id)
+      media_entries =
+        for bed <- Gardens.list_beds(garden.id) do
+          bed_last = Gardens.get_last_media_for_bed(bed.id)
 
-      #     if bed_last do
-      #       []
-      #     else
-      #     end
-      #   end
-      #   |> List.flatten()
+          if bed_last do
+            []
+          else
+            %{
+              type: "media",
+              date: MyDateTime.utc_today(),
+              bed: bed,
+              garden_id: garden.id
+            }
+          end
+        end
+        |> List.flatten()
 
-      water_entries ++
+      media_entries ++
+        water_entries ++
         orphaned_plants ++
         current_nursery_entries ++
         overdue_nursery_entries ++ current_plant_entries ++ overdue_plant_entries

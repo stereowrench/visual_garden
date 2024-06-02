@@ -32,6 +32,7 @@ defmodule VisualGardenWeb.Router do
 
       live "/home/orphaned_nursery/:nursery_entry", HomeLive.Show, :orphaned_nursery
       live "/home/new_garden", HomeLive.Show, :new_garden
+      live "/home/:garden_id/:bed_id/transfer", HomeLive.Show, :transfer
     end
   end
 

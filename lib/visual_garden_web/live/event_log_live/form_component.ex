@@ -13,7 +13,6 @@ defmodule VisualGardenWeb.EventLogLive.FormComponent do
     <div>
       <.header>
         <%= @title %>
-        <:subtitle>Use this form to manage event_log records in your database.</:subtitle>
       </.header>
 
       <.simple_form
@@ -42,6 +41,11 @@ defmodule VisualGardenWeb.EventLogLive.FormComponent do
           <.input field={@form[:till_depth_in]} type="number" label="Till depth in" step="any" />
         <% end %>
         <%= if @action == :transfer do %>
+          <span>
+            If the list is empty you need to
+            <.link class="underline" navigate={~p"/gardens/#{@garden.id}/products/new"}>add growing media</.link>
+            to your garden's inventory.
+          </span>
           <.live_select
             field={@form[:transferred_from_id]}
             value_mapper={&to_string(&1)}

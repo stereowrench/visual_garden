@@ -66,3 +66,17 @@
     patch={~p"/home"}
   />
 </.modal>
+
+<.modal :if={@live_action in [:transfer]} id="event-log-modal" show on_cancel={JS.navigate(~p"/home")}>
+  <.live_component
+    module={VisualGardenWeb.EventLogLive.FormComponent}
+    patch={~p"/home"}
+    action={@live_action}
+    id="event-modal"
+    product={@bed}
+    products={@products}
+    garden={@garden}
+    current_user={@current_user}
+    title={@page_title}
+  />
+</.modal>
