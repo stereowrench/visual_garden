@@ -31,22 +31,29 @@ defmodule VisualGardenWeb.HomeLive.TemplatePlantComponent do
           <% end %>
         </div>
       <% else %>
-        <.link patch={~p"/home/new_garden"}>
-          <.button>
-            Create a garden
-          </.button>
-        </.link>
-        <.modal :if={@action in [:new_garden]} id="garden-modal" show on_cancel={JS.patch(~p"/home")}>
-          <.live_component
-            module={VisualGardenWeb.GardenLive.FormComponent}
-            id={:new}
-            title={@title}
-            current_user={@current_user}
-            action={:new}
-            garden={%Garden{}}
-            patch={~p"/home"}
-          />
-        </.modal>
+        <%= if @current_user do %>
+          <.link patch={~p"/home/new_garden"}>
+            <.button>
+              Create a garden
+            </.button>
+          </.link>
+          <.modal
+            :if={@action in [:new_garden]}
+            id="garden-modal"
+            show
+            on_cancel={JS.patch(~p"/home")}
+          >
+            <.live_component
+              module={VisualGardenWeb.GardenLive.FormComponent}
+              id={:new}
+              title={@title}
+              current_user={@current_user}
+              action={:new}
+              garden={%Garden{}}
+              patch={~p"/home"}
+            />
+          </.modal>
+        <% end %>
       <% end %>
     </div>
     """
