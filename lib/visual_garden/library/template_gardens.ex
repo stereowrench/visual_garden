@@ -39,7 +39,7 @@ defmodule VisualGarden.Library.TemplateGardens do
         )
         |> Enum.sort_by(& &1.sow_start, Date)
         |> case do
-          [a|_] -> a
+          [a | _] -> a
           [] -> nil
         end
 
@@ -67,7 +67,11 @@ defmodule VisualGarden.Library.TemplateGardens do
             )
         end)
       else
-        %{"start" => sched.sow_start}
+        if sched do
+          %{"start" => sched.sow_start}
+        else
+          nil
+        end
       end
     else
       nil
