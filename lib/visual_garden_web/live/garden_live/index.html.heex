@@ -1,6 +1,6 @@
 <.header>
   Listing Gardens
-  <:actions if={@current_user}>
+  <:actions :if={@current_user}>
     <.link patch={~p"/gardens/new"}>
       <.button>New Garden</.button>
     </.link>
