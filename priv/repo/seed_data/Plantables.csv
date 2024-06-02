@@ -30,8 +30,10 @@ c6e0196f-6bfe-4f1a-9c9d-5835a58eb8ce,Generic Cucumbers,seed,52.5,Stereowrench Ge
 26c15775-af0e-446b-b521-761531ddd2fb,Generic Chicory,seed,85,Stereowrench Generic,Cichorium,intybus,,,
 99bdce41-9a23-4971-9083-b2bd2a6541d6,Generic English/Snow peas,seed,70,Stereowrench Generic,Pisum,sativum,,,
 40d39f65-bfb5-4de1-962c-4ea91bc9def3,Generic Field peas,seed,90,Stereowrench Generic,Pisum,sativum,arvense,,
-b08ba757-d9b2-40d5-a872-acbdb464f1e4,"Generic Potatoes, Irish",seed,92.5,Stereowrench Generic,Solanum,tuberosum,,,
-d8e04c65-23fa-4507-b743-7f9570f2db5b,"Generic Potatoes, Irish",seed_potato,92.5,Stereowrench Generic,Solanum,tuberosum,,,
+94d365b1-4ab9-4d75-ab9e-2e7cf755d600,"Generic Potatoes, Irish",seed,70,Stereowrench Generic,Solanum,tuberosum,,,early
+c0451cad-6a3a-4d2e-bb72-89f6364050e5,"Generic Potatoes, Irish",seed_potato,70,Stereowrench Generic,Solanum,tuberosum,,,early
+b08ba757-d9b2-40d5-a872-acbdb464f1e4,"Generic Potatoes, Irish",seed,112.5,Stereowrench Generic,Solanum,tuberosum,,,late
+d8e04c65-23fa-4507-b743-7f9570f2db5b,"Generic Potatoes, Irish",seed_potato,112.5,Stereowrench Generic,Solanum,tuberosum,,,late
 a63a7aee-9940-4db5-bb92-ab1ce56a740e,Generic Kale,seed,60,Stereowrench Generic,Brassica,oleracea,sabellica,,
 d89c787b-c5cb-449b-89bd-d45495ddbf64,Generic Kohlrabi,seed,75,Stereowrench Generic,Brassica,oleracea,gongylodes,,
 ef0a92b8-0b29-4dbb-bdf1-18f17074a77c,Generic Kohlrabi,transplant,52.5,Stereowrench Generic,Brassica,oleracea,gongylodes,,

@@ -57,7 +57,7 @@ Path.join([__DIR__, "./seed_data/Species.csv"])
 end)
 |> Stream.run()
 
-regions = ["South Florida"]
+regions = ["South Florida", "North California"]
 
 defmodule Query do
   import Ecto.Query
@@ -92,6 +92,7 @@ for region_name <- regions do
     case Repo.one(from r in Region, where: r.name == ^region_name) do
       nil ->
         {:ok, r} = Library.create_region(%{name: region_name})
+        r
 
       r ->
         r
