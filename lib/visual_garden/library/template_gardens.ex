@@ -38,7 +38,10 @@ defmodule VisualGarden.Library.TemplateGardens do
           nil
         )
         |> Enum.sort_by(& &1.sow_start, Date)
-        |> hd()
+        |> case do
+          [a|_] -> a
+          [] -> nil
+        end
 
       if execute do
         Repo.transaction(fn ->

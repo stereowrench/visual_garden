@@ -69,9 +69,15 @@ defmodule VisualGardenWeb.HomeLive.TemplatePlantComponent do
   def assign_templates(socket) do
     templates =
       for garden <- socket.assigns.gardens, into: %{} do
-        {garden.id,
-         [{"single_tomato", TemplateGardens.single_tomato_plant_from_nursery(garden, false)}]}
+        case TemplateGardens.single_tomato_plant_from_nursery(garden, false) do
+          nil ->
+            nil
+
+          template ->
+            {garden.id, [{"single_tomato", template}]}
+        end
       end
+      |> Enum.reject(&(&1 == nil))
 
     assign(socket, templates: templates)
   end
