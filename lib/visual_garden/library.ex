@@ -108,15 +108,31 @@ defmodule VisualGarden.Library do
       {sd, ed, schedule}
     end
     |> Enum.sort_by(&elem(&1, 0), Date)
-    |> Enum.map(fn {sd, _ed, schedule} ->
-      date_str = Timex.format!(sd, "{relative}", :relative)
+    |> Enum.map(fn {sd, ed, schedule} ->
+      {:ok, date_str} = MyDateTime.relative_clamp_today(sd)
+
+      remaining_days =
+        if Timex.before?(MyDateTime.utc_today(), ed) && Timex.after?(MyDateTime.utc_today(), sd) do
+          Timex.diff(ed, MyDateTime.utc_today(), :days)
+        else
+          nil
+        end
 
       %{
         date_str: date_str,
-        species_name: names[schedule.species]
+        date: sd,
+        species_name: names[schedule.species],
+        remaining_days: remaining_days
       }
     end)
     |> Enum.group_by(& &1.date_str)
+    |> Enum.sort_by(
+      fn
+        {_, [a | _]} -> a.date
+      end,
+      Date
+    )
+    |> Enum.map(fn {a, b} -> {a, Enum.sort_by(b, & &1.remaining_days)} end)
     |> Enum.take(3)
   end
 
