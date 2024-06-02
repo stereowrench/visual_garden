@@ -96,8 +96,7 @@ if config_env() == :prod do
   # We also recommend setting `force_ssl` in your config/prod.exs,
   # ensuring no data is ever sent via http, always redirecting to https:
   #
-  #     config :visual_garden, VisualGardenWeb.Endpoint,
-  #       force_ssl: [hsts: true]
+  config :visual_garden, VisualGardenWeb.Endpoint, force_ssl: [hsts: true]
   #
   # Check `Plug.SSL` for all available options in `force_ssl`.
 
