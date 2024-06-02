@@ -38,7 +38,9 @@ defmodule VisualGardenWeb.RegionLive.Show do
           end
         end)
 
-      for sched <- sched_list do
+      types = Enum.group_by(sched_list, fn {sched, dates} -> sched.plantable_types end)
+
+      for {type, sched} <- types do
         {sp, sched}
       end
     end)
