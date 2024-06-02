@@ -2,15 +2,14 @@
   <h1>Planner for <%= @garden.name %></h1>
 
   <h2>What's in season?</h2>
-  <div class="prose">
-    <ol>
-      <%= for {date_str, strs} <- @soon_list do %>
-        <li>
-          (<%= date_str %>) <.render_species strs={strs} species_in_garden={@species_in_garden} />
-        </li>
-      <% end %>
-    </ol>
-  </div>
+  Check out a graphical schedule on the <.link navigate={~p"/regions/#{@garden.region_id}"}>region page</.link>
+  <ol>
+    <%= for {date_str, strs} <- @soon_list do %>
+      <li>
+        (<%= date_str %>) <.render_species strs={strs} species_in_garden={@species_in_garden} />
+      </li>
+    <% end %>
+  </ol>
 </div>
 
 <%= for bed <- @beds do %>

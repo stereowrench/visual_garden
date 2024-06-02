@@ -52,10 +52,10 @@ defmodule VisualGardenWeb.NavBarLibrary do
 
   defp routes() do
     [
-      {"Species", ~p"/species"},
       {"Regions", ~p"/regions"},
-      {"Schedules", ~p"/schedules"},
-      {"Plantables", ~p"/library_seeds"}
+      {"Plantables", ~p"/library_seeds"},
+      {"Species", ~p"/species"},
+      {"Schedules", ~p"/schedules"}
     ]
   end
 
