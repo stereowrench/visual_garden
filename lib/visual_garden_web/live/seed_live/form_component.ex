@@ -13,7 +13,7 @@ defmodule VisualGardenWeb.SeedLive.FormComponent do
     <div>
       <.header>
         <%= @title %>
-        <:subtitle>Use this form to manage seed records in your database.</:subtitle>
+        <:subtitle>Add plantables to your garden</:subtitle>
       </.header>
 
       <.simple_form

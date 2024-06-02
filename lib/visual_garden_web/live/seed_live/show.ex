@@ -25,6 +25,6 @@ defmodule VisualGardenWeb.SeedLive.Show do
      |> assign(:seed, Gardens.get_seed!(id))}
   end
 
-  defp page_title(:show), do: "Show Seed"
-  defp page_title(:edit), do: "Edit Seed"
+  defp page_title(:show), do: "Show Plantable"
+  defp page_title(:edit), do: "Edit Plantable"
 end

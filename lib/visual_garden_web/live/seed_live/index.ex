@@ -27,19 +27,19 @@ defmodule VisualGardenWeb.SeedLive.Index do
 
   defp apply_action(socket, :edit, %{"id" => id}) do
     socket
-    |> assign(:page_title, "Edit Seed")
+    |> assign(:page_title, "Edit Plantable")
     |> assign(:seed, Gardens.get_seed!(id))
   end
 
   defp apply_action(socket, :new, _params) do
     socket
-    |> assign(:page_title, "New Seed")
+    |> assign(:page_title, "New Plantable")
     |> assign(:seed, %Seed{})
   end
 
   defp apply_action(socket, :index, _params) do
     socket
-    |> assign(:page_title, "Listing Seeds")
+    |> assign(:page_title, "Listing Plantables")
     |> assign(:seed, nil)
   end
 
