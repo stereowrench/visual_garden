@@ -63,7 +63,10 @@ defmodule VisualGardenWeb.GardenLive.FormComponent do
   @impl true
   def update(%{garden: garden} = assigns, socket) do
     changeset = Gardens.change_garden(garden)
-    Authorization.authorize_garden_modify(garden.id, socket.assigns.current_user)
+
+    if garden.id do
+      Authorization.authorize_garden_modify(garden.id, assigns.current_user)
+    end
 
     {:ok,
      socket
@@ -147,7 +150,10 @@ defmodule VisualGardenWeb.GardenLive.FormComponent do
   end
 
   def handle_event("save", %{"garden" => garden_params}, socket) do
-    Authorization.authorize_garden_modify(socket.assigns.garden.id, socket.assigns.current_user)
+    if socket.assigns.garden.id do
+      Authorization.authorize_garden_modify(socket.assigns.garden.id, socket.assigns.current_user)
+    end
+
     save_garden(socket, socket.assigns.action, garden_params)
   end
 
