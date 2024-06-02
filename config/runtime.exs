@@ -67,8 +67,7 @@ if config_env() == :prod do
       ip: {0, 0, 0, 0, 0, 0, 0, 0},
       port: port
     ],
-    secret_key_base: secret_key_base,
-    force_ssl: [hsts: true]
+    secret_key_base: secret_key_base
 
   # ## SSL Support
   #
