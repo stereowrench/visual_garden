@@ -16,7 +16,7 @@ alias VisualGarden.Library
 alias VisualGarden.Library.{LibrarySeed, Schedule, Species, Region}
 import Ecto.Query
 
-Path.join([__DIR__, "./seed_data/Species.csv"])
+Path.join([__DIR__, "./seed_data/Plants Database - Species.csv"])
 |> File.stream!()
 |> CSV.decode!(headers: true)
 |> Stream.map(fn
@@ -98,7 +98,7 @@ for region_name <- regions do
         r
     end
 
-  Path.join([__DIR__, "./seed_data/Region - #{region.name}.csv"])
+  Path.join([__DIR__, "./seed_data/Plants Database - #{region.name}.csv"])
   |> File.stream!()
   |> CSV.decode!(headers: true)
   |> Stream.map(fn
@@ -162,7 +162,7 @@ for region_name <- regions do
   |> Stream.run()
 end
 
-Path.join([__DIR__, "./seed_data/Plantables.csv"])
+Path.join([__DIR__, "./seed_data/Plants Database - Plantables.csv"])
 |> File.stream!()
 |> CSV.decode!(headers: true)
 |> Stream.map(fn

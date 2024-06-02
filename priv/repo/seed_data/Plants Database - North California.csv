@@ -41,8 +41,8 @@ Peas2,9,1,10,31,seed,,,Vigna,unguiculata,,,
 Habanero Peppers,5,1,5,31,"seed,transplant",6,8,Capsicum,chinense,,,
 Peppers,5,1,5,31,"seed,transplant",6,8,Capsicum,annuum,,,
 "Potatoes, sweet",5,1,5,31,"seed,slip",,,Ipomoea,batatas,,,
-"Potatoes, white early",2,1,2,28,seed,,,Solanum,tuberosum,,,early
-"Potatoes, white late",4,1,5,31,seed,,,Solanum,tuberosum,,,late
+"Potatoes, white early",2,1,2,28,"seed,seed_potato",,,Solanum,tuberosum,,,early
+"Potatoes, white late",4,1,5,31,"seed,seed_potato",,,Solanum,tuberosum,,,late
 Pumpkins,5,1,5,31,seed,,,Cucurbita,pepo,pumpkin,,
 Radish,1,1,12,31,seed,,,Raphanus,sativus,,,
 Rhubarb,12,1,3,31,seed,,,Rheum,rhabarbarum,,,
@@ -55,3 +55,4 @@ Tomatoes,5,1,5,31,seed,5,7,Solanum,lycopersicum,,,
 Turnips,1,1,1,31,seed,,,Brassica,rapa,rapa,,
 Turnips2,8,1,8,31,seed,,,Brassica,rapa,rapa,,
 Watermelons,5,1,6,30,seed,3,4,Citrullus,lanatus,,,
+Any Season,1,1,12,31,"seed,transplant,slip,set,seed_potato",,,Any,Season,,,
