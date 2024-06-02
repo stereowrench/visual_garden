@@ -13,6 +13,15 @@ defmodule VisualGardenWeb.PlannerLive.FormComponent do
       <.header>
         Planner Entry
       </.header>
+      If you don't see species then you must add plantables either by
+      <.link navigate={~p"/library_seeds"} class="underline">
+        importing them from the library
+      </.link>
+      or
+      <.link navigate={~p"/gardens/#{@garden.id}/seeds"} class="underline">
+        adding seeds to your garden.
+      </.link>
+
       <%= if @action in [:new, :new_bulk] do %>
         <.simple_form
           for={@form}
