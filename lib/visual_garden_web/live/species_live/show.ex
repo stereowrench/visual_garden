@@ -19,11 +19,4 @@ defmodule VisualGardenWeb.SpeciesLive.Show do
 
   defp page_title(:show), do: "Show Species"
   defp page_title(:edit), do: "Edit Species"
-
-  defp cultivar(species) do
-    case species.cultivar do
-      nil -> ""
-      cultivar -> "'#{cultivar}'"
-    end
-  end
 end
