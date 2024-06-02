@@ -56,6 +56,7 @@ defmodule VisualGardenWeb do
         layout: {VisualGardenWeb.Layouts, :app}
 
       alias VisualGarden.Authorization
+      on_mount Sentry.LiveViewHook
       unquote(html_helpers())
     end
   end
