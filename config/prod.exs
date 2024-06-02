@@ -8,6 +8,8 @@ import Config
 config :visual_garden, VisualGardenWeb.Endpoint,
   cache_static_manifest: "priv/static/cache_manifest.json"
 
+config :visual_garden, VisualGardenWeb.Endpoint, force_ssl: [hsts: true]
+
 # Configures Swoosh API Client
 config :swoosh, api_client: Swoosh.ApiClient.Finch, finch_name: VisualGarden.Finch
 
