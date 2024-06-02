@@ -54,8 +54,8 @@ defmodule VisualGardenWeb.NavBarLibrary do
     [
       {"Regions", ~p"/regions"},
       {"Plantables", ~p"/library_seeds"},
-      {"Species", ~p"/species"},
-      {"Schedules", ~p"/schedules"}
+      # {"Species", ~p"/species"},
+      # {"Schedules", ~p"/schedules"}
     ]
   end
 
