@@ -1,6 +1,7 @@
 defmodule VisualGardenWeb.DisplayHelpers do
   alias VisualGarden.Library.Species
   use Phoenix.Component
+  use VisualGardenWeb, :verified_routes
 
   defp species_assigns(species) do
     assigns = %{
@@ -88,6 +89,51 @@ defmodule VisualGardenWeb.DisplayHelpers do
     ~H"""
     <span class="inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10">
       Private
+    </span>
+    """
+  end
+
+  def comma_HEEX do
+    assigns = %{}
+    ~H{<span phx-no-format>, </span>}
+  end
+
+  def render_species_name(name, in_garden) do
+    assigns = %{name: name, in_garden?: in_garden}
+
+    ~H"""
+    <%= if @in_garden? do %>
+      <%= @name %>
+      <PetalComponents.Badge.badge color="success" label="In Garden" />
+    <% else %>
+      <.link phx-no-format navigate={~p"/library_seeds?#{[species: @name]}"}><%= @name %></.link>
+    <% end %>
+    """
+  end
+
+  def render_species(assigns) do
+    strs =
+      if sp = assigns[:species_in_garden] do
+        Enum.map(assigns.strs, fn s ->
+          if s.species_name in sp do
+            Map.put(s, :in_garden, true)
+          else
+            Map.put(s, :in_garden, false)
+          end
+        end)
+      else
+        Enum.map(assigns.strs, fn s -> Map.put(s, :in_garden, false) end)
+      end
+
+    strs =
+      Enum.map(strs, &render_species_name(&1.species_name, &1.in_garden))
+      |> Enum.intersperse(comma_HEEX())
+
+    assigns = assign(assigns, strs: strs)
+
+    ~H"""
+    <span phx-no-format>
+      <%= for chunk <- @strs do %><%= chunk %><% end %>
     </span>
     """
   end

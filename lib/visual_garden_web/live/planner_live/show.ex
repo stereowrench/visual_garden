@@ -1,4 +1,6 @@
 defmodule VisualGardenWeb.PlannerLive.Show do
+  alias VisualGarden.Repo
+  alias VisualGarden.Library
   alias VisualGarden.Planner
   alias VisualGarden.Gardens
   use VisualGardenWeb, :live_view
@@ -20,10 +22,21 @@ defmodule VisualGardenWeb.PlannerLive.Show do
      |> assign(:page_title, page_title(socket.assigns.live_action))
      |> assign(:garden, garden)
      |> add_entries()
+     |> assign(:soon_list, Library.list_species_in_order(garden.region_id))
+     |> assign(:species_in_garden, species_in_garden(garden))
      |> assign(:beds, Gardens.list_beds(id))
      |> add_plantability(VisualGarden.MyDateTime.utc_today())
      |> add_current_plants(day)
      |> assign(:extent_dates, extent_dates(garden.tz))}
+  end
+
+  def species_in_garden(garden) do
+    seeds = Gardens.list_seeds(garden.id) |> Repo.preload([:species])
+    species_names = Library.list_species_with_common_names() |> Enum.into(%{})
+
+    for seed <- seeds do
+      species_names[seed.species]
+    end
   end
 
   def add_plantability(socket, start_date, end_date \\ nil) do

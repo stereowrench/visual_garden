@@ -1,38 +1,65 @@
-<%= for bed <- @beds do %>
-  <h2>Bed <%= bed.name %></h2>
+<div class="prose">
+  <h1>Planner for <%= @garden.name %></h1>
 
-  <form phx-submit="plant_combo" phx-change="plant_combo_update">
-    <div class="square-grid" style={["--length: #{bed.length};", "--width: #{bed.width}"]}>
-      <%= for {{_label, val}, idx} <- Enum.with_index(Gardens.squares_options(bed)) do %>
-        <label
-          class="square-label"
-          style={["--content: '#{content_for_cell(@plants[bed.id], val)}'"]}
-        >
-          <input type="hidden" value={bed.id} name="bed_id" />
-          <input
-            class="square-check"
-            type="checkbox"
-            disabled={!has_plant(@plants[bed.id], val) or !@plantability[bed.id][val]}
-            name="Square[]"
-            id={"square_picker_#{idx}_#{bed.id}"}
-            value={val}
-          />
-          <span></span>
-        </label>
+  <h2>What's in season?</h2>
+  <div class="prose">
+    <ol>
+      <%= for {date_str, strs} <- @soon_list do %>
+        <li>
+          (<%= date_str %>) <.render_species strs={strs} species_in_garden={@species_in_garden} />
+        </li>
       <% end %>
-    </div>
-    <.button phx-disable-with="Saving...">Plant bulk</.button>
-  </form>
+    </ol>
+  </div>
+</div>
 
-  <.live_component
-    module={VisualGardenWeb.PlannerLive.GraphComponent}
-    bed={bed}
-    garden={@garden}
-    id={"garden_graph-" <> to_string(bed.id)}
-    planner_entries={@planner_entries[bed.id] || []}
-    current_user={@current_user}
-    extent_dates={@extent_dates}
-  />
+<%= for bed <- @beds do %>
+  <div class="prose">
+    <h2><%= bed.name %></h2>
+    <h3>Bulk Schedule</h3>
+    <p>
+      Select the grid cells to plan in bulk. When the cell is
+      <span style="color: rgb(255,144,144)">red</span>
+      you have no plantables that can be planted in the available space. Either make room in the schedule, <.link navigate={
+        ~p"/library_seeds/"
+      }>add plantables from the library</.link>, or add <.link navigate={
+        ~p"/gardens/#{@garden.id}/seeds"
+      }>custom plantables</.link>.
+    </p>
+    <form phx-submit="plant_combo" phx-change="plant_combo_update">
+      <div class="square-grid" style={["--length: #{bed.length};", "--width: #{bed.width}"]}>
+        <%= for {{_label, val}, idx} <- Enum.with_index(Gardens.squares_options(bed)) do %>
+          <label
+            class="square-label"
+            style={["--content: '#{content_for_cell(@plants[bed.id], val)}'"]}
+          >
+            <input type="hidden" value={bed.id} name="bed_id" />
+            <input
+              class="square-check"
+              type="checkbox"
+              disabled={!has_plant(@plants[bed.id], val) or !@plantability[bed.id][val]}
+              name="Square[]"
+              id={"square_picker_#{idx}_#{bed.id}"}
+              value={val}
+            />
+            <span></span>
+          </label>
+        <% end %>
+      </div>
+      <.button phx-disable-with="Saving...">Plant bulk</.button>
+    </form>
+
+    <h3>Planting Schedule</h3>
+    <.live_component
+      module={VisualGardenWeb.PlannerLive.GraphComponent}
+      bed={bed}
+      garden={@garden}
+      id={"garden_graph-" <> to_string(bed.id)}
+      planner_entries={@planner_entries[bed.id] || []}
+      current_user={@current_user}
+      extent_dates={@extent_dates}
+    />
+  </div>
 <% end %>
 
 <.modal
