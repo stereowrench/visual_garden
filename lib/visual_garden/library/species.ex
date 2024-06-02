@@ -12,6 +12,7 @@ defmodule VisualGarden.Library.Species do
     field :uuid, Ecto.UUID
 
     has_many :schedules, VisualGarden.Library.Schedule
+    has_many :library_seeds, VisualGarden.Library.LibrarySeed
 
     timestamps(type: :utc_datetime)
   end
