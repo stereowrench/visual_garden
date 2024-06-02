@@ -559,7 +559,8 @@ defmodule VisualGarden.Planner do
             type: "nursery_plant",
             planner_entry_id: ne.id,
             date: date,
-            end_date: ne.nursery_end
+            end_date: ne.nursery_end,
+            garden_id: garden.id
           }
         end)
 
@@ -570,7 +571,8 @@ defmodule VisualGarden.Planner do
           %{
             type: "nursery_overdue",
             date: ne.nursery_end,
-            planner_entry_id: ne.id
+            planner_entry_id: ne.id,
+            garden_id: garden.id
           }
         end)
 
@@ -600,7 +602,8 @@ defmodule VisualGarden.Planner do
             type: "plant",
             planner_entry_id: entry.id,
             date: date,
-            end_date: entry.end_plant_date
+            end_date: entry.end_plant_date,
+            garden_id: garden.id
           }
         end)
 
@@ -611,7 +614,8 @@ defmodule VisualGarden.Planner do
           %{
             type: "plant_overdue",
             date: entry.end_plant_date,
-            planner_entry_id: entry.id
+            planner_entry_id: entry.id,
+            garden_id: garden.id
           }
         end)
 
@@ -622,11 +626,30 @@ defmodule VisualGarden.Planner do
             type: "orphaned_nursery",
             date: MyDateTime.utc_today(),
             nursery_entry_id: ne.id,
-            name: ne.seed.name
+            name: ne.seed.name,
+            garden_id: garden.id
           }
         end)
 
-      orphaned_plants ++
+      water_entries =
+        for bed <- Gardens.list_beds(garden.id) do
+          bed_last = Gardens.get_last_water_for_bed(bed.id)
+
+          if bed_last do
+            last_water = bed_last.event_time
+            if Timex.before?(Timex.shift(last_water, hours: 18), MyDateTime.utc_now()) do
+              [%{type: "water", date: MyDateTime.utc_today(), bed: bed, garden_id: garden.id, last_water: last_water}]
+            else
+              []
+            end
+          else
+            [%{type: "water", date: MyDateTime.utc_today(), bed: bed, garden_id: garden.id, last_water: nil}]
+          end
+        end
+        |> List.flatten()
+
+      water_entries ++
+        orphaned_plants ++
         current_nursery_entries ++
         overdue_nursery_entries ++ current_plant_entries ++ overdue_plant_entries
     end

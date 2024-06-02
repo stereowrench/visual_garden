@@ -64,6 +64,7 @@ defmodule VisualGardenWeb.HomeLive.Show do
       "plant" -> render_plant(assigns)
       "plant_overdue" -> render_plant_overdue(assigns)
       "orphaned_nursery" -> render_orphaned_nursery(assigns)
+      "water" -> render_water(assigns)
     end
   end
 
@@ -84,6 +85,40 @@ defmodule VisualGardenWeb.HomeLive.Show do
     """
   end
 
+  def render_water(assigns) do
+    ~H"""
+    <div class="mt-6 border-t border-gray-100">
+      <div class="divide-y divide-gray-200 overflow-hidden rounded-lg bg-white shadow">
+        <div class="border-b border-gray-200 bg-white px-4 py-5 sm:px-6">
+          <h3 class="text-base font-semibold leading-6 text-gray-900">
+            💦 Water <%= @item.bed.name %>
+          </h3>
+        </div>
+        <dl>
+          <div class="dldiv">
+            <dt>Last Watered</dt>
+            <dd>
+              <%= if @item.last_water do
+                Timex.format(@item.last_water, "{relative}", :relative) |> elem(1)
+              else
+                "never"
+              end %>
+            </dd>
+          </div>
+        </dl>
+        <%= unless Timex.after?(@item.date, MyDateTime.utc_today) do %>
+          <.button
+            phx-click={JS.push("water", value: %{bed_id: @item.bed.id})}
+            data-confirm="Are you sure?"
+          >
+            Water
+          </.button>
+        <% end %>
+      </div>
+    </div>
+    """
+  end
+
   def render_nursery_plant(assigns) do
     assigns =
       assign(assigns, remaining_days: Timex.diff(assigns.item.end_date, assigns.item.date, :days))
@@ -92,17 +127,34 @@ defmodule VisualGardenWeb.HomeLive.Show do
     # IO.inspect(assigns.planner_entries[assigns.item.planner_entry_id])
 
     ~H"""
-    <div>
-      (<%= Timex.format(@item.date, "{relative}", :relative) |> elem(1) %>)
-      Nurse <%= @entry.seed.name %> (<%= @remaining_days %> days left) in <%= @entry.bed.name %> (<%= @entry.row %>, <%= @entry.column %>)
-      <%= unless Timex.after?(@item.date, MyDateTime.utc_today) do %>
-        <.button
-          phx-click={JS.push("nurse", value: %{planner_entry_id: @entry.id})}
-          data-confirm="Are you sure?"
-        >
-          Nurse
-        </.button>
-      <% end %>
+    <div class="mt-6 border-t border-gray-100">
+      <div class="divide-y divide-gray-200 overflow-hidden rounded-lg bg-white shadow">
+        <div class="border-b border-gray-200 bg-white px-4 py-5 sm:px-6">
+          <h3 class="text-base font-semibold leading-6 text-gray-900">
+            🌱 Nurse "<%= @entry.seed.name %>" in <%= @entry.bed.name %>
+          </h3>
+        </div>
+        <dl>
+          <div class="dldiv">
+            <dt>In Season</dt>
+            <dd>
+              <%= Timex.format(@item.date, "{relative}", :relative) |> elem(1) %> (<%= @remaining_days %> days left)
+            </dd>
+          </div>
+          <div class="dldiv">
+            <dt>What</dt>
+            <dd><%= @entry.seed.name %></dd>
+          </div>
+        </dl>
+        <%= unless Timex.after?(@item.date, MyDateTime.utc_today) do %>
+          <.button
+            phx-click={JS.push("nurse", value: %{planner_entry_id: @entry.id})}
+            data-confirm="Are you sure?"
+          >
+            Nurse
+          </.button>
+        <% end %>
+      </div>
     </div>
     """
   end
@@ -133,13 +185,12 @@ defmodule VisualGardenWeb.HomeLive.Show do
       assign(assigns, remaining_days: Timex.diff(assigns.item.end_date, assigns.item.date, :days))
       |> assign(entry: assigns.planner_entries[assigns.item.planner_entry_id])
 
-    # IO.inspect(assigns.planner_entries[assigns.item.planner_entry_id])
     ~H"""
     <div class="mt-6 border-t border-gray-100">
       <div class="divide-y divide-gray-200 overflow-hidden rounded-lg bg-white shadow">
         <div class="border-b border-gray-200 bg-white px-4 py-5 sm:px-6">
           <h3 class="text-base font-semibold leading-6 text-gray-900">
-            Plant <%= @entry.common_name %> in <%= @garden.name %>
+            🪴 Plant <%= @entry.common_name %> in <%= @garden.name %>
           </h3>
         </div>
         <dl>
@@ -155,7 +206,7 @@ defmodule VisualGardenWeb.HomeLive.Show do
           </div>
           <div class="dldiv">
             <dt>Where</dt>
-            <dd>(<%= @entry.row %>, <%= @entry.column %>) in <%= @entry.bed.name %> </dd>
+            <dd>(<%= @entry.row %>, <%= @entry.column %>) in <%= @entry.bed.name %></dd>
           </div>
         </dl>
         <%= unless Timex.after?(@item.date, MyDateTime.utc_today) do %>
@@ -249,6 +300,23 @@ defmodule VisualGardenWeb.HomeLive.Show do
         })
 
       Planner.set_entry_nurse_date(entry, garden)
+    end)
+
+    {:noreply, assign_assigns(socket)}
+  end
+
+  @impl true
+  def handle_event("water", %{"bed_id" => bid}, socket) do
+    Repo.transaction(fn ->
+      bed = Gardens.get_product!(bid)
+      garden = Gardens.get_garden!(bed.garden_id)
+      Authorization.authorize_garden_modify(garden.id, socket.assigns.current_user)
+
+      {:ok, _} =
+        Gardens.create_event_log("water", %{
+          "event_time" => MyDateTime.utc_now(),
+          "product_id" => bid
+        })
     end)
 
     {:noreply, assign_assigns(socket)}

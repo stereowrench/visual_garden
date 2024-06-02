@@ -4,6 +4,7 @@ defmodule VisualGarden.Gardens do
   """
 
   import Ecto.Query, warn: false
+  alias VisualGarden.Gardens.EventLog
   alias VisualGarden.Gardens.GardenUser
   alias VisualGarden.Repo
 
@@ -164,6 +165,15 @@ defmodule VisualGarden.Gardens do
 
   def list_beds(garden_id) do
     Repo.all(from p in Product, where: p.garden_id == ^garden_id and p.type == :bed)
+  end
+
+  def get_last_water_for_bed(bed_id) do
+    Repo.one(
+      from event in EventLog,
+        where: event.event_type == :water and event.product_id == ^bed_id,
+        order_by: [desc: :event_time],
+        limit: 1
+    )
   end
 
   @doc """

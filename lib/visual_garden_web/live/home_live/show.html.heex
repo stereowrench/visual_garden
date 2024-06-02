@@ -44,9 +44,7 @@
   <li class="flex justify-between gap-x-6 py-5">
     <.render_todo_item
       item={item}
-      garden={
-        Enum.find(@gardens, &(&1.id == @planner_entries[item.planner_entry_id].bed.garden_id))
-      }
+      garden={Enum.find(@gardens, &(&1.id == item.garden_id))}
       planner_entries={@planner_entries}
     />
   </li>
