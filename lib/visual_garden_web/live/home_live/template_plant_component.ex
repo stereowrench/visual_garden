@@ -71,7 +71,7 @@ defmodule VisualGardenWeb.HomeLive.TemplatePlantComponent do
       for garden <- socket.assigns.gardens do
         case TemplateGardens.single_tomato_plant_from_nursery(garden, false) do
           nil ->
-            nil
+            {garden.id, nil}
 
           template ->
             {garden.id, [{"single_tomato", template}]}
