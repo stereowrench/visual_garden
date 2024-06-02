@@ -202,14 +202,16 @@ defmodule VisualGarden.PlannerTest do
           garden
         )
 
-      assert Planner.get_todo_items(user) == [
-               %{
-                 type: "nursery_plant",
-                 planner_entry_id: pe.id,
-                 date: ~D[2023-06-06],
-                 end_date: ne
-               }
-             ]
+      assert Planner.get_todo_items(user) |> Enum.filter(&(&1.type == "nursery_plant")) ==
+               [
+                 %{
+                   type: "nursery_plant",
+                   planner_entry_id: pe.id,
+                   date: ~D[2023-06-06],
+                   end_date: ne,
+                   garden_id: garden.id
+                 }
+               ]
     end
 
     test "nursery todo future", %{garden: garden, bed: bed, seed: seed, user: user} do
@@ -236,14 +238,17 @@ defmodule VisualGarden.PlannerTest do
           garden
         )
 
-      assert Planner.get_todo_items(user) == [
-               %{
-                 type: "nursery_plant",
-                 planner_entry_id: pe.id,
-                 date: ~D[2023-07-05],
-                 end_date: ne
-               }
-             ]
+      assert Planner.get_todo_items(user)
+             |> Enum.filter(&(&1.type == "nursery_plant")) ==
+               [
+                 %{
+                   type: "nursery_plant",
+                   planner_entry_id: pe.id,
+                   date: ~D[2023-07-05],
+                   end_date: ne,
+                   garden_id: garden.id
+                 }
+               ]
     end
 
     test "nursery todo overdue", %{garden: garden, bed: bed, seed: seed, user: user} do
@@ -270,11 +275,12 @@ defmodule VisualGarden.PlannerTest do
           garden
         )
 
-      assert Planner.get_todo_items(user) == [
+      assert Planner.get_todo_items(user) |> Enum.filter(&(&1.type == "nursery_overdue")) == [
                %{
                  type: "nursery_overdue",
                  planner_entry_id: pe.id,
-                 date: ~D[2023-05-15]
+                 date: ~D[2023-05-15],
+                 garden_id: garden.id
                }
              ]
     end
@@ -299,14 +305,16 @@ defmodule VisualGarden.PlannerTest do
           garden
         )
 
-      assert Planner.get_todo_items(user) == [
-               %{
-                 type: "plant",
-                 planner_entry_id: pe.id,
-                 date: ~D[2023-06-06],
-                 end_date: plante
-               }
-             ]
+      assert Planner.get_todo_items(user) |> Enum.filter(&(&1.type == "plant")) ==
+               [
+                 %{
+                   type: "plant",
+                   planner_entry_id: pe.id,
+                   date: ~D[2023-06-06],
+                   end_date: plante,
+                   garden_id: garden.id
+                 }
+               ]
     end
 
     test "plant todo future", %{garden: garden, bed: bed, seed: seed, user: user} do
@@ -329,14 +337,16 @@ defmodule VisualGarden.PlannerTest do
           garden
         )
 
-      assert Planner.get_todo_items(user) == [
-               %{
-                 type: "plant",
-                 planner_entry_id: pe.id,
-                 date: ~D[2023-07-05],
-                 end_date: plante
-               }
-             ]
+      assert Planner.get_todo_items(user) |> Enum.filter(&(&1.type == "plant")) ==
+               [
+                 %{
+                   type: "plant",
+                   planner_entry_id: pe.id,
+                   date: ~D[2023-07-05],
+                   end_date: plante,
+                   garden_id: garden.id
+                 }
+               ]
     end
 
     test "plant todo overdue", %{garden: garden, bed: bed, seed: seed, user: user} do
@@ -359,11 +369,12 @@ defmodule VisualGarden.PlannerTest do
           garden
         )
 
-      assert Planner.get_todo_items(user) == [
+      assert Planner.get_todo_items(user) |> Enum.filter(&(&1.type == "plant_overdue")) == [
                %{
                  type: "plant_overdue",
                  planner_entry_id: pe.id,
-                 date: ~D[2023-05-15]
+                 date: ~D[2023-05-15],
+                 garden_id: garden.id
                }
              ]
     end
@@ -393,7 +404,8 @@ defmodule VisualGarden.PlannerTest do
 
       {:ok, _} = Planner.set_planner_entry_plant(pe, plant.id, garden)
 
-      assert Planner.get_todo_items(user) == []
+      assert Planner.get_todo_items(user) |> Enum.filter(&(&1.type == "plant")) ==
+               []
     end
 
     test "nursed plants don't appear", %{garden: garden, bed: bed, seed: seed, user: user} do
@@ -427,14 +439,17 @@ defmodule VisualGarden.PlannerTest do
         garden_id: garden.id
       })
 
-      assert Planner.get_todo_items(user) == [
-               %{
-                 type: "plant",
-                 date: ~D[2023-06-19],
-                 end_date: ~D[2023-07-13],
-                 planner_entry_id: pe.id
-               }
-             ]
+      assert Planner.get_todo_items(user)
+             |> Enum.filter(&(&1.type == "plant")) ==
+               [
+                 %{
+                   type: "plant",
+                   date: ~D[2023-06-19],
+                   end_date: ~D[2023-07-13],
+                   planner_entry_id: pe.id,
+                   garden_id: garden.id
+                 }
+               ]
     end
 
     test "water" do

@@ -59,7 +59,7 @@ defmodule VisualGardenWeb.LibrarySeedLive.FormComponent do
   def update(%{library_seed: library_seed} = assigns, socket) do
     changeset = Library.change_library_seed(library_seed)
 
-    species = Planner.get_available_species(assigns.garden.region_id)
+    species = Planner.get_available_species()
 
     {:ok,
      socket

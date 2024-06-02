@@ -258,6 +258,17 @@ defmodule VisualGarden.Planner do
     end)
   end
 
+  def get_available_species() do
+    Library.list_species_with_common_names()
+    |> Enum.map(fn {species, name} ->
+      %{
+        label: DisplayHelpers.species_display_string_simple(species, name),
+        matches: [],
+        value: to_string(species.id)
+      }
+    end)
+  end
+
   def species_bubble(
         collected,
         species = %{
@@ -637,16 +648,44 @@ defmodule VisualGarden.Planner do
 
           if bed_last do
             last_water = bed_last.event_time
+
             if Timex.before?(Timex.shift(last_water, hours: 18), MyDateTime.utc_now()) do
-              [%{type: "water", date: MyDateTime.utc_today(), bed: bed, garden_id: garden.id, last_water: last_water}]
+              [
+                %{
+                  type: "water",
+                  date: MyDateTime.utc_today(),
+                  bed: bed,
+                  garden_id: garden.id,
+                  last_water: last_water
+                }
+              ]
             else
               []
             end
           else
-            [%{type: "water", date: MyDateTime.utc_today(), bed: bed, garden_id: garden.id, last_water: nil}]
+            [
+              %{
+                type: "water",
+                date: MyDateTime.utc_today(),
+                bed: bed,
+                garden_id: garden.id,
+                last_water: nil
+              }
+            ]
           end
         end
         |> List.flatten()
+
+      # media_entries =
+      #   for bed <- Gardens.list_beds(garden.id) do
+      #     bed_last = Gardens.get_last_media_for_bed(bed.id)
+
+      #     if bed_last do
+      #       []
+      #     else
+      #     end
+      #   end
+      #   |> List.flatten()
 
       water_entries ++
         orphaned_plants ++

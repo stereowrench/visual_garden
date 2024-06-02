@@ -66,7 +66,7 @@ defmodule VisualGardenWeb.SeedLiveTest do
       {:ok, index_live, _html} = live(conn, ~p"/gardens/#{garden.id}/seeds")
 
       assert index_live |> element("#seeds-#{seed.id} a", "Edit") |> render_click() =~
-               "Edit Seed"
+               "Edit Plantable"
 
       assert_patch(index_live, ~p"/gardens/#{garden.id}/seeds/#{seed}/edit")
 
@@ -101,7 +101,7 @@ defmodule VisualGardenWeb.SeedLiveTest do
       conn = log_in_user(conn, user)
       {:ok, _show_live, html} = live(conn, ~p"/gardens/#{garden.id}/seeds/#{seed}")
 
-      assert html =~ "Show Seed"
+      assert html =~ "Show Plantable"
       assert html =~ seed.name
     end
 
@@ -110,7 +110,7 @@ defmodule VisualGardenWeb.SeedLiveTest do
       {:ok, show_live, _html} = live(conn, ~p"/gardens/#{garden.id}/seeds/#{seed}")
 
       assert show_live |> element("a", "Edit") |> render_click() =~
-               "Edit Seed"
+               "Edit Plantable"
 
       assert_patch(show_live, ~p"/gardens/#{garden.id}/seeds/#{seed}/show/edit")
 

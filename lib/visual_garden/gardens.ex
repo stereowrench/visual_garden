@@ -176,6 +176,15 @@ defmodule VisualGarden.Gardens do
     )
   end
 
+  def get_last_media_for_bed(bed_id) do
+    Repo.one(
+      from event in EventLog,
+        where: event.event_type == :transfer and event.product_id == ^bed_id,
+        order_by: [desc: :event_time],
+        limit: 1
+    )
+  end
+
   @doc """
   Gets a single products.
 
