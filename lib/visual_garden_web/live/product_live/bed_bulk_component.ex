@@ -64,7 +64,7 @@ defmodule VisualGardenWeb.ProductLive.BedBulkComponent do
 
   @impl true
   def update(assigns, socket) do
-    Authorization.authorize_garden_modify(assigns.bed.garden_id, socket.assigns.current_user)
+    Authorization.authorize_garden_modify(assigns.bed.garden_id, assigns.current_user)
 
     plants =
       Gardens.list_plants(assigns.bed.garden_id, assigns.bed.id)
