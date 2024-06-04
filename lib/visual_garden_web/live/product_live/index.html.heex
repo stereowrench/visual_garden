@@ -24,7 +24,7 @@
   </:actions>
 </.header>
 
-<div class="prose">
+<div class="prose prose-eagle">
   <%= for {name, products} <- Enum.group_by(@products, & &1.type) do %>
     <h3 id={"product-header-" <> to_string(name)}><%= friendly_type(name) %></h3>
     <.table

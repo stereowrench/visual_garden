@@ -34,7 +34,7 @@ defmodule VisualGardenWeb.SeedLive.FormComponent do
         <.input field={@form[:description]} type="text" label="Description" />
         <.input field={@form[:days_to_maturation]} type="number" label="Days to maturation" />
 
-        <div class="prose">
+        <div class="prose prose-eagle">
           To allow planting at anytime of the year select "Any Season" as the species.
         </div>
 
