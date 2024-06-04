@@ -1,4 +1,4 @@
-<div class="prose">
+<div class="prose prose-eagle">
   <h1 class="text-eagle-900">Home</h1>
 </div>
 
@@ -12,7 +12,7 @@
 />
 
 <%!-- Soon to be planted --%>
-<div class="prose mt-10">
+<div class="prose prose-eagle mt-10">
   <h2>What's coming up to grow?</h2>
 </div>
 <PC.accordion
@@ -25,7 +25,7 @@
   }
 >
   <:item :let={entry}>
-    <div class="prose">
+    <div class="prose prose-eagle">
       <ol>
         <%= for {date_str, strs} <- entry.content do %>
           <li>
@@ -37,7 +37,7 @@
   </:item>
 </PC.accordion>
 
-<div class="prose mt-10">
+<div class="prose prose-eagle mt-10">
   <h2>Task list</h2>
 </div>
 
