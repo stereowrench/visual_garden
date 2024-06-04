@@ -9,7 +9,7 @@ defmodule VisualGardenWeb.HomeLive.TemplatePlantComponent do
     ~H"""
     <div>
       <%= if @gardens != [] do %>
-        <div class="prose">
+        <div class="prose prose-eagle">
           <%= for garden <- @gardens do %>
             <h3><%= garden.name %></h3>
             <%= for {name, template} <- @templates[garden.id] do %>

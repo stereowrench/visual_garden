@@ -121,7 +121,7 @@ defmodule VisualGardenWeb.PlannerLive.FormComponent do
           </:actions>
         </.simple_form>
       <% else %>
-        <div class="prose">
+        <div class="prose prose-eagle">
           <h3>Nursery start</h3>
           <%= @planner_entry.nursery_start %>
           <h3>Nursery end</h3>
