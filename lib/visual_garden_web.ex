@@ -57,6 +57,7 @@ defmodule VisualGardenWeb do
 
       alias VisualGarden.Authorization
       on_mount Sentry.LiveViewHook
+      on_mount VisualGardenWeb.SentryUserHook
       unquote(html_helpers())
     end
   end
