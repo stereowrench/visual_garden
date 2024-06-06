@@ -70,9 +70,15 @@ jobs:
         POSTGRES_PASSWORD: postgres
       run:
         mix test
-
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    concurrency:
+      group: deploy
+    steps:
     - name: Deploy To Linode
       uses: appleboy/ssh-action@master
+      if: github.ref == 'refs/heads/main'
       with:
         host: garden.stereowrench.com
         username: root
@@ -80,7 +86,7 @@ jobs:
         port: 22
         script_stop: true
         script: |
-          cd /srv
+          cd /srv/visual_garden
           git pull
           mix deps.get
           mix assets.deploy
