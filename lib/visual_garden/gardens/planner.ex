@@ -4,7 +4,6 @@ defmodule VisualGarden.Gardens.Planner do
 
   schema "planners" do
     field :garden_id, :id
-    has_many :entries, VisualGarden.Gardens.PlannerEntry
 
     timestamps(type: :utc_datetime)
   end

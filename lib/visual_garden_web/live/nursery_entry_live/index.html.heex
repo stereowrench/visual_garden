@@ -18,7 +18,7 @@
     <div class="sr-only">
       <.link navigate={~p"/gardens/#{@garden.id}/nursery_entries/#{nursery_entry}"}>Show</.link>
     </div>
-    <.link patch={~p"/gardens/#{@garden.id}/nursery_entries/#{nursery_entry}/edit"}>Edit</.link>
+    <%!-- <.link patch={~p"/gardens/#{@garden.id}/nursery_entries/#{nursery_entry}/edit"}>Edit</.link> --%>
   </:action>
   <:action :let={{id, nursery_entry}}>
     <.link

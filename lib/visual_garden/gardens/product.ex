@@ -10,7 +10,7 @@ defmodule VisualGarden.Gardens.Product do
     field :length, :integer
     field :width, :integer
 
-    has_many :planner_entries, VisualGarden.Gardens.PlannerEntry
+    has_many :planner_entries, VisualGarden.Gardens.PlannerEntry, foreign_key: :bed_id
 
     timestamps(type: :utc_datetime)
   end

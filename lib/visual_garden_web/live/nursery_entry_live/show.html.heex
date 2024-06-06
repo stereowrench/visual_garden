@@ -4,12 +4,12 @@
   Nursery entry <%= @nursery_entry.id %>
   <:subtitle>This is a nursery_entry record from your database.</:subtitle>
   <:actions>
-    <.link
+    <%!-- <.link
       patch={~p"/gardens/#{@garden.id}/nursery_entries/#{@nursery_entry}/show/edit"}
       phx-click={JS.push_focus()}
     >
       <.button>Edit nursery_entry</.button>
-    </.link>
+    </.link> --%>
   </:actions>
 </.header>
 
