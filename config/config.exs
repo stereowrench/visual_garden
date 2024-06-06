@@ -68,7 +68,7 @@ config :sentry,
   environment_name: Mix.env(),
   enable_source_code_context: true,
   root_source_code_paths: [File.cwd!()],
-  before_send: {VisualGarden.Sentry, :before_send}
+  before_send: {VisualGarden.Sentry, :filter_non_500}
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
