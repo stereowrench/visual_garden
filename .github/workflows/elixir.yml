@@ -70,3 +70,21 @@ jobs:
         POSTGRES_PASSWORD: postgres
       run:
         mix test
+
+    - name: Deploy To Linode
+      uses: appleboy/ssh-action@master
+      with:
+        host: garden.stereowrench.com
+        username: root
+        key: ${{ secrets.ssh_key }}
+        port: 22
+        script_stop: true
+        script: |
+          cd /srv
+          git pull
+          mix deps.get
+          mix assets.deploy
+          MIX_ENV=prod mix release --overwrite
+          direnv exec . _build/prod/rel/visual_garden/bin/visual_garden stop
+          mix ecto.migrate
+          direnv exec . _build/prod/rel/visual_garden/bin/visual_garden daemon
