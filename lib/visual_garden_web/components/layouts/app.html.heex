@@ -265,6 +265,14 @@
       <div class="px-4 py-10 sm:px-6 lg:px-8 lg:py-6">
         <Flashy.Container.render flash={@flash} class="z-10" />
         <%= @inner_content %>
+
+        <div class="mt-16 border-t border-white/10 pt-8 sm:mt-20 lg:mt-24">
+          <footer>
+            <.link navigate={~p"/privacy"}>
+              Privacy Policy
+            </.link>
+          </footer>
+        </div>
       </div>
     </div>
   </main>

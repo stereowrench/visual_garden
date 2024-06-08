@@ -40,6 +40,7 @@ defmodule VisualGardenWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :home
+    get "/privacy", PageController, :privacy
 
     live_session :routed,
       on_mount: [

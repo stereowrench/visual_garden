@@ -10,4 +10,8 @@ defmodule VisualGardenWeb.PageController do
       render(conn, :home, layout: false)
     end
   end
+
+  def privacy(conn, _params) do
+    render(conn, :privacy, layout: false)
+  end
 end
