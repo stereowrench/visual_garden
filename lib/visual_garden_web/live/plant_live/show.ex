@@ -1,4 +1,5 @@
 defmodule VisualGardenWeb.PlantLive.Show do
+  alias VisualGarden.Authorization.UnauthorizedError
   use VisualGardenWeb, :live_view
 
   alias VisualGarden.Gardens
@@ -24,6 +25,17 @@ defmodule VisualGardenWeb.PlantLive.Show do
       ) do
     garden = Gardens.get_garden!(garden_id)
     Authorization.authorize_garden_view(garden.id, socket.assigns.current_user)
+    plant = Gardens.get_plant!(id)
+
+    product = Gardens.get_product!(product_id)
+
+    unless product.garden_id == garden.id do
+      raise UnauthorizedError
+    end
+
+    unless plant.product_id == product.id do
+      raise UnauthorizedError
+    end
 
     {:noreply,
      socket
@@ -35,13 +47,20 @@ defmodule VisualGardenWeb.PlantLive.Show do
        Authorization.can_modify_garden?(garden, socket.assigns.current_user)
      )
      |> assign(:garden, garden)
-     |> assign(:product, Gardens.get_product!(product_id))
-     |> assign(:plant, Gardens.get_plant!(id))
+     |> assign(:product, product)
+     |> assign(:plant, plant)
      |> assign(:events, Gardens.list_event_logs(product_id, id))}
   end
 
   defp page_title(:show), do: "Show Plant"
   defp page_title(:edit), do: "Edit Plant"
+
+  @impl true
+  def handle_event("archive", _, socket) do
+    Authorization.authorize_garden_modify(socket.assigns.garden.id, socket.assigns.current_user)
+    {:ok, _} = Gardens.archive_plant(socket.assigns.plant)
+    {:noreply, socket |> assign(:plant, Gardens.get_plant!(socket.assigns.plant.id))}
+  end
 
   @impl true
   def handle_info({VisualGardenWeb.PlantLive.FormComponent, {:saved, plant}}, socket) do

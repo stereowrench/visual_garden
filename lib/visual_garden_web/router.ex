@@ -110,6 +110,7 @@ defmodule VisualGardenWeb.Router do
 
       live "/gardens/:garden_id/seeds/:id", SeedLive.Show, :show
       live "/gardens/:garden_id/seeds/:id/show/edit", SeedLive.Show, :edit
+      live "/gardens/:garden_id/seeds/:id/show/archive", SeedLive.Show, :archive
 
       live "/schedules", ScheduleLive.Index, :index
       live "/schedules/new", ScheduleLive.Index, :new

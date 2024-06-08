@@ -372,13 +372,14 @@ defmodule VisualGarden.Gardens do
 
   alias VisualGarden.Gardens.Plant
 
+  def archive_plant(plant) do
+    plant
+    |> Plant.changeset(%{archived: true})
+    |> Repo.update()
+  end
+
   @doc """
   Returns the list of plants.
-
-  ## Examples
-
-      iex> list_plants()
-      [%Plant{}, ...]
 
   """
   def list_plants(garden_id) do
