@@ -486,6 +486,7 @@ defmodule VisualGarden.Planner do
   def unwrwap_dates(m1, d1, m2, d2, today) do
     start = Date.new!(today.year, m1, d1)
     endd = Date.new!(today.year, m2, d2)
+
     if Timex.before?(today, endd) && Timex.after?(start, endd) do
       {Timex.shift(start, years: -1), endd}
     else
@@ -544,7 +545,7 @@ defmodule VisualGarden.Planner do
     for garden <- gardens do
       entries =
         list_planner_entries_ungrouped(garden.id)
-        |> Repo.preload([:nursery_entry])
+        |> Repo.preload([:nursery_entry, :plant])
 
       nursery_filter_fn = fn entry ->
         entry.nursery_start != nil and entry.nursery_end != nil and entry.nursery_entry == nil
@@ -610,6 +611,8 @@ defmodule VisualGarden.Planner do
           %{
             type: "refuse",
             planner_entry_id: a.id,
+            plant: a.plant,
+            bed: a.bed,
             date: Timex.shift(a.end_plant_date, days: a.days_to_refuse),
             garden_id: garden.id
           }
@@ -712,7 +715,8 @@ defmodule VisualGarden.Planner do
         end
         |> List.flatten()
 
-      media_entries ++
+      refuse_entries ++
+        media_entries ++
         water_entries ++
         orphaned_plants ++
         current_nursery_entries ++
