@@ -91,8 +91,12 @@ defmodule VisualGarden.Planner do
     mapped =
       Repo.all(
         from pe in PlannerEntry,
-          where: pe.row == ^row and pe.column == ^column and pe.bed_id == ^bed.id
+          where: pe.row == ^row and pe.column == ^column and pe.bed_id == ^bed.id,
+          preload: [:plant]
       )
+      |> Enum.reject(fn pe ->
+        pe.plant && pe.plant.archived == true
+      end)
       |> Enum.reject(fn pe ->
         pe.id == skip_id
       end)

@@ -119,7 +119,7 @@ defmodule VisualGardenWeb.PlannerLive.Show do
               Timex.diff(en, today, :days) < 0 ->
                 {num, nil}
 
-              Timex.diff(start, today, :days) <= 0 and Timex.diff(en, today, :days) >= 0 ->
+              Timex.diff(start, today, :days) < 0 and Timex.diff(en, today, :days) >= 0 ->
                 {num, entry.common_name}
 
               true ->

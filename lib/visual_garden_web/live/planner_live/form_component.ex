@@ -13,6 +13,18 @@ defmodule VisualGardenWeb.PlannerLive.FormComponent do
       <.header>
         Planner Entry
       </.header>
+      <%= if @planner_entry && @planner_entry.plant_id do %>
+        <.link
+          class="underline"
+          navigate={
+            ~p"/gardens/#{@garden.id}/beds/#{@planner_entry.bed_id}/plants/#{@planner_entry.plant_id}"
+          }
+        >
+          View plant
+        </.link>
+        <br/>
+      <% end %>
+
       If you don't see species then you must add plantables either by
       <.link navigate={~p"/library_seeds"} class="underline">
         importing them from the library
