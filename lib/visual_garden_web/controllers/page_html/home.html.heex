@@ -46,45 +46,53 @@
         A gardening app for the masses
       </h1>
       <div class="mx-auto mt-8 max-w-2xl sm:mt-20 lg:mt-16 lg:max-w-4xl">
-      <dl class="grid max-w-xl grid-cols-1 gap-x-8 gap-y-10 lg:max-w-none lg:grid-cols-2 lg:gap-y-16">
-        <div class="relative pl-16">
-          <dt class="text-base font-semibold leading-7 text-gray-900">
-            <div class="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-mojo-600">
-              <.icon name="hero-calendar-days" class=" text-white h-6 w-6" />
-            </div>
-            Schedule
-          </dt>
-          <dd class="mt-2 text-base leading-7 text-gray-600">Morbi viverra dui mi arcu sed. Tellus semper adipiscing suspendisse semper morbi. Odio urna massa nunc massa.</dd>
-        </div>
-        <div class="relative pl-16">
-          <dt class="text-base font-semibold leading-7 text-gray-900">
-            <div class="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-mojo-600">
-              <.icon name="hero-book-open" class=" text-white h-6 w-6" />
-            </div>
-            Planning
-          </dt>
-          <dd class="mt-2 text-base leading-7 text-gray-600">Sit quis amet rutrum tellus ullamcorper ultricies libero dolor eget. Sem sodales gravida quam turpis enim lacus amet.</dd>
-        </div>
-        <div class="relative pl-16">
-          <dt class="text-base font-semibold leading-7 text-gray-900">
-            <div class="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-mojo-600">
-              <.icon name="hero-chart-bar" class=" text-white h-6 w-6" />
-            </div>
-            Tracking
-          </dt>
-          <dd class="mt-2 text-base leading-7 text-gray-600">Quisque est vel vulputate cursus. Risus proin diam nunc commodo. Lobortis auctor congue commodo diam neque.</dd>
-        </div>
-        <div class="relative pl-16">
-          <dt class="text-base font-semibold leading-7 text-gray-900">
-            <div class="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-mojo-600">
-              <.icon name="hero-bell-alert" class=" text-white h-6 w-6" />
-            </div>
-            Reminders
-          </dt>
-          <dd class="mt-2 text-base leading-7 text-gray-600">Arcu egestas dolor vel iaculis in ipsum mauris. Tincidunt mattis aliquet hac quis. Id hac maecenas ac donec pharetra eget.</dd>
-        </div>
-      </dl>
-    </div>
+        <dl class="grid max-w-xl grid-cols-1 gap-x-8 gap-y-10 lg:max-w-none lg:grid-cols-2 lg:gap-y-16">
+          <div class="relative pl-16">
+            <dt class="text-base font-semibold leading-7 text-gray-900">
+              <div class="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-mojo-600">
+                <.icon name="hero-calendar-days" class=" text-white h-6 w-6" />
+              </div>
+              Schedule
+            </dt>
+            <dd class="mt-2 text-base leading-7 text-gray-600">
+              Morbi viverra dui mi arcu sed. Tellus semper adipiscing suspendisse semper morbi. Odio urna massa nunc massa.
+            </dd>
+          </div>
+          <div class="relative pl-16">
+            <dt class="text-base font-semibold leading-7 text-gray-900">
+              <div class="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-mojo-600">
+                <.icon name="hero-book-open" class=" text-white h-6 w-6" />
+              </div>
+              Planning
+            </dt>
+            <dd class="mt-2 text-base leading-7 text-gray-600">
+              Sit quis amet rutrum tellus ullamcorper ultricies libero dolor eget. Sem sodales gravida quam turpis enim lacus amet.
+            </dd>
+          </div>
+          <div class="relative pl-16">
+            <dt class="text-base font-semibold leading-7 text-gray-900">
+              <div class="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-mojo-600">
+                <.icon name="hero-chart-bar" class=" text-white h-6 w-6" />
+              </div>
+              Tracking
+            </dt>
+            <dd class="mt-2 text-base leading-7 text-gray-600">
+              Quisque est vel vulputate cursus. Risus proin diam nunc commodo. Lobortis auctor congue commodo diam neque.
+            </dd>
+          </div>
+          <div class="relative pl-16">
+            <dt class="text-base font-semibold leading-7 text-gray-900">
+              <div class="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-mojo-600">
+                <.icon name="hero-bell-alert" class=" text-white h-6 w-6" />
+              </div>
+              Reminders
+            </dt>
+            <dd class="mt-2 text-base leading-7 text-gray-600">
+              Arcu egestas dolor vel iaculis in ipsum mauris. Tincidunt mattis aliquet hac quis. Id hac maecenas ac donec pharetra eget.
+            </dd>
+          </div>
+        </dl>
+      </div>
       <div class="mt-10 flex items-center gap-x-6">
         <.link
           class="rounded-md bg-mojo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-mojo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mojo-600"
@@ -111,4 +119,12 @@
       </div>
     </div>
   </div>
+</div>
+
+<div class="mt-16 border-t border-white/10 pt-8 sm:mt-20 lg:mt-24">
+  <footer>
+    <.link navigate={~p"/privacy"}>
+      Privacy Policy
+    </.link>
+  </footer>
 </div>
