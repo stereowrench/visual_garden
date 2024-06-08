@@ -1,4 +1,5 @@
 defmodule VisualGarden.GardensTest do
+  alias VisualGarden.Planner
   alias VisualGarden.LibraryFixtures
   use VisualGarden.DataCase
 
@@ -579,6 +580,35 @@ defmodule VisualGarden.GardensTest do
     end
   end
 
-  describe "refuse and concurrency" do
+  describe "refuse" do
+    import VisualGarden.GardensFixtures
+    import VisualGarden.AccountsFixtures
+
+    test "refuse updates the planner" do
+      garden = garden_fixture()
+      seed = seed_fixture(%{}, garden)
+      bed = product_fixture(%{type: "bed", length: 1, width: 1}, garden)
+      plant = plant_fixture(%{seed_id: seed.id}, garden)
+
+      {:ok, pe} =
+        Planner.create_planner_entry(%{
+          start_plant_date: ~D[2023-05-01],
+          end_plant_date: ~D[2023-05-01],
+          days_to_maturity: 60,
+          days_to_refuse: 15,
+          common_name: "My Plant",
+          seed_id: seed.id,
+          bed_id: bed.id,
+          row: 0,
+          column: 0,
+          plant_id: plant.id
+        }, garden)
+
+      Gardens.archive_plant(plant)
+      pe = Planner.get_planner_entry_by_plant(plant.id)
+
+      assert pe.days_to_refuse == 36
+      assert pe.days_to_maturity == 36
+    end
   end
 end

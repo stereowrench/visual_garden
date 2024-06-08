@@ -68,6 +68,7 @@ defmodule VisualGardenWeb.ProductLive.BedBulkComponent do
 
     plants =
       Gardens.list_plants(assigns.bed.garden_id, assigns.bed.id)
+      |> Enum.reject(& &1.archived)
       |> Enum.group_by(fn plant ->
         Gardens.row_col_to_square(plant.row, plant.column, assigns.bed)
       end)

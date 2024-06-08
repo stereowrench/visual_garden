@@ -74,6 +74,10 @@ defmodule VisualGarden.Planner do
     |> Repo.preload([:nursery_entry, :bed, :seed])
   end
 
+  def get_planner_entry_by_plant(plant_id) do
+    Repo.one(from p in PlannerEntry, where: p.plant_id == ^plant_id)
+  end
+
   def get_end_date(square, bed, start_date, skip_id \\ nil) do
     start_date =
       if start_date do
@@ -87,8 +91,12 @@ defmodule VisualGarden.Planner do
     mapped =
       Repo.all(
         from pe in PlannerEntry,
-          where: pe.row == ^row and pe.column == ^column and pe.bed_id == ^bed.id
+          where: pe.row == ^row and pe.column == ^column and pe.bed_id == ^bed.id,
+          preload: [:plant]
       )
+      |> Enum.reject(fn pe ->
+        pe.plant && pe.plant.archived == true
+      end)
       |> Enum.reject(fn pe ->
         pe.id == skip_id
       end)
@@ -483,17 +491,21 @@ defmodule VisualGarden.Planner do
     start = Date.new!(today.year, m1, d1)
     endd = Date.new!(today.year, m2, d2)
 
-    {s, e} =
-      if Timex.before?(start, endd) do
-        {start, endd}
-      else
-        {start, Timex.shift(endd, years: 1)}
-      end
-
-    if Timex.before?(e, today) do
-      {Timex.shift(s, years: 1), Timex.shift(e, years: 1)}
+    if Timex.before?(today, endd) && Timex.after?(start, endd) do
+      {Timex.shift(start, years: -1), endd}
     else
-      {s, e}
+      {s, e} =
+        if Timex.before?(start, endd) do
+          {start, endd}
+        else
+          {start, Timex.shift(endd, years: 1)}
+        end
+
+      if Timex.before?(e, today) do
+        {Timex.shift(s, years: 1), Timex.shift(e, years: 1)}
+      else
+        {s, e}
+      end
     end
   end
 
@@ -537,7 +549,7 @@ defmodule VisualGarden.Planner do
     for garden <- gardens do
       entries =
         list_planner_entries_ungrouped(garden.id)
-        |> Repo.preload([:nursery_entry])
+        |> Repo.preload([:nursery_entry, :plant])
 
       nursery_filter_fn = fn entry ->
         entry.nursery_start != nil and entry.nursery_end != nil and entry.nursery_entry == nil
@@ -595,6 +607,20 @@ defmodule VisualGarden.Planner do
         entries
         |> Enum.reject(nursery_filter_fn)
         |> Enum.reject(&(&1.plant_id != nil))
+
+      refuse_entries =
+        entries
+        |> Enum.filter(&(&1.plant_id != nil))
+        |> Enum.map(fn a ->
+          %{
+            type: "refuse",
+            planner_entry_id: a.id,
+            plant: a.plant,
+            bed: a.bed,
+            date: Timex.shift(a.end_plant_date, days: a.days_to_refuse),
+            garden_id: garden.id
+          }
+        end)
 
       current_plant_entries =
         planting_entries
@@ -693,7 +719,8 @@ defmodule VisualGarden.Planner do
         end
         |> List.flatten()
 
-      media_entries ++
+      refuse_entries ++
+        media_entries ++
         water_entries ++
         orphaned_plants ++
         current_nursery_entries ++

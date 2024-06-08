@@ -10,6 +10,7 @@ defmodule VisualGarden.Gardens.Plant do
 
     field :row, :integer
     field :column, :integer
+    field :archived, :boolean, default: false
 
     timestamps(type: :utc_datetime)
   end
@@ -17,7 +18,7 @@ defmodule VisualGarden.Gardens.Plant do
   @doc false
   def changeset(plant, attrs) do
     plant
-    |> cast(attrs, [:name, :qty, :row, :column, :seed_id, :product_id])
+    |> cast(attrs, [:name, :qty, :row, :column, :seed_id, :product_id, :archived])
     |> validate_number(:qty, greater_than_or_equal_to: 1)
     |> validate_seed()
     |> validate_plant()
