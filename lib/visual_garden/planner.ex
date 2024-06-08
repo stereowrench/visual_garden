@@ -486,18 +486,21 @@ defmodule VisualGarden.Planner do
   def unwrwap_dates(m1, d1, m2, d2, today) do
     start = Date.new!(today.year, m1, d1)
     endd = Date.new!(today.year, m2, d2)
-
-    {s, e} =
-      if Timex.before?(start, endd) do
-        {start, endd}
-      else
-        {start, Timex.shift(endd, years: 1)}
-      end
-
-    if Timex.before?(e, today) do
-      {Timex.shift(s, years: 1), Timex.shift(e, years: 1)}
+    if Timex.before?(today, endd) && Timex.after?(start, endd) do
+      {Timex.shift(start, years: -1), endd}
     else
-      {s, e}
+      {s, e} =
+        if Timex.before?(start, endd) do
+          {start, endd}
+        else
+          {start, Timex.shift(endd, years: 1)}
+        end
+
+      if Timex.before?(e, today) do
+        {Timex.shift(s, years: 1), Timex.shift(e, years: 1)}
+      else
+        {s, e}
+      end
     end
   end
 
@@ -599,6 +602,18 @@ defmodule VisualGarden.Planner do
         entries
         |> Enum.reject(nursery_filter_fn)
         |> Enum.reject(&(&1.plant_id != nil))
+
+      refuse_entries =
+        entries
+        |> Enum.filter(&(&1.plant_id != nil))
+        |> Enum.map(fn a ->
+          %{
+            type: "refuse",
+            planner_entry_id: a.id,
+            date: Timex.shift(a.end_plant_date, days: a.days_to_refuse),
+            garden_id: garden.id
+          }
+        end)
 
       current_plant_entries =
         planting_entries
