@@ -74,6 +74,10 @@ defmodule VisualGarden.Planner do
     |> Repo.preload([:nursery_entry, :bed, :seed])
   end
 
+  def get_planner_entry_by_plant(plant_id) do
+    Repo.one(from p in PlannerEntry, where: p.plant_id == ^plant_id)
+  end
+
   def get_end_date(square, bed, start_date, skip_id \\ nil) do
     start_date =
       if start_date do
