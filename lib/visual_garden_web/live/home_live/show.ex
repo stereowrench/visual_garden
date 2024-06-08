@@ -91,6 +91,7 @@ defmodule VisualGardenWeb.HomeLive.Show do
       "orphaned_nursery" -> render_orphaned_nursery(assigns)
       "water" -> render_water(assigns)
       "media" -> render_media(assigns)
+      "refuse" -> render_refuse(assigns)
     end
   end
 
@@ -107,6 +108,39 @@ defmodule VisualGardenWeb.HomeLive.Show do
           Plant orphan
         </.button>
       </.link>
+    </div>
+    """
+  end
+
+  def render_refuse(assigns) do
+    ~H"""
+    <div class="mt-6 border-t border-gray-100">
+      <div class="divide-y divide-gray-200 overflow-hidden rounded-lg bg-white shadow">
+        <div class="border-b border-gray-200 bg-white px-4 py-5 sm:px-6">
+          <h3 class="text-base font-semibold leading-6 text-gray-900">
+            🗑️ Refuse Plant <%= @item.plant.name %> in <%= @item.bed.name %>
+          </h3>
+        </div>
+        <dl>
+          <div class="dldiv">
+            <dt>Refuse date</dt>
+            <dd>
+              <%= @item.date %>
+            </dd>
+          </div>
+        </dl>
+        <%!-- <%= unless Timex.after?(@item.date, MyDateTime.utc_today) do %> --%>
+        <%= unless false do %>
+          <.button
+            phx-click={
+              JS.push("refuse", value: %{pe_id: @item.planner_entry_id, garden_id: @item.garden_id})
+            }
+            data-confirm="Are you sure?"
+          >
+            Refuse
+          </.button>
+        <% end %>
+      </div>
     </div>
     """
   end
@@ -365,6 +399,18 @@ defmodule VisualGardenWeb.HomeLive.Show do
           "product_id" => bid
         })
     end)
+
+    {:noreply, assign_assigns(socket)}
+  end
+
+  @impl true
+  def handle_event("refuse", %{"pe_id" => peid}, socket) do
+    pe = Planner.get_planner_entry!(peid)
+    bed = Gardens.get_product!(pe.bed_id)
+    garden = Gardens.get_garden!(bed.garden_id)
+    Authorization.authorize_garden_modify(garden.id, socket.assigns.current_user)
+    plant = Gardens.get_plant!(pe.plant_id)
+    {:ok, _} = Gardens.archive_plant(plant)
 
     {:noreply, assign_assigns(socket)}
   end

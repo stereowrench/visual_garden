@@ -2,6 +2,7 @@
 
 <.header>
   Plant <%= @plant.id %>
+  <PetalComponents.Badge.badge color="info" label="Archived" />
   <:subtitle>This is a plant record from your database.</:subtitle>
   <:actions :if={@can_modify?}>
     <.link
@@ -10,6 +11,9 @@
     >
       <.button>Edit plant</.button>
     </.link>
+    <%= unless @plant.archived do %>
+      <.button phx-click="archive" data-confirm="Are you sure?">Archive plant</.button>
+    <% end %>
   </:actions>
 </.header>
 

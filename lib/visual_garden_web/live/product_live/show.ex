@@ -22,6 +22,7 @@ defmodule VisualGardenWeb.ProductLive.Show do
 
     grouped_plants =
       Gardens.list_plants(garden_id, id)
+      |> Enum.reject(& &1.archived)
       |> Enum.group_by(fn plant ->
         Gardens.row_col_to_square(plant.row, plant.column, product)
       end)
@@ -54,6 +55,7 @@ defmodule VisualGardenWeb.ProductLive.Show do
 
     grouped_plants =
       Gardens.list_plants(garden_id, id)
+      |> Enum.reject(& &1.archived)
       |> Enum.group_by(fn plant ->
         Gardens.row_col_to_square(plant.row, plant.column, product)
       end)

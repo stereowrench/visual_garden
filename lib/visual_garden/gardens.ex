@@ -4,6 +4,7 @@ defmodule VisualGarden.Gardens do
   """
 
   import Ecto.Query, warn: false
+  alias VisualGarden.MyDateTime
   alias VisualGarden.Gardens.EventLog
   alias VisualGarden.Gardens.GardenUser
   alias VisualGarden.Repo
@@ -372,13 +373,25 @@ defmodule VisualGarden.Gardens do
 
   alias VisualGarden.Gardens.Plant
 
+  def archive_plant(plant) do
+    pe = Planner.get_planner_entry_by_plant(plant.id)
+    product = get_product!(plant.product_id)
+    garden = get_garden!(product.garden_id)
+
+    if pe do
+      Planner.update_planner_entry(pe, garden, %{
+        days_to_refuse: Timex.diff(MyDateTime.utc_today(), pe.end_plant_date, :days),
+        days_to_maturity: Timex.diff(MyDateTime.utc_today(), pe.start_plant_date, :days)
+      })
+    end
+
+    plant
+    |> Plant.changeset(%{archived: true})
+    |> Repo.update()
+  end
+
   @doc """
   Returns the list of plants.
-
-  ## Examples
-
-      iex> list_plants()
-      [%Plant{}, ...]
 
   """
   def list_plants(garden_id) do
