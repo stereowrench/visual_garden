@@ -8,7 +8,12 @@ defmodule VisualGarden.Application do
   @impl true
   def start(_type, _args) do
     :logger.add_handler(:my_sentry_handler, Sentry.LoggerHandler, %{
-      config: %{metadata: [:file, :line], capture_log_messages: true, level: :error}
+      config: %{
+        metadata: [:file, :line],
+        rate_limiting: [max_events: 10, duration: _1_second = 1_000],
+        capture_log_messages: true,
+        level: :error
+      }
     })
 
     children = [
