@@ -22,9 +22,8 @@ defmodule VisualGardenWeb.PlannerLive.FormComponent do
         >
           View plant
         </.link>
-        <br/>
+        <br />
       <% end %>
-
       If you don't see species then you must add plantables either by
       <.link navigate={~p"/library_seeds"} class="underline">
         importing them from the library
