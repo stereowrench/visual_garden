@@ -13,7 +13,9 @@
   rows={@streams.species_collection}
   row_click={fn {_id, species} -> JS.navigate(~p"/species/#{species}") end}
 >
-  <:col :let={{_id, species}} label="Name"><%= species_display_string(species, get_common_name(@common_names, species)) %></:col>
+  <:col :let={{_id, species}} label="Name">
+    <%= species_display_string(species, get_common_name(@common_names, species)) %>
+  </:col>
   <:action :let={{_id, species}}>
     <div class="sr-only">
       <.link navigate={~p"/species/#{species}"}>Show</.link>

@@ -2,7 +2,8 @@
   <h1>Planner for <%= @garden.name %></h1>
 
   <h2>What's in season?</h2>
-  Check out a graphical schedule on the <.link navigate={~p"/regions/#{@garden.region_id}"}>region page</.link>
+  Check out a graphical schedule on the
+  <.link navigate={~p"/regions/#{@garden.region_id}"}>region page</.link>
   <ol>
     <%= for {date_str, strs} <- @soon_list do %>
       <li>

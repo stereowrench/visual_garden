@@ -591,18 +591,21 @@ defmodule VisualGarden.GardensTest do
       plant = plant_fixture(%{seed_id: seed.id}, garden)
 
       {:ok, pe} =
-        Planner.create_planner_entry(%{
-          start_plant_date: ~D[2023-05-01],
-          end_plant_date: ~D[2023-05-01],
-          days_to_maturity: 60,
-          days_to_refuse: 15,
-          common_name: "My Plant",
-          seed_id: seed.id,
-          bed_id: bed.id,
-          row: 0,
-          column: 0,
-          plant_id: plant.id
-        }, garden)
+        Planner.create_planner_entry(
+          %{
+            start_plant_date: ~D[2023-05-01],
+            end_plant_date: ~D[2023-05-01],
+            days_to_maturity: 60,
+            days_to_refuse: 15,
+            common_name: "My Plant",
+            seed_id: seed.id,
+            bed_id: bed.id,
+            row: 0,
+            column: 0,
+            plant_id: plant.id
+          },
+          garden
+        )
 
       Gardens.archive_plant(plant)
       pe = Planner.get_planner_entry_by_plant(plant.id)

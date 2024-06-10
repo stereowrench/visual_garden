@@ -43,7 +43,9 @@ defmodule VisualGardenWeb.EventLogLive.FormComponent do
         <%= if @action == :transfer do %>
           <span>
             If the list is empty you need to
-            <.link class="underline" navigate={~p"/gardens/#{@garden.id}/products/new"}>add growing media</.link>
+            <.link class="underline" navigate={~p"/gardens/#{@garden.id}/products/new"}>
+              add growing media
+            </.link>
             to your garden's inventory.
           </span>
           <.live_select

@@ -27,14 +27,14 @@ defmodule VisualGardenWeb.Tooltips do
 
     Once schedules you will be reminded on the home page of:
     <ul>
-    <li>When to nurse your plants</li>
-    <li>When to plant your plants</li>
-    <li>When to water your plants</li>
-    <li>[In development] When to mulch your plants</li>
-    <li>[In development] When to thin your plants</li>
-    <li>[In development] When to weed your plants</li>
-    <li>[In development] When to trim your plants</li>
-    <li>[In development] When to harvest your plants</li>
+      <li>When to nurse your plants</li>
+      <li>When to plant your plants</li>
+      <li>When to water your plants</li>
+      <li>[In development] When to mulch your plants</li>
+      <li>[In development] When to thin your plants</li>
+      <li>[In development] When to weed your plants</li>
+      <li>[In development] When to trim your plants</li>
+      <li>[In development] When to harvest your plants</li>
     </ul>
     """
   end

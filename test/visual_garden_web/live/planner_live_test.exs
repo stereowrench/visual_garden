@@ -26,7 +26,7 @@ defmodule VisualGardenWeb.PlannerLiveTest do
         end_day: 1,
         start_month: 7,
         start_day: 1,
-        plantable_types: ["seed"],
+        plantable_types: ["seed"]
       })
 
     {:ok, show_live, _html} = live(conn, ~p"/planners/#{garden.id}")
