@@ -121,10 +121,19 @@
   </div>
 </div>
 
-<div class="mt-16 border-t border-white/10 pt-8 sm:mt-20 lg:mt-24">
-  <footer>
-    <.link navigate={~p"/privacy"}>
-      Privacy Policy
-    </.link>
-  </footer>
+<div class="m-0 border-t border-eagle-200">
+  <footer class="bg-eagle-100">
+      <div class="mx-auto max-w-7xl overflow-hidden px-6 py-20 sm:py-24 lg:px-8">
+        <nav class="-mb-6 columns-2 sm:flex sm:justify-center sm:space-x-12" aria-label="Footer">
+          <div class="pb-6">
+            <.link
+              navigate={~p"/privacy"}
+              class="text-md leading-6 text-eagle-600 hover:text-eagle-900"
+            >
+              Privacy Policy
+            </.link>
+          </div>
+        </nav>
+      </div>
+    </footer>
 </div>
