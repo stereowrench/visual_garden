@@ -29,9 +29,7 @@ defmodule VisualGardenWeb.KeywordHighlighter do
         assigns = %{hs: hs}
 
         ~H"""
-        <%= for h <- @hs do %>
-          <%= h %>
-        <% end %>
+        <span phx-no-format><%= for h <- @hs do %><%= h %><% end %></span>
         """
     end
   end
