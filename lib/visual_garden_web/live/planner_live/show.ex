@@ -21,6 +21,7 @@ defmodule VisualGardenWeb.PlannerLive.Show do
      socket
      |> add_params(params)
      |> assign(:page_tip_title, Tooltips.planner_title())
+     |> assign(:can_modify?, Authorization.can_modify_garden?(garden, socket.assigns.current_user))
      |> assign(:page_tip, Tooltips.planner_content(garden))
      |> assign(:page_title, page_title(socket.assigns.live_action))
      |> assign(:garden, garden)
@@ -267,6 +268,7 @@ defmodule VisualGardenWeb.PlannerLive.Show do
 
   @impl true
   def handle_event("plant_combo_update", %{"Square" => squares, "bed_id" => bed_id}, socket) do
+    Authorization.authorize_garden_modify(socket.garden.id, socket.assigns.current_user)
     bed = Gardens.get_product!(bed_id)
     end_date = get_end_date(squares, bed, VisualGarden.MyDateTime.utc_today())
     {:noreply, add_plantability(socket, VisualGarden.MyDateTime.utc_today(), end_date)}
@@ -274,12 +276,14 @@ defmodule VisualGardenWeb.PlannerLive.Show do
 
   @impl true
   def handle_event("plant_combo_update", %{"bed_id" => _bed_id}, socket) do
+    Authorization.authorize_garden_modify(socket.garden.id, socket.assigns.current_user)
     end_date = nil
     {:noreply, add_plantability(socket, VisualGarden.MyDateTime.utc_today(), end_date)}
   end
 
   @impl true
   def handle_event("delete", %{"id" => planner_id} = params, socket) do
+    Authorization.authorize_garden_modify(socket.garden.id, socket.assigns.current_user)
     planner = Planner.get_planner_entry!(planner_id)
     Planner.delete_planner_entry(planner)
 

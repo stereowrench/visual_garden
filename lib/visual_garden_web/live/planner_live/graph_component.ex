@@ -34,25 +34,27 @@ defmodule VisualGardenWeb.PlannerLive.GraphComponent do
         <% end %>
       <% end %>
 
-      <%= for {group, spans} <- generate_available_regions(@planner_entries, @extent_dates, @bed) do %>
-        <%= for %{start_date: a, finish_date: b} <- spans do %>
-          <.link patch={
-            ~p"/planners/#{@garden.id}/#{@bed.id}/#{group}/new?#{[start_date: Date.to_string(a)]}"
-          }>
-            <%!-- <text
+      <%= if @can_edit? do %>
+        <%= for {group, spans} <- generate_available_regions(@planner_entries, @extent_dates, @bed) do %>
+          <%= for %{start_date: a, finish_date: b} <- spans do %>
+            <.link patch={
+              ~p"/planners/#{@garden.id}/#{@bed.id}/#{group}/new?#{[start_date: Date.to_string(a)]}"
+            }>
+              <%!-- <text
              y={25 + 25 * (group)}
             >
               <%= VisualGarden.Planner.parse_square(to_string(group), @bed) |> (fn {x, y} -> "#{x}, #{y}" end).() %>
             </text> --%>
-            <rect
-              width={Timex.diff(b, a, :days)}
-              height="25"
-              y={25 + 25 * group}
-              class="new-crop-span"
-              x={40 + x_shift_date(a, @garden.tz, @extent_dates)}
-            >
-            </rect>
-          </.link>
+              <rect
+                width={Timex.diff(b, a, :days)}
+                height="25"
+                y={25 + 25 * group}
+                class="new-crop-span"
+                x={40 + x_shift_date(a, @garden.tz, @extent_dates)}
+              >
+              </rect>
+            </.link>
+          <% end %>
         <% end %>
       <% end %>
 
@@ -93,6 +95,7 @@ defmodule VisualGardenWeb.PlannerLive.GraphComponent do
       </rect>
       <rect
         width={entry_width(@entry)}
+        fill="blue"
         height="25"
         y={25 + 25 * bed_square(@entry, @bed)}
         x={
