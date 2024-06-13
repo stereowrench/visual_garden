@@ -9,6 +9,11 @@
   </:actions>
 </.header>
 
+<div class="prose">
+  To add plants you need to add entries to the
+  <.link navigate={~p"/planners/#{@garden.id}"}>schedule.</.link>
+</div>
+
 <.table
   id="plants"
   rows={@streams.plants}
