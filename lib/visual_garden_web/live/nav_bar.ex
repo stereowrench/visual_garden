@@ -53,7 +53,7 @@ defmodule VisualGardenWeb.NavBar do
   defp routes(garden) do
     [
       {"Home", ~p"/gardens/#{garden.id}"},
-      {"Nursery", ~p"/gardens/#{garden.id}/nursery_entries"},
+      # {"Nursery", ~p"/gardens/#{garden.id}/nursery_entries"},
       {"Plants", ~p"/gardens/#{garden.id}/plants"},
       {"Seeds, etc", ~p"/gardens/#{garden.id}/seeds"},
       {"Media, etc.", ~p"/gardens/#{garden.id}/products"},
