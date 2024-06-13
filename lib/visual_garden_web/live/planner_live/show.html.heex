@@ -13,7 +13,12 @@
   </ol>
 
   <%= if @can_modify? do %>
-    <br /> Create a <.link navigate={~p"/gardens/#{@garden.id}/products/new_bed"}>new bed</.link>
+    <br /> Create a
+    <.link navigate={~p"/gardens/#{@garden.id}/products/new_bed"}>
+      <.button>
+        new bed
+      </.button>
+    </.link>
     to add more plants.
   <% end %>
 </div>
