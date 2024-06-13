@@ -24,6 +24,12 @@
   </:actions>
 </.header>
 
+<%= if @live_action in [:beds, :new_bed, :edit_bed] do %>
+  <div class="prose">
+    Visit the <.link navigate={~p"/home"}>home page</.link> to view actionable todo items.
+  </div>
+<% end %>
+
 <div class="prose prose-eagle">
   <%= for {name, products} <- Enum.group_by(@products, & &1.type) do %>
     <h3 id={"product-header-" <> to_string(name)}><%= friendly_type(name) %></h3>
