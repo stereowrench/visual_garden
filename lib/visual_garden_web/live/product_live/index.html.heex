@@ -11,6 +11,13 @@
   <% else %>
     Listing products
   <% end %>
+  <:subtitle>
+    <%= if @live_action in [:beds, :new_bed, :edit_bed] do %>
+      Beds are where your plants grow
+    <% else %>
+      Add growing media, fertilizer, and compost here.
+    <% end %>
+  </:subtitle>
   <:actions :if={@can_modify?}>
     <%= if @live_action in [:beds, :new_bed, :edit_bed] do %>
       <.link patch={~p"/gardens/#{@garden.id}/products/new_bed"}>
