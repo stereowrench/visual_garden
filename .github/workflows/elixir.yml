@@ -91,6 +91,5 @@ jobs:
           mix deps.get
           mix assets.deploy
           MIX_ENV=prod mix release --overwrite
-          direnv exec . _build/prod/rel/visual_garden/bin/visual_garden stop || true
           mix ecto.migrate
-          direnv exec . _build/prod/rel/visual_garden/bin/visual_garden daemon
+          direnv exec . _build/prod/rel/visual_garden/bin/visual_garden restart || direnv exec . _build/prod/rel/visual_garden/bin/visual_garden daemon
