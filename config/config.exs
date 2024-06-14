@@ -19,6 +19,7 @@ config :visual_garden, VisualGardenWeb.Endpoint,
     formats: [html: VisualGardenWeb.ErrorHTML, json: VisualGardenWeb.ErrorJSON],
     layout: false
   ],
+  http_options: [log_protocol_errors: false],
   pubsub_server: VisualGarden.PubSub,
   live_view: [signing_salt: "/fv/WHvF"]
 
