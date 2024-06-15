@@ -107,7 +107,9 @@ defmodule VisualGarden.Gardens.EventLog do
       :event_time,
       :event_type,
       :transferred_to_id,
-      :transferred_from_id
+      :transferred_from_id,
+      :transferred_amount,
+      :transfer_units
     ])
     |> validate_inclusion(:event_type, [:transfer])
   end

@@ -214,7 +214,7 @@
 </.modal>
 
 <.modal
-  :if={@live_action in [:new_water, :till, :transfer]}
+  :if={@live_action in [:new_water, :till]}
   id="event-log-modal"
   show
   on_cancel={modal_cancel(@product)}
@@ -233,7 +233,7 @@
 </.modal>
 
 <.modal
-  :if={@live_action in [:bulk_weed, :bulk_trim, :bulk_harvest]}
+  :if={@live_action in [:bulk_weed, :bulk_trim, :bulk_harvest, :transfer]}
   id="bed-bulk-modal"
   show
   on_cancel={modal_cancel(@product)}
@@ -242,6 +242,8 @@
     module={VisualGardenWeb.ProductLive.BedBulkComponent}
     patch={modal_patch(@product)}
     action={@live_action}
+    garden={@garden}
+    products={@products}
     id="bulk-modal"
     bed={@product}
     current_user={@current_user}

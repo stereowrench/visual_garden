@@ -91,7 +91,6 @@ defmodule VisualGardenWeb.EventLogLive.FormComponent do
 
   defp event_type_for_action(:new_water), do: "water"
   defp event_type_for_action(:till), do: "till"
-  defp event_type_for_action(:transfer), do: "transfer"
 
   @impl true
   def update(assigns, socket) do

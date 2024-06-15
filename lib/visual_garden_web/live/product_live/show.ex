@@ -84,6 +84,11 @@ defmodule VisualGardenWeb.ProductLive.Show do
     {:noreply, assign(socket, :events, events)}
   end
 
+  def handle_info({VisualGardenWeb.ProductLive.BedBulkComponent, :bulk_saved}, socket) do
+    events = Gardens.list_event_logs(socket.assigns.product.id)
+    {:noreply, assign(socket, :events, events)}
+  end
+
   def handle_info({VisualGardenWeb.ProductLive.FormComponent, {:saved, product}}, socket) do
     {:noreply, assign(socket, :product, product)}
   end
