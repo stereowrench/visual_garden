@@ -108,6 +108,12 @@ defmodule VisualGarden.Library do
       {sd, ed, schedule}
     end
     |> Enum.sort_by(&elem(&1, 0), Date)
+    |> Enum.flat_map(fn {sd, ed, schedule} ->
+      [
+        {sd, ed, schedule},
+        {Timex.shift(sd, years: 1), Timex.shift(ed, years: 1), schedule}
+      ]
+    end)
     |> Enum.map(fn {sd, ed, schedule} ->
       {:ok, date_str} = MyDateTime.relative_clamp_today(sd)
 
