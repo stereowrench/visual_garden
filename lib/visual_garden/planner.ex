@@ -460,7 +460,7 @@ defmodule VisualGarden.Planner do
     end
     |> List.flatten()
     |> Enum.reject(fn s ->
-      Timex.diff(s.sow_start, MyDateTime.utc_today(), :months) > 9
+      Timex.diff(s.sow_start, MyDateTime.utc_today(), :months) > 12
     end)
   end
 
