@@ -48,20 +48,6 @@
         <.button>Amend</.button>
       </.link>
     </div>
-    <div class="relative inline-block text-left">
-      <.link
-        patch={
-          if @product.type == :bed do
-            ~p"/gardens/#{@garden.id}/beds/#{@product}/show/edit"
-          else
-            ~p"/gardens/#{@garden.id}/products/#{@product}/show/edit"
-          end
-        }
-        phx-click={JS.push_focus()}
-      >
-        <.button>Edit product</.button>
-      </.link>
-    </div>
     <%= if @product.type == :bed do %>
       <div class="relative inline-block text-left">
         <.link
@@ -77,6 +63,20 @@
           phx-click={JS.push_focus()}
         >
           <.button>Trim</.button>
+        </.link>
+      </div>
+      <div class="relative inline-block text-left major-button">
+        <.link
+          patch={
+            if @product.type == :bed do
+              ~p"/gardens/#{@garden.id}/beds/#{@product}/show/edit"
+            else
+              ~p"/gardens/#{@garden.id}/products/#{@product}/show/edit"
+            end
+          }
+          phx-click={JS.push_focus()}
+        >
+          <.button>Edit product</.button>
         </.link>
       </div>
       <%!-- <div class="relative inline-block text-left">

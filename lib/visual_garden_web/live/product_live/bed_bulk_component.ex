@@ -13,7 +13,7 @@ defmodule VisualGardenWeb.ProductLive.BedBulkComponent do
     <div>
       <.header>
         <%= title(assigns.action) %>
-        <%!-- <:subtitle></:subtitle> --%>
+        <:subtitle>Select the squares you want to apply the action to.</:subtitle>
       </.header>
       <.simple_form
         for={@form}
@@ -43,7 +43,7 @@ defmodule VisualGardenWeb.ProductLive.BedBulkComponent do
           <span>
             If the list is empty you need to
             <.link class="underline" navigate={~p"/gardens/#{@garden.id}/products/new"}>
-              add growing media
+              add fertilizers, compost, or growing media
             </.link>
             to your garden's inventory.
           </span>
