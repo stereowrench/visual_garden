@@ -268,7 +268,7 @@ defmodule VisualGardenWeb.PlannerLive.Show do
 
   @impl true
   def handle_event("plant_combo_update", %{"Square" => squares, "bed_id" => bed_id}, socket) do
-    Authorization.authorize_garden_modify(socket.garden.id, socket.assigns.current_user)
+    Authorization.authorize_garden_modify(socket.assigns.garden.id, socket.assigns.current_user)
     bed = Gardens.get_product!(bed_id)
     end_date = get_end_date(squares, bed, VisualGarden.MyDateTime.utc_today())
     {:noreply, add_plantability(socket, VisualGarden.MyDateTime.utc_today(), end_date)}
@@ -276,7 +276,7 @@ defmodule VisualGardenWeb.PlannerLive.Show do
 
   @impl true
   def handle_event("plant_combo_update", %{"bed_id" => _bed_id}, socket) do
-    Authorization.authorize_garden_modify(socket.garden.id, socket.assigns.current_user)
+    Authorization.authorize_garden_modify(socket.assigns.garden.id, socket.assigns.current_user)
     end_date = nil
     {:noreply, add_plantability(socket, VisualGarden.MyDateTime.utc_today(), end_date)}
   end
