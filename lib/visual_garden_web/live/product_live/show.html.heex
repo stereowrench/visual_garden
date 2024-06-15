@@ -65,21 +65,22 @@
           <.button>Trim</.button>
         </.link>
       </div>
-      <div class="relative inline-block text-left major-button">
-        <.link
-          patch={
-            if @product.type == :bed do
-              ~p"/gardens/#{@garden.id}/beds/#{@product}/show/edit"
-            else
-              ~p"/gardens/#{@garden.id}/products/#{@product}/show/edit"
-            end
-          }
-          phx-click={JS.push_focus()}
-        >
-          <.button>Edit product</.button>
-        </.link>
-      </div>
-      <%!-- <div class="relative inline-block text-left">
+    <% end %>
+    <div class="relative inline-block text-left major-button">
+      <.link
+        patch={
+          if @product.type == :bed do
+            ~p"/gardens/#{@garden.id}/beds/#{@product}/show/edit"
+          else
+            ~p"/gardens/#{@garden.id}/products/#{@product}/show/edit"
+          end
+        }
+        phx-click={JS.push_focus()}
+      >
+        <.button>Edit product</.button>
+      </.link>
+    </div>
+    <%!-- <div class="relative inline-block text-left">
         <.link
           patch={~p"/gardens/#{@garden.id}/beds/#{@product}/show/bulk_harvest"}
           phx-click={JS.push_focus()}
@@ -87,7 +88,6 @@
           <.button>Harvest</.button>
         </.link>
       </div> --%>
-    <% end %>
   <% end %>
 <% end %>
 
