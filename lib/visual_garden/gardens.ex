@@ -631,8 +631,8 @@ defmodule VisualGarden.Gardens do
     Repo.all(
       from e in EventLog,
         where:
-          (e.product_id == ^product_id and
-             e.row == ^row and e.column == ^column) or (is_nil(e.row) and is_nil(e.column)),
+          e.product_id == ^product_id and
+            ((e.row == ^row and e.column == ^column) or (is_nil(e.row) and is_nil(e.column))),
         left_join: p in Plant,
         on: e.plant_id == p.id,
         where: (p.row == ^row and p.column == ^column) or (is_nil(p.row) and is_nil(p.column)),
