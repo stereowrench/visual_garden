@@ -781,25 +781,6 @@ defmodule VisualGarden.Gardens do
     end)
   end
 
-  def create_event_logs(type = "weed", squares, bed) do
-    Repo.transaction(fn ->
-      time = VisualGarden.MyDateTime.utc_now()
-
-      for square <- squares do
-        {row, column} = Planner.parse_square(square, bed)
-
-        {:ok, _} =
-          create_event_log(type, %{
-            "event_type" => type,
-            "event_time" => time,
-            "row" => row,
-            "column" => column,
-            "product_id" => bed.id
-          })
-      end
-    end)
-  end
-
   # def create_event_log(type, attrs \\ %{}) do
   #   attrs = Map.merge(%{event_type: type}, attrs)
   #   %EventLog{}
