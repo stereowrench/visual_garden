@@ -412,7 +412,9 @@ defmodule VisualGarden.GardensTest do
         "event_type" => "transfer",
         "event_time" => VisualGarden.MyDateTime.utc_now(),
         "transferred_to_id" => product.id,
-        "transferred_from_id" => product2.id
+        "transferred_from_id" => product2.id,
+        "transfer_units" => "cuft",
+        "transferred_amount" => "1"
       }
 
       assert {:ok, %EventLog{} = event_log} = Gardens.create_event_log("transfer", valid_attrs)
