@@ -17,7 +17,7 @@ defmodule VisualGardenWeb do
   those modules here.
   """
 
-  def static_paths, do: ~w(assets fonts images favicon.ico robots.txt)
+  def static_paths, do: ~w(assets fonts images favicon.ico robots.txt sw.js)
 
   def router do
     quote do
@@ -39,7 +39,7 @@ defmodule VisualGardenWeb do
   def controller do
     quote do
       use Phoenix.Controller,
-        formats: [:html, :json],
+        formats: [:html, :json, :js],
         layouts: [html: VisualGardenWeb.Layouts]
 
       import Plug.Conn

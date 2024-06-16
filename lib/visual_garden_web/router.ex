@@ -17,6 +17,15 @@ defmodule VisualGardenWeb.Router do
     plug :accepts, ["json"]
   end
 
+  pipeline :js do
+    plug :accepts, ["js"]
+  end
+
+  scope "/", VisualGardenWeb do
+    pipe_through [:js]
+    get "/sw.js", ServiceWorkerController, :service_worker
+  end
+
   scope "/", VisualGardenWeb do
     pipe_through [:browser, :require_authenticated_user]
 
