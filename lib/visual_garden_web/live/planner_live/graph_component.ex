@@ -176,9 +176,21 @@ defmodule VisualGardenWeb.PlannerLive.GraphComponent do
 
   defp entry_width(entry) do
     if entry.nursery_start do
-      entry.days_to_maturity - Timex.diff(entry.end_plant_date, entry.nursery_start, :days)
+      a = entry.days_to_maturity - Timex.diff(entry.end_plant_date, entry.nursery_start, :days)
+
+      if a < 0 do
+        0
+      else
+        a
+      end
     else
-      entry.days_to_maturity - Timex.diff(entry.end_plant_date, entry.start_plant_date, :days)
+      a = entry.days_to_maturity - Timex.diff(entry.end_plant_date, entry.start_plant_date, :days)
+
+      if a < 0 do
+        0
+      else
+        a
+      end
     end
   end
 
