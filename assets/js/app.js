@@ -120,6 +120,21 @@ Hooks.LocalTime = {
   },
 };
 
+Hooks.Notifications = {
+  mounted() {
+    if (Notification.permission !== "granted") {
+      this.el.style.display = "initial";
+    }
+
+    this.el.addEventListener("click", () => {
+      Notification.requestPermission((permission) => {
+        console.log(permission)
+        if (permission === "granted") this.el.style.display = "none";
+      });
+    });
+  },
+};
+
 Hooks.Sidebar = {
   mounted() {
     let menuOpen = false;
