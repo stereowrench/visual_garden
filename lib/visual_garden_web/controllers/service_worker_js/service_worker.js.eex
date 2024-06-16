@@ -1,6 +1,13 @@
+self.addEventListener("install", function (e) {
+  self.skipWaiting();
+});
+
 self.addEventListener("push", function (event) {
-  console.log("Push message received.");
-  console.log(event)
-
-
+  self.registration.showNotification(event.data.json().title, {
+    body: event.data.json().body,
+    icon: "./favicon.ico",
+    data: {
+      url: event.data.json().url,
+    },
+  });
 });

@@ -14,7 +14,8 @@ defmodule VisualGardenWeb.NotificationsChannel do
   # by sending replies to requests from the client
   @impl true
   def handle_in("subscribe", payload, socket) do
-    WebPushElixir.send_notification(payload["sub"], "abc") |> dbg()
+    bin = Jason.encode!(%{title: "update", body: "test", url: "/home"})
+    WebPushElixir.send_notification(payload["sub"], bin)
     {:reply, {:ok, payload}, socket}
   end
 
