@@ -128,7 +128,6 @@ Hooks.Notifications = {
 
     this.el.addEventListener("click", () => {
       Notification.requestPermission((permission) => {
-        console.log(permission)
         if (permission === "granted") this.el.style.display = "none";
       });
     });
