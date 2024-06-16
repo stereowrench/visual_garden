@@ -134,6 +134,21 @@ defmodule VisualGardenWeb.PlannerLive.GraphComponent do
         }
       >
       </rect>
+      <rect
+        width={@entry.days_to_refuse - @entry.days_to_maturity}
+        height="25"
+        y={25 + 25 * bed_square(@entry, @bed)}
+        fill="lightgreen"
+        x={
+          40 +
+            x_shift_date(
+              Timex.shift(@entry.end_plant_date, days: @entry.days_to_maturity),
+              @garden.tz,
+              @extent_dates
+            )
+        }
+      >
+      </rect>
       <text
         dominant-baseline="central"
         text-anchor="middle"
