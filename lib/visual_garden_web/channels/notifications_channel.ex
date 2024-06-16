@@ -15,7 +15,10 @@ defmodule VisualGardenWeb.NotificationsChannel do
   @impl true
   def handle_in("subscribe", payload, socket) do
     bin = Jason.encode!(%{title: "update", body: "test", url: "/home"})
-    WebPushElixir.send_notification(payload["sub"], bin)
+    res = WebPushElixir.send_notification(payload["sub"], bin)
+    if res.status_code == 410 do
+      # TODO purge client subscription
+    end
     {:reply, {:ok, payload}, socket}
   end
 
