@@ -40,7 +40,9 @@
     <div class="mx-auto max-w-2xl lg:mx-0 lg:max-w-xl lg:flex-shrink-0 lg:pt-8">
       <div class="flex items-center gap-4">
         <img class="h-16 w-auto" src={~p"/images/logo.jpeg"} alt="StereoWrench VisualGarden" />
-        <span class="text-3xl font-bold tracking-tight text-eagle-900 md:text-6xl">VisualGarden</span>
+        <span class="text-3xl font-bold tracking-tight text-eagle-900 md:text-6xl">
+          VisualGarden
+        </span>
       </div>
       <h1 class="mt-4 text-xl font-bold tracking-tight text-eagle-800 sm:text-3xl">
         A gardening app for the masses
@@ -55,7 +57,7 @@
               Schedule
             </dt>
             <dd class="mt-2 text-base leading-7 text-gray-600">
-              Morbi viverra dui mi arcu sed. Tellus semper adipiscing suspendisse semper morbi. Odio urna massa nunc massa.
+              See when you can plant your crops with a convenient chart
             </dd>
           </div>
           <div class="relative pl-16">
@@ -66,7 +68,7 @@
               Planning
             </dt>
             <dd class="mt-2 text-base leading-7 text-gray-600">
-              Sit quis amet rutrum tellus ullamcorper ultricies libero dolor eget. Sem sodales gravida quam turpis enim lacus amet.
+              Decide when to plant ahead of time so you're ready for the next season.
             </dd>
           </div>
           <div class="relative pl-16">
@@ -77,7 +79,7 @@
               Tracking
             </dt>
             <dd class="mt-2 text-base leading-7 text-gray-600">
-              Quisque est vel vulputate cursus. Risus proin diam nunc commodo. Lobortis auctor congue commodo diam neque.
+              Log watering, fertilizing, tilling, and more!
             </dd>
           </div>
           <div class="relative pl-16">
@@ -85,10 +87,10 @@
               <div class="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-mojo-600">
                 <.icon name="hero-bell-alert" class=" text-white h-6 w-6" />
               </div>
-              Reminders
+              Tasks
             </dt>
             <dd class="mt-2 text-base leading-7 text-gray-600">
-              Arcu egestas dolor vel iaculis in ipsum mauris. Tincidunt mattis aliquet hac quis. Id hac maecenas ac donec pharetra eget.
+              Know what to do and when to do it.
             </dd>
           </div>
         </dl>
@@ -96,13 +98,13 @@
       <div class="mt-10 flex items-center gap-x-6">
         <.link
           class="rounded-md bg-mojo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-mojo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mojo-600"
-          navigate={~p"/gardens"}
+          navigate={~p"/regions"}
         >
-          View Gardens
+          View Schedules
         </.link>
-        <a href="#" class="text-sm font-semibold leading-6 text-gray-900">
+        <%!-- <a href="#" class="text-sm font-semibold leading-6 text-gray-900">
           Learn more <span aria-hidden="true">→</span>
-        </a>
+        </a> --%>
       </div>
     </div>
     <div class="mx-auto mt-16 flex max-w-2xl sm:mt-24 lg:ml-10 lg:mr-0 lg:mt-0 lg:max-w-none lg:flex-none xl:ml-32">
@@ -121,19 +123,31 @@
   </div>
 </div>
 
+<img
+  src={~p"/images/schedule_img.png"}
+  alt="App screenshot"
+  class="w-[76rem] rounded-md shadow-2xl ring-1 ring-eagle-900/10"
+/>
+
+<img
+  src={~p"/images/in_season_img.png"}
+  alt="App screenshot"
+  class="w-[76rem] rounded-md shadow-2xl ring-1 ring-eagle-900/10"
+/>
+
 <div class="m-0 border-t border-eagle-200">
   <footer class="bg-eagle-100">
-      <div class="mx-auto max-w-7xl overflow-hidden px-6 py-8 sm:py-24 lg:px-8">
-        <nav class="-mb-6 columns-2 flex justify-center sm:space-x-12" aria-label="Footer">
-          <div class="pb-6">
-            <.link
-              navigate={~p"/privacy"}
-              class="text-md leading-6 text-eagle-600 hover:text-eagle-900"
-            >
-              Privacy Policy
-            </.link>
-          </div>
-        </nav>
-      </div>
-    </footer>
+    <div class="mx-auto max-w-7xl overflow-hidden px-6 py-8 sm:py-24 lg:px-8">
+      <nav class="-mb-6 columns-2 flex justify-center sm:space-x-12" aria-label="Footer">
+        <div class="pb-6">
+          <.link
+            navigate={~p"/privacy"}
+            class="text-md leading-6 text-eagle-600 hover:text-eagle-900"
+          >
+            Privacy Policy
+          </.link>
+        </div>
+      </nav>
+    </div>
+  </footer>
 </div>
