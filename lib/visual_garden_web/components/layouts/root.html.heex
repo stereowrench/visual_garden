@@ -15,12 +15,7 @@
     </script>
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js">
     </script>
-    <script>
-      if('serviceWorker' in navigator) {
-          navigator.serviceWorker.register('/sw.js')
-                   .then(function() { console.log("Service Worker Registered"); });
-        }
-    </script>
+    <meta id="vapid-public" name="vapid-public" value={Application.get_env(:web_push_elixir, :vapid_public_key)} />
   </head>
   <body class="bg-white antialiased h-full">
     <%= @inner_content %>

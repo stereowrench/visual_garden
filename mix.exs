@@ -69,7 +69,8 @@ defmodule VisualGarden.MixProject do
       {:sentry, "~> 10.0"},
       {:hackney, "~> 1.19"},
       {:site_encrypt, "~> 0.6"},
-      {:csv, "~> 3.2"}
+      {:csv, "~> 3.2"},
+      {:web_push_elixir, "~> 0.4.0"}
     ]
   end
 

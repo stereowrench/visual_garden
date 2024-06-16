@@ -121,4 +121,9 @@ if config_env() == :prod do
   #     config :swoosh, :api_client, Swoosh.ApiClient.Hackney
   #
   # See https://hexdocs.pm/swoosh/Swoosh.html#module-installation for details.
+
+  config :web_push_encryption, :vapid_details,
+    subject: System.get_env("VAPID_SUBJECT"),
+    public_key: System.get_Env("VAPID_PUBLIC_KEY"),
+    private_key: System.get_Env("VAPID_PRIVATE_KEY")
 end

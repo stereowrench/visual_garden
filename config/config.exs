@@ -74,6 +74,12 @@ config :sentry,
   root_source_code_paths: [File.cwd!()],
   before_send: {VisualGarden.Sentry, :filter_non_500}
 
+config :web_push_elixir,
+  vapid_subject: "mailto:administrator@example.com",
+  vapid_public_key:
+    "BPyaCVdokvpTRkOb8PpbgVk4tBs73EkiB6_csKP8AsmGL5uEKH_-ykvlIel9OXIIAcoRmzu_PccPfrtNE1WSspQ",
+  vapid_private_key: "mE_IQLIkxz7lfMak7rnc8gDA5J6SK-u3KeTWft4GdjA"
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{config_env()}.exs"

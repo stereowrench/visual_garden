@@ -1,1 +1,6 @@
-debugger;
+self.addEventListener("push", function (event) {
+  console.log("Push message received.");
+  console.log(event)
+
+
+});

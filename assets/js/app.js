@@ -23,6 +23,7 @@ import { LiveSocket } from "phoenix_live_view";
 import topbar from "../vendor/topbar";
 import FlashyHooks from "flashy";
 import live_select from "live_select";
+import "./user_socket.js";
 
 let csrfToken = document
   .querySelector("meta[name='csrf-token']")
@@ -90,7 +91,7 @@ const convertToDateTimeLocalString = (date) => {
   const minutes = date.getMinutes().toString().padStart(2, "0");
 
   return `${year}-${month}-${day}T${hours}:${minutes}`;
-}
+};
 
 Hooks.EventTime = {
   mounted() {
@@ -98,8 +99,8 @@ Hooks.EventTime = {
     const d = new Date(this.el.value);
     const dateTimeLocalValue = new Date(
       d.getTime() - d.getTimezoneOffset() * 60000
-    )
-    this.el.value = convertToDateTimeLocalString(new Date(dateTimeLocalValue))
+    );
+    this.el.value = convertToDateTimeLocalString(new Date(dateTimeLocalValue));
 
     stored.value = new Date(this.el.value).toISOString();
     stored.dispatchEvent(new Event("input", { bubbles: true }));
