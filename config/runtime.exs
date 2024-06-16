@@ -122,8 +122,8 @@ if config_env() == :prod do
   #
   # See https://hexdocs.pm/swoosh/Swoosh.html#module-installation for details.
 
-  config :web_push_encryption, :vapid_details,
-    subject: System.get_env("VAPID_SUBJECT"),
-    public_key: System.get_Env("VAPID_PUBLIC_KEY"),
-    private_key: System.get_Env("VAPID_PRIVATE_KEY")
+  config :web_push_elixir,
+    vapid_subject: System.get_env("VAPID_SUBJECT"),
+    vapid_public_key: System.get_Env("VAPID_PUBLIC_KEY"),
+    vapid_private_key: System.get_Env("VAPID_PRIVATE_KEY")
 end
