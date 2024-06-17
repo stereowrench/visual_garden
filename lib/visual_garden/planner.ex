@@ -633,6 +633,7 @@ defmodule VisualGarden.Planner do
             garden_id: garden.id
           }
         end)
+        |> Enum.filter(& Timex.after?(MyDateTime.utc_today(), &1.date))
 
       current_plant_entries =
         planting_entries
