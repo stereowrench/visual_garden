@@ -312,7 +312,8 @@ defmodule VisualGarden.PlannerTest do
                    planner_entry_id: pe.id,
                    date: ~D[2023-06-06],
                    end_date: plante,
-                   garden_id: garden.id
+                   garden_id: garden.id,
+                   disabled: false
                  }
                ]
     end
@@ -344,7 +345,8 @@ defmodule VisualGarden.PlannerTest do
                    planner_entry_id: pe.id,
                    date: ~D[2023-07-05],
                    end_date: plante,
-                   garden_id: garden.id
+                   garden_id: garden.id,
+                   disabled: false
                  }
                ]
     end
@@ -447,7 +449,8 @@ defmodule VisualGarden.PlannerTest do
                    date: ~D[2023-06-19],
                    end_date: ~D[2023-07-13],
                    planner_entry_id: pe.id,
-                   garden_id: garden.id
+                   garden_id: garden.id,
+                   disabled: false
                  }
                ]
     end

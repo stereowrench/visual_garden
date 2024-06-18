@@ -293,7 +293,7 @@ defmodule VisualGardenWeb.HomeLive.Show do
         <%= unless Timex.after?(@item.date, MyDateTime.utc_today) do %>
           <.button
             phx-click={JS.push("plant", value: %{planner_entry_id: @entry.id})}
-            disabled={IO.inspect(@item).disabled}
+            disabled={@item.disabled}
             data-confirm="Are you sure?"
           >
             Plant
