@@ -623,6 +623,9 @@ defmodule VisualGarden.Planner do
       refuse_entries =
         entries
         |> Enum.filter(&(&1.plant_id != nil))
+        |> Enum.reject(fn pe ->
+          pe.plant.archived
+        end)
         |> Enum.map(fn a ->
           %{
             type: "refuse",
@@ -633,7 +636,7 @@ defmodule VisualGarden.Planner do
             garden_id: garden.id
           }
         end)
-        |> Enum.filter(& Timex.after?(MyDateTime.utc_today(), &1.date))
+        |> Enum.filter(&Timex.after?(MyDateTime.utc_today(), &1.date))
 
       current_plant_entries =
         planting_entries
@@ -648,8 +651,18 @@ defmodule VisualGarden.Planner do
               today
             end
 
+          disabled =
+            entries
+            |> Enum.filter(fn pe -> pe.plant end)
+            |> Enum.filter(fn pe ->
+              pe.bed_id == entry.bed_id && pe.row == entry.row && pe.column == entry.column
+            end)
+            |> Enum.all?(fn pe -> pe.plant.archived end)
+            |> (fn x -> !x end).()
+
           %{
             type: "plant",
+            disabled: disabled,
             planner_entry_id: entry.id,
             date: date,
             end_date: entry.end_plant_date,
