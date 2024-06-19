@@ -90,7 +90,7 @@ defmodule VisualGardenWeb.EventLogLive.FormComponent do
   end
 
   defp event_type_for_action(:new_water), do: "water"
-  defp event_type_for_action(:transfer), do: "water"
+  defp event_type_for_action(:transfer), do: "transfer"
   defp event_type_for_action(:till), do: "till"
 
   @impl true
