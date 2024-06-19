@@ -266,6 +266,10 @@ defmodule VisualGardenWeb.PlannerLive.Show do
      )}
   end
 
+  def handle_event("plant_combo", %{"bed_id" => bed_id}, socket) do
+    {:noreply, socket}
+  end
+
   @impl true
   def handle_event("plant_combo_update", %{"Square" => squares, "bed_id" => bed_id}, socket) do
     Authorization.authorize_garden_modify(socket.assigns.garden.id, socket.assigns.current_user)
