@@ -236,6 +236,19 @@ defmodule VisualGarden.Planner do
   #   |> List.flatten()
   # end
 
+  def species_has_schedule_in_region(species, type, region_id) do
+    schedules_map =
+      region_id
+      |> schedules_map()
+      |> do_map_to_species(Library.list_species())
+
+    list =
+      schedules_map[species.id]
+      |> Enum.flat_map(fn sched -> sched.plantable_types end)
+
+    type in list
+  end
+
   defp map_species_to_schedules(schedules_map, species) do
     collected =
       species

@@ -34,9 +34,9 @@ defmodule VisualGardenWeb.SeedLive.FormComponent do
         <.input field={@form[:description]} type="text" label="Description" />
         <.input field={@form[:days_to_maturation]} type="number" label="Days to maturation" />
 
-        <div class="prose prose-eagle">
-          To allow planting at anytime of the year select "Any Season" as the species.
-        </div>
+        <%= if @planner_empty do %>
+          <span>No matching schedules for species and type. Select "Any Season" to continue.</span>
+        <% end %>
 
         <.live_select
           field={@form[:species_id]}
@@ -71,6 +71,7 @@ defmodule VisualGardenWeb.SeedLive.FormComponent do
     {:ok,
      socket
      |> assign(assigns)
+     |> assign(:planner_empty, false)
      |> assign(:species, species)
      |> assign_form(changeset)}
   end
@@ -100,7 +101,20 @@ defmodule VisualGardenWeb.SeedLive.FormComponent do
       |> Gardens.change_seed(prms)
       |> Map.put(:action, :validate)
 
-    {:noreply, assign_form(socket, changeset)}
+    empty? =
+      if seed_params["species_id"] not in [nil, ""] and seed_params["type"] not in [nil, ""] do
+        species = Library.get_species!(seed_params["species_id"])
+
+        !Planner.species_has_schedule_in_region(
+          species,
+          seed_params["type"],
+          socket.assigns.garden.region_id
+        )
+      else
+        false
+      end
+
+    {:noreply, socket |> assign_form(changeset) |> assign(:planner_empty, empty?)}
   end
 
   def handle_event("save", %{"seed" => seed_params}, socket) do
