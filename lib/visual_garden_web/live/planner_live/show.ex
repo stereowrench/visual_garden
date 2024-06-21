@@ -287,7 +287,7 @@ defmodule VisualGardenWeb.PlannerLive.Show do
 
   @impl true
   def handle_event("delete", %{"id" => planner_id} = params, socket) do
-    Authorization.authorize_garden_modify(socket.garden.id, socket.assigns.current_user)
+    Authorization.authorize_garden_modify(socket.assigns.garden.id, socket.assigns.current_user)
     planner = Planner.get_planner_entry!(planner_id)
     Planner.delete_planner_entry(planner)
 
