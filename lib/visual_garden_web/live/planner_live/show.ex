@@ -222,7 +222,7 @@ defmodule VisualGardenWeb.PlannerLive.Show do
     |> assign(:bed, Gardens.get_product!(bid))
     |> assign(:square, sq)
     |> assign(:squares, nil)
-    |> assign(:end_date, Planner.get_end_date(sq, bed, start_date))
+    |> assign(:end_date, dbg(Planner.get_end_date(sq, bed, start_date)))
     |> assign(:start_date, start_date)
     |> assign(:planner_entry, nil)
     |> assign(:plantables, plantables)

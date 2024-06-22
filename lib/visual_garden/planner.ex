@@ -101,11 +101,13 @@ defmodule VisualGarden.Planner do
         pe.id == skip_id
       end)
       |> Enum.map(fn
-        %{start_plant_date: spd, end_plant_date: epd, days_to_refuse: dtr} ->
-          if Timex.between?(start_date, spd, Timex.shift(epd, days: dtr)) do
+        %{start_plant_date: spd, end_plant_date: epd, days_to_refuse: dtr} = foo ->
+          ed = Timex.shift(epd, days: dtr)
+
+          if Timex.between?(start_date, spd, ed) do
             []
           else
-            if Timex.before?(Timex.shift(epd, days: dtr), start_date) do
+            if Timex.before?(ed, start_date) do
               []
             else
               spd
