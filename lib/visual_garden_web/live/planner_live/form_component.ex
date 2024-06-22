@@ -157,7 +157,13 @@ defmodule VisualGardenWeb.PlannerLive.FormComponent do
               type="date"
               name="refuse_date"
               label="Refuse date"
-              min={Timex.shift(@planner_entry.end_plant_date, days: @planner_entry.days_to_maturity)}
+              min={
+                if @planner_entry.nursery_start do
+                  Timex.shift(@planner_entry.nursery_end, days: @planner_entry.days_to_maturity)
+                else
+                  Timex.shift(@planner_entry.end_plant_date, days: @planner_entry.days_to_maturity)
+                end
+              }
               max={@edit_end_refuse}
               value={Timex.shift(@planner_entry.end_plant_date, days: @planner_entry.days_to_refuse)}
             />
@@ -193,7 +199,6 @@ defmodule VisualGardenWeb.PlannerLive.FormComponent do
 
     plantables_parsed =
       assigns.plantables
-      |> dbg()
       |> Enum.group_by(& &1.common_name)
 
     # garden
@@ -261,7 +266,9 @@ defmodule VisualGardenWeb.PlannerLive.FormComponent do
         seed_types =
           if params["species"] == "Any Season" do
             species_sel
-            |> Enum.group_by(&"#{&1.type} -- #{&1.seed.name} -- #{common_names[&1.seed.harvest_species_id]}")
+            |> Enum.group_by(
+              &"#{&1.type} -- #{&1.seed.name} -- #{common_names[&1.seed.harvest_species_id]}"
+            )
           else
             species_sel
             |> Enum.group_by(&"#{&1.type} -- #{&1.seed.name}")
