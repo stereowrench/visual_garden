@@ -14,16 +14,24 @@ defmodule VisualGardenWeb.LibrarySeedLive.Index do
      socket
      |> assign(:gardens, Gardens.list_gardens(socket.assigns.current_user))
      |> assign(:garden, Gardens.get_garden!(garden_id))
-     |> assign(:library_seed, Library.get_library_seed!(seed_id))
-     |> stream(:library_seeds, Library.list_library_seeds() |> filter_species(params))}
+     |> assign(:library_seed, Library.get_library_seed!(seed_id))}
   end
 
   @impl true
   def mount(params, _session, socket) do
     {:ok,
      socket
-     |> assign(:gardens, Gardens.list_gardens(socket.assigns.current_user))
-     |> stream(:library_seeds, Library.list_library_seeds() |> filter_species(params))}
+     |> assign(:gardens, Gardens.list_gardens(socket.assigns.current_user))}
+  end
+
+  @impl true
+  def handle_params(params, _url, socket) do
+    {:noreply,
+     socket
+     |> assign(:species, params["species"])
+     |> stream(:library_seeds, Library.list_library_seeds() |> filter_species(params))
+     |> assign(:can_edit?, Authorization.can_modify_library?(socket.assigns.current_user))
+     |> apply_action(socket.assigns.live_action, params)}
   end
 
   def filter_species(seeds, %{"species" => sp}) do
@@ -38,14 +46,6 @@ defmodule VisualGardenWeb.LibrarySeedLive.Index do
 
   def filter_species(seeds, _) do
     seeds
-  end
-
-  @impl true
-  def handle_params(params, _url, socket) do
-    {:noreply,
-     socket
-     |> assign(:can_edit?, Authorization.can_modify_library?(socket.assigns.current_user))
-     |> apply_action(socket.assigns.live_action, params)}
   end
 
   defp apply_action(socket, :copy, %{"id" => id}) do

@@ -6,20 +6,30 @@
       <.button>New Library seed</.button>
     </.link>
   </:actions>
+  <:subtitle>
+    Add a plantable to your garden by clicking the <.icon name="hero-plus" /> sign.
+
+    If a plantable is missing please make a post on the
+    <.link
+      href="https://forum.stereowrench.com/c/visual-garden/6"
+      class="text-blue-600 visited:text-purple-600 hover:text-blue-300"
+    >
+      Forum
+    </.link>
+    or
+    <.link
+      href="https://discord.gg/r8pePh8RM4"
+      class="text-blue-600 visited:text-purple-600 hover:text-blue-300"
+    >
+      Discord
+    </.link>
+  </:subtitle>
 </.header>
-If a plantable is missing please make a post on the
-<.link
-  href="https://forum.stereowrench.com/c/visual-garden/6"
-  class="text-blue-600 visited:text-purple-600 hover:text-blue-300"
->
-  Forum
-</.link> or
-<.link
-  href="https://discord.gg/r8pePh8RM4"
-  class="text-blue-600 visited:text-purple-600 hover:text-blue-300"
->
-  Discord
-</.link>
+
+<%= if @species do %>
+  Filtering for <%= @species %>.
+  <.link class="text-blue-600 hover:underline" patch={~p"/library_seeds"}>Clear filter</.link>
+<% end %>
 
 <.table
   id="library_seeds"
