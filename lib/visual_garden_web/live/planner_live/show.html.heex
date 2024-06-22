@@ -1,6 +1,14 @@
 <div class="prose prose-eagle">
   <h1>Planner for <%= @garden.name %></h1>
 
+  <%= if @can_modify? do %>
+    <br />
+    Create a <.link phx-no-format navigate={~p"/planners/#{@garden.id}/new_bed"}>
+      <.button>
+        new bed
+      </.button></.link> to add more plants.
+  <% end %>
+
   <h2>What's in season?</h2>
   Check out a graphical schedule on the
   <.link navigate={~p"/regions/#{@garden.region_id}"}>region page</.link>
@@ -11,24 +19,41 @@
       </li>
     <% end %>
   </ol>
+</div>
 
-  <%= if @can_modify? do %>
-    <br /> Create a
-    <.link navigate={~p"/gardens/#{@garden.id}/products/new_bed"}>
-      <.button>
-        new bed
-      </.button>
-    </.link>
-    to add more plants.
-  <% end %>
+<.modal
+  :if={@live_action in [:new_bed]}
+  id="product-modal"
+  show
+  on_cancel={JS.patch(~p"/planners/#{@garden.id}")}
+>
+  <.live_component
+    module={VisualGardenWeb.ProductLive.FormComponent}
+    id={:new}
+    title={@page_title}
+    action={@live_action}
+    product={%VisualGarden.Gardens.Product{}}
+    current_user={@current_user}
+    patch={~p"/planners/#{@garden.id}"}
+    garden={@garden}
+  />
+</.modal>
+
+<div class="prose">
+  <h2>Beds</h2>
+  <ul>
+    <%= for bed <- @beds do %>
+      <li><a href={"#bed-#{bed.id}"}><%= bed.name %></a></li>
+    <% end %>
+  </ul>
 </div>
 
 <%= for bed <- @beds do %>
-  <div class="prose prose-eagle">
-    <h2><%= bed.name %></h2>
+  <div class="prose prose-eagle mb-24">
+    <h3 class="anchor" id={"bed-#{bed.id}"}><%= bed.name %></h3>
     <%= if @can_modify? do %>
-      <h3>Bulk Schedule</h3>
-      <p>
+      <h4>Bulk Schedule</h4>
+      <p class="text-[0.8125rem] leading-6">
         Select the grid cells to plan in bulk. When the cell is
         <span style="color: rgb(255,144,144)">red</span>
         you have no plantables that can be planted in the available space. Either make room in the schedule, <.link navigate={
@@ -60,7 +85,7 @@
         <.button phx-disable-with="Saving...">Plant bulk</.button>
       </form>
     <% end %>
-    <h3>Planting Schedule</h3>
+    <h4>Planting Schedule</h4>
     <.live_component
       module={VisualGardenWeb.PlannerLive.GraphComponent}
       bed={bed}

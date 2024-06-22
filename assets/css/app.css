@@ -117,3 +117,7 @@ dd {
   /* --tw-bg-opacity: 1; */
   /* border: solid; */
 }
+
+.anchor {
+  scroll-margin-top: 56px;
+}

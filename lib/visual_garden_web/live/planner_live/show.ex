@@ -248,6 +248,7 @@ defmodule VisualGardenWeb.PlannerLive.Show do
   defp page_title(:new), do: "New Planner"
   defp page_title(:edit), do: "Edit Planner"
   defp page_title(:new_bulk), do: "New Plans"
+  defp page_title(:new_bed), do: "New Bed"
 
   @impl true
   def handle_info({VisualGardenWeb.PlannerLive.FormComponent, {:saved, _plant}}, socket) do
@@ -255,6 +256,18 @@ defmodule VisualGardenWeb.PlannerLive.Show do
 
     socket =
       socket
+      |> add_plantability(start_date)
+      |> add_current_plants(start_date)
+
+    {:noreply, socket}
+  end
+
+  def handle_info({VisualGardenWeb.ProductLive.FormComponent, {:saved, _bed}}, socket) do
+    start_date = VisualGarden.MyDateTime.utc_today()
+
+    socket =
+      socket
+      |> assign(:beds, Gardens.list_beds(socket.assigns.garden.id))
       |> add_plantability(start_date)
       |> add_current_plants(start_date)
 
