@@ -12,7 +12,11 @@ defmodule VisualGardenWeb.HomeLive.Show do
 
   @impl true
   def mount(_params, _session, socket) do
-    {:ok, socket}
+    if socket.assigns.current_user do
+      {:ok, socket}
+    else
+      {:ok, socket |> redirect(to: ~p"/")}
+    end
   end
 
   @impl true

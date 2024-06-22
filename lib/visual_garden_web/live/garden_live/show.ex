@@ -1,4 +1,5 @@
 defmodule VisualGardenWeb.GardenLive.Show do
+  alias VisualGarden.Planner
   alias VisualGarden.Accounts
   use VisualGardenWeb, :live_view
 
@@ -13,10 +14,14 @@ defmodule VisualGardenWeb.GardenLive.Show do
   def handle_params(%{"id" => id}, _, socket) do
     Authorization.authorize_garden_view(id, socket.assigns.current_user)
     garden = Gardens.get_garden!(id)
+    products = Gardens.list_products(id)
 
     {:noreply,
      socket
      |> assign(:page_title, page_title(socket.assigns.live_action))
+     |> assign(:planned_entries, get_planned_entries(garden))
+     |> assign(:total_sqft, total_sqft(products))
+     |> assign(:archived_plants, archived_plants(garden))
      |> assign(:garden, garden)
      |> assign(:seeds, Gardens.list_seeds(id))
      |> assign(
@@ -25,7 +30,29 @@ defmodule VisualGardenWeb.GardenLive.Show do
      )
      |> assign_plants()
      |> assign(:users, Gardens.list_garden_users(garden))
-     |> assign(:products, Gardens.list_products(id))}
+     |> assign(:products, products)}
+  end
+
+  defp archived_plants(garden) do
+    beds = Gardens.list_beds(garden.id)
+    for bed <- beds do
+      Gardens.list_plants(garden.id, bed.id)
+      |> Enum.filter(& &1.archived)
+      |> length()
+    end
+    |> Enum.sum()
+  end
+
+  defp get_planned_entries(garden) do
+    Planner.list_planner_entries_ungrouped(garden.id)
+    |> length()
+  end
+
+  defp total_sqft(products) do
+    products
+    |> Enum.filter(& &1.type == :bed)
+    |> Enum.map(fn b -> b.width * b.length end)
+    |> Enum.sum()
   end
 
   defp page_title(:show), do: "Show Garden"

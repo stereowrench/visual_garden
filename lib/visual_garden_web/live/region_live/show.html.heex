@@ -8,6 +8,15 @@
   </:actions>
 </.header>
 
+<div class="prose">
+  <%= if @current_user do %>
+    To start planting, <.link navigate={~p"/gardens/new"}>create a garden</.link>
+  <% else %>
+    To start planting, <.link navigate={~p"/users/register"}>create an account</.link>, then
+    <.link navigate={~p"/gardens/new"}>create a garden</.link>
+  <% end %>
+</div>
+
 <div class="prose prose-eagle">
   <h3>Schedule Graphic</h3>
 </div>

@@ -57,7 +57,9 @@
 </ul>
 <ul class="relative z-10 flex items-center gap-4 px-4 sm:px-6 lg:px-8 justify-beginning">
   <.link navigate={~p"/home"}>
-    <PC.badge color="warning" class="home-badge" label={"Todo #{@home_badge}"} />
+    <%= if @home_badge > 0 do %>
+      <PC.badge color="warning" class="home-badge" label={"Todo #{@home_badge}"} />
+    <% end %>
   </.link>
 </ul>
 <div id="main-sidebar" phx-hook="Sidebar">

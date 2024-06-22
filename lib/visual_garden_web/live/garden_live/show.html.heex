@@ -17,16 +17,35 @@
   </:actions>
 </.header>
 
+<div class="prose">
+  To get started, plan some plants in the
+  <.link navigate={~p"/planners/#{@garden.id}"}>planner</.link>
+  and then visit the <.link navigate={~p"/home"}>home page</.link>.
+</div>
+
 <dl class="mx-auto grid grid-cols-1 gap-px bg-gray-900/5 sm:grid-cols-2 lg:grid-cols-4">
   <div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-2 bg-white px-4 py-10 sm:px-6 xl:px-8">
     <dt class="text-sm font-medium leading-6 text-gray-500">Total Plants</dt>
-    <%!-- <dd
-      class="text-xs font-medium text-gray-700"
-      data-dt={last_watered_dt(@events)}
-    > --%>
-    <%!-- </dd> --%>
     <dd class="w-full flex-none text-3xl font-medium leading-10 tracking-tight text-gray-900">
       <%= @total_plants %>
+    </dd>
+  </div>
+  <div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-2 bg-white px-4 py-10 sm:px-6 xl:px-8">
+    <dt class="text-sm font-medium leading-6 text-gray-500">Planned Plants</dt>
+    <dd class="w-full flex-none text-3xl font-medium leading-10 tracking-tight text-gray-900">
+      <%= @planned_entries %>
+    </dd>
+  </div>
+  <div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-2 bg-white px-4 py-10 sm:px-6 xl:px-8">
+    <dt class="text-sm font-medium leading-6 text-gray-500">Total sqft</dt>
+    <dd class="w-full flex-none text-3xl font-medium leading-10 tracking-tight text-gray-900">
+      <%= @total_sqft %>
+    </dd>
+  </div>
+  <div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-2 bg-white px-4 py-10 sm:px-6 xl:px-8">
+    <dt class="text-sm font-medium leading-6 text-gray-500">Archived plants</dt>
+    <dd class="w-full flex-none text-3xl font-medium leading-10 tracking-tight text-gray-900">
+      <%= @archived_plants %>
     </dd>
   </div>
 </dl>

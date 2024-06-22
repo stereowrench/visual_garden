@@ -65,9 +65,10 @@ defmodule VisualGardenWeb.RegionLive.Show do
 
   def types_str(assigns) do
     ~H"""
-    [<%= for type <- Enum.intersperse(@schedule.plantable_types, ", ") do %>
-      <%= type %>
-    <% end %>]
+    <text phx-no-format dominant-baseline="central" text-anchor="middle" x={365} y={30 + 60 * @idx}>
+    <%= DisplayHelpers.species_display_string_simple(@species) %>
+    [<%= for type <- Enum.intersperse(@schedule.plantable_types, ", ") do %><%= type %><% end %>]
+    </text>
     """
   end
 
@@ -76,16 +77,17 @@ defmodule VisualGardenWeb.RegionLive.Show do
 
     assigns =
       assign(assigns, pairs: pairs)
-      |> assign(types_str: types_str(%{schedule: assigns.schedule}))
+      |> assign(
+        types_str:
+          types_str(%{schedule: assigns.schedule, species: assigns.species, idx: assigns.idx})
+      )
 
     ~H"""
     <g>
       <%= for pair <- @pairs do %>
         <.rect_for2 dates={pair} idx={@idx} />
       <% end %>
-      <text dominant-baseline="central" text-anchor="middle" x={365} y={30 + 60 * @idx}>
-        <%= @types_str %> <%= DisplayHelpers.species_display_string_simple(@species) %>
-      </text>
+      <%= @types_str %>
     </g>
     """
   end

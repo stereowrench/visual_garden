@@ -48,7 +48,7 @@ defmodule VisualGardenWeb.DisplayHelpers do
     assigns = species_assigns(species)
 
     ~H"""
-    <%= @season_str %><i><%= @genus %> <%= @name %> <%= @var_str %></i> <%= @cultivar_str %> <%= @common_str %>
+    <%= @common_str %> <%= @season_str %><i><%= @genus %> <%= @name %> <%= @var_str %></i> <%= @cultivar_str %>
     """
   end
 
@@ -63,7 +63,7 @@ defmodule VisualGardenWeb.DisplayHelpers do
     assigns = species_assigns(species)
 
     """
-    #{assigns.season_str} #{assigns.genus} #{assigns.name}#{assigns.var_str}#{assigns.cultivar_str}#{assigns.common_str}
+    #{assigns.common_str} #{assigns.season_str} #{assigns.genus} #{assigns.name}#{assigns.var_str}#{assigns.cultivar_str}
     """
   end
 
