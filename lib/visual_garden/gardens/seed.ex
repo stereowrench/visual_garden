@@ -47,7 +47,9 @@ defmodule VisualGarden.Gardens.Seed do
     if get_field(cs, :any_season) do
       as = Library.get_any_season()
 
-      put_change(cs, :species_id, as.id)
+      cs
+      |> put_change(:harvest_species_id, get_field(cs, :species_id))
+      |> put_change(:species_id, as.id)
     else
       sid = get_field(cs, :harvest_species_id)
 

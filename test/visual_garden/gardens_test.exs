@@ -132,6 +132,14 @@ defmodule VisualGarden.GardensTest do
 
     test "populates species_id" do
       species = LibraryFixtures.species_fixture()
+
+      species =
+        LibraryFixtures.species_fixture(%{
+          genus: "Any",
+          species: "season",
+          common_name: "Any Season"
+        })
+
       garden = garden_fixture()
 
       {:ok, seed} =
@@ -177,7 +185,7 @@ defmodule VisualGarden.GardensTest do
     test "list_seeds/0 returns all seeds" do
       seed = seed_fixture()
       garden = Gardens.get_garden!(seed.garden_id)
-      assert Gardens.list_seeds(garden.id) == [seed]
+      assert Gardens.list_seeds(garden.id) == [seed] |> Repo.preload([:harvest_species])
     end
 
     test "get_seed!/1 returns the seed with given id" do
