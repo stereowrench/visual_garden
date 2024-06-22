@@ -280,7 +280,7 @@ defmodule VisualGarden.Gardens do
 
   """
   def list_seeds(garden_id) do
-    Repo.all(from s in Seed, where: s.garden_id == ^garden_id)
+    Repo.all(from s in Seed, where: s.garden_id == ^garden_id, preload: [:harvest_species])
   end
 
   @doc """

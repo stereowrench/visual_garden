@@ -193,6 +193,7 @@ defmodule VisualGardenWeb.PlannerLive.FormComponent do
 
     plantables_parsed =
       assigns.plantables
+      |> dbg()
       |> Enum.group_by(& &1.common_name)
 
     # garden
@@ -252,9 +253,19 @@ defmodule VisualGardenWeb.PlannerLive.FormComponent do
       if species = params["species"] do
         species_sel = socket.assigns.plantables_parsed[species]
 
+        common_names =
+          Library.list_species_with_common_names()
+          |> Enum.map(fn {s, name} -> {s.id, name} end)
+          |> Enum.into(%{})
+
         seed_types =
-          species_sel
-          |> Enum.group_by(&"#{&1.type} -- #{&1.seed.name}")
+          if params["species"] == "Any Season" do
+            species_sel
+            |> Enum.group_by(&"#{&1.type} -- #{&1.seed.name} -- #{common_names[&1.seed.harvest_species_id]}")
+          else
+            species_sel
+            |> Enum.group_by(&"#{&1.type} -- #{&1.seed.name}")
+          end
 
         seed_type_options = Map.keys(seed_types)
 
