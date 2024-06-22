@@ -121,3 +121,7 @@ dd {
 .anchor {
   scroll-margin-top: 56px;
 }
+
+.home-badge {
+  @apply lg:ml-72;
+}

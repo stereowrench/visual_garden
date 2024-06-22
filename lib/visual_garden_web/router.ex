@@ -23,6 +23,7 @@ defmodule VisualGardenWeb.Router do
     live_session :creation,
       on_mount: [
         {VisualGardenWeb.UserAuth, :ensure_authenticated},
+        VisualGardenWeb.HomeBadge,
         VisualGardenWeb.Nav,
         Flashy.Hook
       ] do
@@ -45,6 +46,7 @@ defmodule VisualGardenWeb.Router do
     live_session :routed,
       on_mount: [
         {VisualGardenWeb.UserAuth, :mount_current_user},
+        VisualGardenWeb.HomeBadge,
         VisualGardenWeb.Nav,
         Flashy.Hook
       ] do
@@ -188,6 +190,7 @@ defmodule VisualGardenWeb.Router do
     live_session :redirect_if_user_is_authenticated,
       on_mount: [
         {VisualGardenWeb.UserAuth, :redirect_if_user_is_authenticated},
+        VisualGardenWeb.HomeBadge,
         VisualGardenWeb.Nav,
         Flashy.Hook
       ] do
@@ -206,6 +209,7 @@ defmodule VisualGardenWeb.Router do
     live_session :require_authenticated_user,
       on_mount: [
         {VisualGardenWeb.UserAuth, :ensure_authenticated},
+        VisualGardenWeb.HomeBadge,
         VisualGardenWeb.Nav,
         Flashy.Hook
       ] do
@@ -222,6 +226,7 @@ defmodule VisualGardenWeb.Router do
     live_session :current_user,
       on_mount: [
         {VisualGardenWeb.UserAuth, :mount_current_user},
+        VisualGardenWeb.HomeBadge,
         VisualGardenWeb.Nav,
         Flashy.Hook
       ] do
