@@ -37,9 +37,9 @@ defmodule VisualGardenWeb.SeedLive.FormComponent do
         <%= if @planner_empty do %>
           <span>No matching schedules for species and type. Select "Any Season" to continue.</span>
         <% end %>
-
+        <.input field={@form[:any_season]} type="checkbox" label="Any season?" />
         <.live_select
-          field={@form[:species_id]}
+          field={@form[:harvest_species_id]}
           label="Species"
           phx-target={@myself}
           options={@species}
