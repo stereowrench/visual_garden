@@ -102,8 +102,8 @@ defmodule VisualGardenWeb.SeedLive.FormComponent do
       |> Map.put(:action, :validate)
 
     empty? =
-      if seed_params["species_id"] not in [nil, ""] and seed_params["type"] not in [nil, ""] do
-        species = Library.get_species!(seed_params["species_id"])
+      if seed_params["harvest_species_id"] not in [nil, ""] and seed_params["type"] not in [nil, ""] do
+        species = Library.get_species!(seed_params["harvest_species_id"])
 
         !Planner.species_has_schedule_in_region(
           species,
