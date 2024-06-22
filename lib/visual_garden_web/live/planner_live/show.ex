@@ -209,12 +209,13 @@ defmodule VisualGardenWeb.PlannerLive.Show do
     bed = Gardens.get_product!(bid)
     start_date = if params["start_date"], do: Date.from_iso8601!(params["start_date"])
     start_date = start_date || VisualGarden.MyDateTime.utc_today()
+    ped = Planner.get_end_date(sq, bed, start_date)
 
     plantables =
       Planner.get_plantables_from_garden(
         bed,
         start_date,
-        Planner.get_end_date(sq, bed, start_date),
+        ped,
         VisualGarden.MyDateTime.utc_today()
       )
 
@@ -222,7 +223,7 @@ defmodule VisualGardenWeb.PlannerLive.Show do
     |> assign(:bed, Gardens.get_product!(bid))
     |> assign(:square, sq)
     |> assign(:squares, nil)
-    |> assign(:end_date, dbg(Planner.get_end_date(sq, bed, start_date)))
+    |> assign(:end_date, ped)
     |> assign(:start_date, start_date)
     |> assign(:planner_entry, nil)
     |> assign(:plantables, plantables)
