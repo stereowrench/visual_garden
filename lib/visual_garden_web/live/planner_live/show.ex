@@ -21,7 +21,10 @@ defmodule VisualGardenWeb.PlannerLive.Show do
      socket
      |> add_params(params)
      |> assign(:page_tip_title, Tooltips.planner_title())
-     |> assign(:can_modify?, Authorization.can_modify_garden?(garden, socket.assigns.current_user))
+     |> assign(
+       :can_modify?,
+       Authorization.can_modify_garden?(garden, socket.assigns.current_user)
+     )
      |> assign(:page_tip, Tooltips.planner_content(garden))
      |> assign(:page_title, page_title(socket.assigns.live_action))
      |> assign(:garden, garden)
