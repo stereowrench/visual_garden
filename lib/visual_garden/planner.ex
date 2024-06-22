@@ -101,14 +101,24 @@ defmodule VisualGarden.Planner do
         pe.id == skip_id
       end)
       |> Enum.map(fn
-        %{start_plant_date: spd, end_plant_date: epd, days_to_refuse: dtr} ->
-          if Timex.between?(start_date, spd, Timex.shift(epd, days: dtr)) do
+        %{start_plant_date: spd, end_plant_date: epd, days_to_refuse: dtr} = foo ->
+          ed = Timex.shift(epd, days: dtr)
+
+          if Timex.between?(start_date, spd, ed) do
             []
           else
-            if Timex.before?(Timex.shift(epd, days: dtr), start_date) do
+            if Timex.before?(ed, start_date) do
               []
             else
-              spd
+              if start_date == ed do
+                if Timex.before?(spd, start_date) do
+                  []
+                else
+                  spd
+                end
+              else
+                spd
+              end
             end
           end
       end)
@@ -235,6 +245,19 @@ defmodule VisualGarden.Planner do
   #   end
   #   |> List.flatten()
   # end
+
+  def species_has_schedule_in_region(species, type, region_id) do
+    schedules_map =
+      region_id
+      |> schedules_map()
+      |> do_map_to_species(Library.list_species())
+
+    list =
+      (schedules_map[species.id] || [])
+      |> Enum.flat_map(fn sched -> sched.plantable_types end)
+
+    type in list
+  end
 
   defp map_species_to_schedules(schedules_map, species) do
     collected =

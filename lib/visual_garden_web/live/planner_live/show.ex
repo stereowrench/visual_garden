@@ -21,7 +21,10 @@ defmodule VisualGardenWeb.PlannerLive.Show do
      socket
      |> add_params(params)
      |> assign(:page_tip_title, Tooltips.planner_title())
-     |> assign(:can_modify?, Authorization.can_modify_garden?(garden, socket.assigns.current_user))
+     |> assign(
+       :can_modify?,
+       Authorization.can_modify_garden?(garden, socket.assigns.current_user)
+     )
      |> assign(:page_tip, Tooltips.planner_content(garden))
      |> assign(:page_title, page_title(socket.assigns.live_action))
      |> assign(:garden, garden)
@@ -206,12 +209,13 @@ defmodule VisualGardenWeb.PlannerLive.Show do
     bed = Gardens.get_product!(bid)
     start_date = if params["start_date"], do: Date.from_iso8601!(params["start_date"])
     start_date = start_date || VisualGarden.MyDateTime.utc_today()
+    ped = Planner.get_end_date(sq, bed, start_date)
 
     plantables =
       Planner.get_plantables_from_garden(
         bed,
         start_date,
-        Planner.get_end_date(sq, bed, start_date),
+        ped,
         VisualGarden.MyDateTime.utc_today()
       )
 
@@ -219,7 +223,7 @@ defmodule VisualGardenWeb.PlannerLive.Show do
     |> assign(:bed, Gardens.get_product!(bid))
     |> assign(:square, sq)
     |> assign(:squares, nil)
-    |> assign(:end_date, Planner.get_end_date(sq, bed, start_date))
+    |> assign(:end_date, ped)
     |> assign(:start_date, start_date)
     |> assign(:planner_entry, nil)
     |> assign(:plantables, plantables)
@@ -244,6 +248,7 @@ defmodule VisualGardenWeb.PlannerLive.Show do
   defp page_title(:new), do: "New Planner"
   defp page_title(:edit), do: "Edit Planner"
   defp page_title(:new_bulk), do: "New Plans"
+  defp page_title(:new_bed), do: "New Bed"
 
   @impl true
   def handle_info({VisualGardenWeb.PlannerLive.FormComponent, {:saved, _plant}}, socket) do
@@ -251,6 +256,18 @@ defmodule VisualGardenWeb.PlannerLive.Show do
 
     socket =
       socket
+      |> add_plantability(start_date)
+      |> add_current_plants(start_date)
+
+    {:noreply, socket}
+  end
+
+  def handle_info({VisualGardenWeb.ProductLive.FormComponent, {:saved, _bed}}, socket) do
+    start_date = VisualGarden.MyDateTime.utc_today()
+
+    socket =
+      socket
+      |> assign(:beds, Gardens.list_beds(socket.assigns.garden.id))
       |> add_plantability(start_date)
       |> add_current_plants(start_date)
 

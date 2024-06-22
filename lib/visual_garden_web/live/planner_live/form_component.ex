@@ -113,7 +113,7 @@ defmodule VisualGardenWeb.PlannerLive.FormComponent do
               <.input
                 type="date"
                 name="refuse_date"
-                label="Refuse date"
+                label={refuse_label()}
                 min={
                   get_start_refuse_date(
                     @form[:end_plant_date].value,
@@ -156,8 +156,14 @@ defmodule VisualGardenWeb.PlannerLive.FormComponent do
             <.input
               type="date"
               name="refuse_date"
-              label="Refuse date"
-              min={Timex.shift(@planner_entry.end_plant_date, days: @planner_entry.days_to_maturity)}
+              label={refuse_label()}
+              min={
+                if @planner_entry.nursery_start do
+                  Timex.shift(@planner_entry.nursery_end, days: @planner_entry.days_to_maturity)
+                else
+                  Timex.shift(@planner_entry.end_plant_date, days: @planner_entry.days_to_maturity)
+                end
+              }
               max={@edit_end_refuse}
               value={Timex.shift(@planner_entry.end_plant_date, days: @planner_entry.days_to_refuse)}
             />
@@ -175,6 +181,19 @@ defmodule VisualGardenWeb.PlannerLive.FormComponent do
         </.link>
       <% end %>
     </div>
+    """
+  end
+
+  defp refuse_label() do
+    assigns = %{}
+
+    ~H"""
+    <span>
+      Refuse date
+      <span class="text-[0.8125rem] leading-6">
+        (The date that you want to discard the plant.)
+      </span>
+    </span>
     """
   end
 
@@ -252,9 +271,21 @@ defmodule VisualGardenWeb.PlannerLive.FormComponent do
       if species = params["species"] do
         species_sel = socket.assigns.plantables_parsed[species]
 
+        common_names =
+          Library.list_species_with_common_names()
+          |> Enum.map(fn {s, name} -> {s.id, name} end)
+          |> Enum.into(%{})
+
         seed_types =
-          species_sel
-          |> Enum.group_by(&"#{&1.type} -- #{&1.seed.name}")
+          if params["species"] == "Any Season" do
+            species_sel
+            |> Enum.group_by(
+              &"#{&1.type} -- #{&1.seed.name} -- #{common_names[&1.seed.harvest_species_id]}"
+            )
+          else
+            species_sel
+            |> Enum.group_by(&"#{&1.type} -- #{&1.seed.name}")
+          end
 
         seed_type_options = Map.keys(seed_types)
 

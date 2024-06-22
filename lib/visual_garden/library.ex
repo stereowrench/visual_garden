@@ -158,6 +158,10 @@ defmodule VisualGarden.Library do
   """
   def get_species!(id), do: Repo.get!(Species, id)
 
+  def get_any_season() do
+    get_species_by_common_name("Any Season")
+  end
+
   def list_common_species() do
     Repo.all(from s in Species, where: not is_nil(s.common_name))
   end

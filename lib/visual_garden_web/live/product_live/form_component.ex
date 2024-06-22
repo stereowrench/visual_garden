@@ -10,7 +10,6 @@ defmodule VisualGardenWeb.ProductLive.FormComponent do
     <div>
       <.header>
         <%= @title %>
-        <:subtitle>Use this form to manage products records in your database.</:subtitle>
       </.header>
 
       <.simple_form
@@ -20,7 +19,7 @@ defmodule VisualGardenWeb.ProductLive.FormComponent do
         phx-change="validate"
         phx-submit="save"
       >
-        <.input field={@form[:name]} type="text" label="Name" />
+        <.input field={@form[:name]} type="text" label="Name" autocomplete="off" />
         <%= if @action in [:new_bed, :edit_bed] do %>
           <.input type="hidden" field={@form[:type]} value="bed" options={[:bed]} />
           <.input type="number" field={@form[:length]} label="Length (ft.)" />

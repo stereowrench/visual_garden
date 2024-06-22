@@ -27,7 +27,7 @@ defmodule VisualGardenWeb.Tooltips do
 
     Once schedules you will be reminded on the home page of:
     <ul>
-      <li>When to nurse your plants</li>
+      <li>When to plant in the nursery</li>
       <li>When to plant your plants</li>
       <li>When to water your plants</li>
       <li>[In development] When to mulch your plants</li>

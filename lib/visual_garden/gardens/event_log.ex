@@ -77,6 +77,17 @@ defmodule VisualGarden.Gardens.EventLog do
     |> validate_inclusion(:event_type, [:water])
   end
 
+  def changeset_humidity(event_log, attrs) do
+    event_log
+    |> cast(attrs, [
+      :event_type,
+      :event_time,
+      :product_id
+    ])
+    |> validate_required([:event_time, :product_id])
+    |> validate_inclusion(:event_type, [:humidity])
+  end
+
   @doc false
   def changeset_tilled(event_log, attrs) do
     event_log

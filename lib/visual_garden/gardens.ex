@@ -171,7 +171,7 @@ defmodule VisualGarden.Gardens do
   def get_last_water_for_bed(bed_id) do
     Repo.one(
       from event in EventLog,
-        where: event.event_type == :water and event.product_id == ^bed_id,
+        where: event.event_type in [:water, :humidity] and event.product_id == ^bed_id,
         order_by: [desc: :event_time],
         limit: 1
     )
@@ -280,7 +280,7 @@ defmodule VisualGarden.Gardens do
 
   """
   def list_seeds(garden_id) do
-    Repo.all(from s in Seed, where: s.garden_id == ^garden_id)
+    Repo.all(from s in Seed, where: s.garden_id == ^garden_id, preload: [:harvest_species])
   end
 
   @doc """
@@ -696,6 +696,15 @@ defmodule VisualGarden.Gardens do
     |> EventLog.changeset_water(attrs)
     |> Repo.insert()
   end
+
+  def create_event_log(type = "humidity", attrs) do
+    attrs = Map.merge(%{"event_type" => type}, attrs)
+
+    %EventLog{}
+    |> EventLog.changeset_humidity(attrs)
+    |> Repo.insert()
+  end
+
 
   def create_event_log(type = "till", attrs) do
     attrs = Map.merge(%{"event_type" => type}, attrs)
