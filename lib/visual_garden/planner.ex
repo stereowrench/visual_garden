@@ -111,9 +111,13 @@ defmodule VisualGarden.Planner do
               []
             else
               if start_date == ed do
-                []
+                if Timex.before?(spd, start_date) do
+                  []
+                else
+                  spd
+                end
               else
-                ed
+                spd
               end
             end
           end
