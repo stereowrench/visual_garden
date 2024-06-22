@@ -243,7 +243,7 @@ defmodule VisualGarden.Planner do
       |> do_map_to_species(Library.list_species())
 
     list =
-      schedules_map[species.id]
+      (schedules_map[species.id] || [])
       |> Enum.flat_map(fn sched -> sched.plantable_types end)
 
     type in list

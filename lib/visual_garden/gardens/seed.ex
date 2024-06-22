@@ -49,7 +49,12 @@ defmodule VisualGarden.Gardens.Seed do
       put_change(cs, :species_id, as.id)
     else
       sid = get_field(cs, :harvest_species_id)
-      put_change(cs, :species_id, sid)
+
+      if sid do
+        put_change(cs, :species_id, sid)
+      else
+        put_change(cs, :harvest_species_id, get_field(cs, :species_id))
+      end
     end
   end
 end
