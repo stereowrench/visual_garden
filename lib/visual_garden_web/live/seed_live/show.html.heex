@@ -6,8 +6,8 @@
 />
 
 <.header>
-  Seed <%= @seed.name %>
-  <:subtitle>This is a plantable in your garden.</:subtitle>
+  Viewing plantable
+  <:subtitle><%= @seed.name %></:subtitle>
   <:actions :if={@can_modify?}>
     <.link patch={~p"/gardens/#{@garden.id}/seeds/#{@seed}/show/edit"} phx-click={JS.push_focus()}>
       <.button>Edit seed</.button>
@@ -16,8 +16,19 @@
 </.header>
 
 <.list>
-  <:item title="Name"><%= @seed.name %></:item>
   <:item title="Description"><%= @seed.description %></:item>
+  <:item title="Any season?">
+    <%= if @seed.any_season do %>
+      <PC.badge color="info" label="Yes" />
+    <% else %>
+      <PC.badge color="gray" label="No" />
+    <% end %>
+  </:item>
+  <:item title="Species">
+    <.link class="underline" navigate={~p"/species/#{@seed.harvest_species_id}"}>
+      <%= render_species(@seed.harvest_species, @common_name) %>
+    </.link>
+  </:item>
 </.list>
 
 <.back navigate={~p"/gardens/#{@garden.id}/seeds"}>Back to seeds</.back>
