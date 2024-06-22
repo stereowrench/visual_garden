@@ -113,7 +113,7 @@ defmodule VisualGardenWeb.PlannerLive.FormComponent do
               <.input
                 type="date"
                 name="refuse_date"
-                label="Refuse date"
+                label={refuse_label()}
                 min={
                   get_start_refuse_date(
                     @form[:end_plant_date].value,
@@ -156,7 +156,7 @@ defmodule VisualGardenWeb.PlannerLive.FormComponent do
             <.input
               type="date"
               name="refuse_date"
-              label="Refuse date"
+              label={refuse_label()}
               min={
                 if @planner_entry.nursery_start do
                   Timex.shift(@planner_entry.nursery_end, days: @planner_entry.days_to_maturity)
@@ -181,6 +181,19 @@ defmodule VisualGardenWeb.PlannerLive.FormComponent do
         </.link>
       <% end %>
     </div>
+    """
+  end
+
+  defp refuse_label() do
+    assigns = %{}
+
+    ~H"""
+    <span>
+      Refuse date
+      <span class="text-[0.8125rem] leading-6">
+        (The date that you want to discard the plant.)
+      </span>
+    </span>
     """
   end
 
