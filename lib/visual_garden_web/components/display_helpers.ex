@@ -103,7 +103,7 @@ defmodule VisualGardenWeb.DisplayHelpers do
 
     ~H"""
     <%= if @in_garden? do %>
-      <%= @name %>
+      <.link phx-no-format class="no-underline" navigate={~p"/library_seeds?#{[species: @name]}"}><%= @name %></.link>
       <PetalComponents.Badge.badge color="success" label="In Garden" />
     <% else %>
       <.link phx-no-format navigate={~p"/library_seeds?#{[species: @name]}"}><%= @name %></.link>
