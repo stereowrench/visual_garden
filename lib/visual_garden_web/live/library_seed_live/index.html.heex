@@ -34,7 +34,13 @@
 <.table
   id="library_seeds"
   rows={@streams.library_seeds}
-  row_click={fn {_id, library_seed} -> JS.navigate(~p"/library_seeds/#{library_seed}") end}
+  row_click={
+    fn {_id, library_seed} ->
+      JS.navigate(
+        ~p"/library_seeds/#{library_seed}?#{if @species, do: [species: @species], else: []}"
+      )
+    end
+  }
 >
   <:col :let={{_id, library_seed}} label="Name"><%= library_seed.name %></:col>
   <:col :let={{_id, library_seed}} label="Type"><%= library_seed.type %></:col>
@@ -58,7 +64,11 @@
   </:action>
   <:action :let={{_id, library_seed}}>
     <div class="sr-only">
-      <.link navigate={~p"/library_seeds/#{library_seed}"}>Show</.link>
+      <.link navigate={
+        ~p"/library_seeds/#{library_seed}?#{if @species, do: [species: @species], else: []}"
+      }>
+        Show
+      </.link>
     </div>
     <%= if @can_edit? do %>
       <.link patch={~p"/library_seeds/#{library_seed}/edit"}>Edit</.link>

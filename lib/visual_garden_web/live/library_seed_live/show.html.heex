@@ -9,13 +9,30 @@
   </:actions>
 </.header>
 
+<PC.dropdown>
+  <:trigger_element>
+    Add plantable to garden <.icon name="hero-plus" />
+  </:trigger_element>
+  <%= for garden <- @gardens do %>
+    <PetalComponents.Dropdown.dropdown_menu_item
+      label={garden.name}
+      link_type="a"
+      to={
+        ~p"/library_seeds/#{@library_seed.id}/copy/#{garden.id}?#{[ret: "seed"] ++ if @species, do: [species: @species], else: []}"
+      }
+    />
+  <% end %>
+</PC.dropdown>
+
 <.list>
   <:item title="Type"><%= @library_seed.type %></:item>
   <:item title="Days to maturation"><%= @library_seed.days_to_maturation %></:item>
   <:item title="Manufacturer"><%= @library_seed.manufacturer %></:item>
 </.list>
 
-<.back navigate={~p"/library_seeds"}>Back to library_seeds</.back>
+<.back navigate={~p"/library_seeds?#{if @species, do: [species: @species], else: []}"}>
+  Back to library_seeds
+</.back>
 
 <.modal
   :if={@live_action == :edit}

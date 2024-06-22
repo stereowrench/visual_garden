@@ -48,13 +48,22 @@ defmodule VisualGardenWeb.LibrarySeedLive.Index do
     seeds
   end
 
-  defp apply_action(socket, :copy, %{"id" => id}) do
+  defp apply_action(socket, :copy, params = %{"id" => id}) do
     lseed = Library.get_library_seed!(id)
 
     if Gardens.get_seed_by_library_seed(lseed.id, socket.assigns.garden.id) do
-      socket
-      |> put_notification(Normal.new(:warning, "Seed already in garden"))
-      |> push_patch(to: ~p"/library_seeds")
+      if params["ret"] == "seed" do
+        socket
+        |> put_notification(Normal.new(:warning, "Seed already in garden"))
+        |> push_patch(
+          to:
+            ~p"/library_seeds/#{lseed.id}?#{if params["species"], do: [species: params["species"]], else: []}"
+        )
+      else
+        socket
+        |> put_notification(Normal.new(:warning, "Seed already in garden"))
+        |> push_patch(to: ~p"/library_seeds")
+      end
     else
       {:ok, _} =
         Gardens.create_seed(%{
@@ -67,9 +76,21 @@ defmodule VisualGardenWeb.LibrarySeedLive.Index do
           library_seed_id: lseed.id
         })
 
-      socket
-      |> put_notification(Normal.new(:success, "Added seed to garden!"))
-      |> push_patch(to: ~p"/library_seeds")
+      if params["ret"] == "seed" do
+        socket
+        |> put_notification(Normal.new(:success, "Added seed to garden!"))
+        |> push_patch(
+          to:
+            ~p"/library_seeds/#{lseed.id}?#{if socket.assigns.species, do: [species: socket.assigns.species], else: []}"
+        )
+      else
+        socket
+        |> put_notification(Normal.new(:success, "Added seed to garden!"))
+        |> push_patch(
+          to:
+            ~p"/library_seeds?#{if socket.assigns.species, do: [species: socket.assigns.species], else: []}"
+        )
+      end
     end
   end
 
