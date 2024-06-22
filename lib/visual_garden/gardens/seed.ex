@@ -29,7 +29,8 @@ defmodule VisualGarden.Gardens.Seed do
       :garden_id,
       :days_to_maturation,
       :species_id,
-      :harvest_species_id
+      :harvest_species_id,
+      :any_season
     ])
     |> validate_required([
       :type,

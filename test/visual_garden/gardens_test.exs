@@ -1,4 +1,5 @@
 defmodule VisualGarden.GardensTest do
+  alias VisualGarden.Library
   alias VisualGarden.Planner
   alias VisualGarden.LibraryFixtures
   use VisualGarden.DataCase
@@ -128,6 +129,50 @@ defmodule VisualGarden.GardensTest do
     import VisualGarden.GardensFixtures
 
     @invalid_attrs %{name: nil, description: nil}
+
+    test "populates species_id" do
+      species = LibraryFixtures.species_fixture()
+      garden = garden_fixture()
+
+      {:ok, seed} =
+        Gardens.create_seed(%{
+          type: "seed",
+          name: "my seed",
+          description: "foo",
+          garden_id: garden.id,
+          days_to_maturation: 30,
+          harvest_species_id: species.id
+        })
+
+      assert seed.species_id == species.id
+
+      {:ok, seed} =
+        Gardens.create_seed(%{
+          type: "seed",
+          name: "my seed",
+          description: "foo",
+          garden_id: garden.id,
+          days_to_maturation: 30,
+          harvest_species_id: species.id,
+          any_season: true
+        })
+
+      any_season = Library.get_any_season()
+      assert seed.species_id == any_season.id
+
+      {:ok, seed} =
+        Gardens.create_seed(%{
+          type: "seed",
+          name: "my seed",
+          description: "foo",
+          garden_id: garden.id,
+          days_to_maturation: 30,
+          species_id: species.id,
+          any_season: true
+        })
+
+      assert seed.harvest_species_id == species.id
+    end
 
     test "list_seeds/0 returns all seeds" do
       seed = seed_fixture()
