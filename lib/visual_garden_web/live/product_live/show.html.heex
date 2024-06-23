@@ -1,9 +1,8 @@
-<.live_component
-  module={VisualGardenWeb.NavBar}
-  id="navbar"
-  garden={@garden}
-  current={if @product.type == :bed, do: "Beds", else: "Media, etc."}
-/>
+<%= if @product.type == :bed do %>
+  <.back navigate={~p"/gardens/#{@garden.id}/beds"}>Back to beds</.back>
+<% else %>
+  <.back navigate={~p"/gardens/#{@garden.id}/products"}>Back to media</.back>
+<% end %>
 
 <.header>
   <%= @product.name %>
@@ -188,12 +187,6 @@
     bed={@product}
   />
 </div>
-
-<%= if @product.type == :bed do %>
-  <.back navigate={~p"/gardens/#{@garden.id}/beds"}>Back to beds</.back>
-<% else %>
-  <.back navigate={~p"/gardens/#{@garden.id}/products"}>Back to products</.back>
-<% end %>
 
 <.modal
   :if={@live_action == :edit && @can_modify?}
