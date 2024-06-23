@@ -52,6 +52,43 @@
   </:action>
 </.table>
 
+<div class="prose">
+  <h3>Archived plants</h3>
+</div>
+<.table
+  id="archived-plants"
+  rows={@streams.archived_plants}
+  row_click={
+    fn {_id, plant} ->
+      JS.navigate(~p"/gardens/#{@garden.id}/beds/#{plant.product_id}/plants/#{plant}")
+    end
+  }
+>
+  <:col :let={{_id, plant}} label="Name"><%= plant.name %></:col>
+  <:col :let={{_id, plant}} label="Qty"><%= plant.qty || 1 %></:col>
+  <:col :let={{_id, plant}} label="Bed"><%= plant.product.name %></:col>
+  <:action :let={{_id, plant}}>
+    <div class="sr-only">
+      <.link navigate={~p"/gardens/#{@garden.id}/beds/#{plant.product_id}/plants/#{plant}"}>
+        Show
+      </.link>
+    </div>
+    <%= if @can_modify? do %>
+      <.link patch={~p"/gardens/#{@garden.id}/beds/#{plant.product_id}/plants/#{plant}/edit"}>
+        Edit
+      </.link>
+    <% end %>
+  </:action>
+  <:action :let={{id, plant}} :if={@can_modify?}>
+    <.link
+      phx-click={JS.push("delete", value: %{id: plant.id}) |> hide("##{id}")}
+      data-confirm="Are you sure?"
+    >
+      Delete
+    </.link>
+  </:action>
+</.table>
+
 <.modal
   :if={@live_action in [:new, :edit]}
   id="plant-modal"
