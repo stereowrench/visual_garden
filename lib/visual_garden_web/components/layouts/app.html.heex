@@ -131,7 +131,7 @@
                       icon="hero-building-library"
                     />
                   </li>
-  </ul>
+                </ul>
                 <ul class="-mx-2 space-y-1">
                   <li>
                     <!-- Current: "bg-gray-50 text-indigo-600", Default: "text-gray-700 hover:text-indigo-600 hover:bg-gray-50" -->
@@ -148,7 +148,9 @@
               <li>
                 <%= if assigns[:garden] do %>
                   <ul class="-mx-2 space-y-1">
-                    <div class="text-xs font-semibold leading-6 text-gray-400"><%= @garden.name %></div>
+                    <div class="text-xs font-semibold leading-6 text-gray-400">
+                      <%= @garden.name %>
+                    </div>
 
                     <li>
                       <.nav_link
@@ -246,21 +248,7 @@
                 />
               </li>
             </ul>
-          </li>
-          <li>
-            <div class="text-xs font-semibold leading-6 text-eagle-600">Your Gardens</div>
-
             <ul class="-mx-2 mt-2 space-y-1">
-              <li>
-                <!-- Current: "bg-gray-50 text-indigo-600", Default: "text-gray-700 hover:text-indigo-600 hover:bg-gray-50" -->
-                <.nav_link
-                  active={@active_tab}
-                  name={:planner}
-                  path={~p"/planners"}
-                  text="Planner"
-                  icon="hero-presentation-chart-line"
-                />
-              </li>
               <li>
                 <.nav_link
                   active={@active_tab}
@@ -271,6 +259,70 @@
                 />
               </li>
             </ul>
+          </li>
+          <li>
+            <%= if assigns[:garden] do %>
+              <div class="text-xs font-semibold leading-6 text-eagle-600">
+                <%= @garden.name %>
+              </div>
+
+              <ul class="-mx-2 mt-2 space-y-1">
+                <li>
+                  <.nav_link
+                    active={@active_tab}
+                    name={:garden_overview}
+                    path={~p"/gardens/#{@garden.id}"}
+                    text="Overview"
+                    icon="hero-magnifying-glass"
+                  />
+                </li>
+                <li>
+                  <.nav_link
+                    active={@active_tab}
+                    name={:media}
+                    path={~p"/gardens/#{@garden.id}/products"}
+                    text="Media"
+                    icon="hero-document-duplicate"
+                  />
+                </li>
+                <li>
+                  <.nav_link
+                    active={@active_tab}
+                    name={:beds}
+                    path={~p"/gardens/#{@garden.id}/beds"}
+                    text="Beds"
+                    icon="hero-arrow-down-on-square"
+                  />
+                </li>
+                <li>
+                  <.nav_link
+                    active={@active_tab}
+                    name={:plantables}
+                    path={~p"/gardens/#{@garden.id}/seeds"}
+                    text="Plantables"
+                    icon="mdi--seed-outline"
+                  />
+                </li>
+                <li>
+                  <.nav_link
+                    active={@active_tab}
+                    name={:planner}
+                    path={~p"/planners/#{@garden.id}"}
+                    text="Planner"
+                    icon="hero-presentation-chart-line"
+                  />
+                </li>
+                <li>
+                  <.nav_link
+                    active={@active_tab}
+                    name={:plants}
+                    path={~p"/gardens/#{@garden.id}/plants"}
+                    text="Plants"
+                    icon="material-symbols--potted-plant-outline"
+                  />
+                </li>
+              </ul>
+            <% end %>
           </li>
           <%!-- <li class="-mx-6 mt-auto">
             <a
