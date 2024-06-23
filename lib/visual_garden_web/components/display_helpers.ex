@@ -98,15 +98,15 @@ defmodule VisualGardenWeb.DisplayHelpers do
     ~H{<span phx-no-format>, </span>}
   end
 
-  def render_species_name(name, in_garden, remaining_days) do
-    assigns = %{name: name, in_garden?: in_garden, remaining_days: remaining_days}
+  def render_species_name(name, in_garden, remaining_days, garden) do
+    assigns = %{name: name, in_garden?: in_garden, remaining_days: remaining_days, garden: garden}
 
     ~H"""
     <%= if @in_garden? do %>
-      <.link phx-no-format class="no-underline" navigate={~p"/library_seeds?#{[species: @name]}"}><%= @name %></.link>
+      <.link phx-no-format class="no-underline" navigate={~p"/gardens/#{@garden.id}/library_seeds?#{[species: @name]}"}><%= @name %></.link>
       <PetalComponents.Badge.badge color="success" label="In Garden" />
     <% else %>
-      <.link phx-no-format navigate={~p"/library_seeds?#{[species: @name]}"}><%= @name %></.link>
+      <.link phx-no-format navigate={~p"/gardens/#{@garden.id}/library_seeds?#{[species: @name]}"}><%= @name %></.link>
     <% end %>
     <%= if @remaining_days do %>
       <PetalComponents.Badge.badge color="gray" label={"#{@remaining_days} days left"} />
@@ -129,7 +129,7 @@ defmodule VisualGardenWeb.DisplayHelpers do
       end
 
     strs =
-      Enum.map(strs, &render_species_name(&1.species_name, &1.in_garden, &1.remaining_days))
+      Enum.map(strs, &render_species_name(&1.species_name, &1.in_garden, &1.remaining_days, assigns.garden))
       |> Enum.intersperse(comma_HEEX())
 
     assigns = assign(assigns, strs: strs)
