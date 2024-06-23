@@ -92,6 +92,12 @@ defmodule VisualGardenWeb.EventLogLive.Show do
     """
   end
 
+  defp do_render_event(:humidity, assigns) do
+    ~H"""
+    Moist
+    """
+  end
+
   defp do_render_event(:weed, assigns) do
     ~H"""
     Weeded

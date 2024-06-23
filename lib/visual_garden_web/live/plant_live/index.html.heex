@@ -1,4 +1,8 @@
-<.live_component module={VisualGardenWeb.NavBar} id="navbar" garden={@garden} current="Plants" />
+<div class="mb-14">
+  <.back navigate={~p"/planners/#{@garden.id}"}>
+    Return to planner
+  </.back>
+</div>
 
 <.header>
   Listing Plants
@@ -11,7 +15,7 @@
 
 <div class="prose">
   To add plants you need to add entries to the
-  <.link navigate={~p"/planners/#{@garden.id}"}>schedule.</.link>
+  <.link navigate={~p"/planners/#{@garden.id}"}>planner.</.link>
 </div>
 
 <.table

@@ -26,6 +26,22 @@ defmodule VisualGardenWeb.Nav do
         {GardenLive.Show, _} ->
           :garden_overview
 
+        {ProductLive.Index, action} when action in [:beds, :new_bed] ->
+          :beds
+
+        {ProductLive.Show, action}
+        when action in [
+               :bulk_weed,
+               :bulk_trim,
+               :bulk_harvest,
+               :show_bed,
+               :new_water_bed,
+               :till_bed,
+               :transfer_bed,
+               :edit_bed
+             ] ->
+          :beds
+
         {ProductLive.Index, _} ->
           :media
 
@@ -37,7 +53,6 @@ defmodule VisualGardenWeb.Nav do
 
         {SeedLive.Index, _} ->
           :plantables
-
 
         {SeedLive.Show, _} ->
           :plantables
@@ -53,7 +68,6 @@ defmodule VisualGardenWeb.Nav do
 
         {LibrarySeedLive.Index, :garden_library} ->
           :plantables
-
 
         {LibrarySeedLive.Show, :garden_library} ->
           :plantables

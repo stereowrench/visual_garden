@@ -226,11 +226,13 @@ defmodule VisualGardenWeb.ProductLive.BedBulkComponent do
   defp allow_empty(:bulk_trim), do: false
   defp allow_empty(:bulk_harvest), do: false
   defp allow_empty(:transfer), do: true
+  defp allow_empty(:transfer_bed), do: true
 
   defp title(:bulk_weed), do: "Bulk Weed"
   defp title(:bulk_trim), do: "Bulk Trim"
   defp title(:bulk_harvest), do: "Bulk Harvest"
   defp title(:transfer), do: "Bulk Amend"
+  defp title(:transfer_bed), do: "Bulk Amend"
 
   defp notify_parent(msg), do: send(self(), {__MODULE__, msg})
 

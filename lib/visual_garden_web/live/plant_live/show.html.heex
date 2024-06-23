@@ -1,9 +1,12 @@
-<.live_component module={VisualGardenWeb.NavBar} id="navbar" garden={@garden} current="Plants" />
+<.back navigate={~p"/gardens/#{@garden.id}/plants"}>Back to plants</.back>
 
 <.header>
   Plant <%= @plant.id %>
   <PetalComponents.Badge.badge color="info" label="Archived" />
-  <:subtitle>This is a plant record from your database.</:subtitle>
+  <:subtitle>
+    This plant was planted in
+    <.link class="link" navigate={~p"/gardens/#{@garden.id}/beds/#{@product.id}"}><%= @product.name %></.link>
+  </:subtitle>
   <:actions :if={@can_modify?}>
     <.link
       patch={~p"/gardens/#{@garden.id}/beds/#{@product.id}/plants/#{@plant}/show/edit"}
@@ -20,8 +23,6 @@
 <.list>
   <:item title="Name"><%= @plant.name %></:item>
 </.list>
-
-<.back navigate={~p"/gardens/#{@garden.id}/products/#{@product.id}"}>Back to bed</.back>
 
 <VisualGardenWeb.EventLogLive.Show.render_events events={@events} garden={@garden} bed={@product} />
 
