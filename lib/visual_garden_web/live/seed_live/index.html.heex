@@ -1,10 +1,20 @@
 <.live_component
-  module={VisualGardenWeb.NavBar}
+  module={VisualGardenWeb.NavBarSeeds}
   id="navbar"
   garden={@garden}
-  current="Seeds, etc"
+  current="Plantables"
 />
-
+<.forward_back
+  navigate_forward={~p"/planners/#{@garden.id}/"}
+  navigate_backward={~p"/gardens/#{@garden.id}/beds"}
+>
+  <:forward>
+    Go to planner
+  </:forward>
+  <:backward>
+    Return to beds
+  </:backward>
+</.forward_back>
 <.header>
   Listing Seeds
   <:actions :if={@can_modify?}>
