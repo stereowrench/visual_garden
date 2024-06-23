@@ -580,7 +580,6 @@ defmodule VisualGardenWeb.CoreComponents do
     """
   end
 
-
   @doc """
   Renders a forward navigation link.
 
@@ -600,6 +599,33 @@ defmodule VisualGardenWeb.CoreComponents do
       >
         <.icon name="hero-arrow-right-solid" class="h-3 w-3" />
         <%= render_slot(@inner_block) %>
+      </.link>
+      <div class="clear-both"></div>
+    </div>
+    """
+  end
+
+  attr :navigate_forward, :any, required: true
+  attr :navigate_backward, :any, required: true
+  slot :forward, required: true
+  slot :backward, required: true
+
+  def forward_back(assigns) do
+    ~H"""
+    <div>
+      <.link
+        navigate={@navigate_backward}
+        class="text-sm font-semibold leading-6 text-zinc-900 hover:text-zinc-700"
+      >
+        <.icon name="hero-arrow-left-solid" class="h-3 w-3" />
+        <%= render_slot(@backward) %>
+      </.link>
+      <.link
+        navigate={@navigate_forward}
+        class="float-right text-sm font-semibold leading-6 text-zinc-900 hover:text-zinc-700"
+      >
+        <.icon name="hero-arrow-right-solid" class="h-3 w-3" />
+        <%= render_slot(@forward) %>
       </.link>
       <div class="clear-both"></div>
     </div>
