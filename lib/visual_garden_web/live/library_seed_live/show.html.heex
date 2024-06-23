@@ -1,10 +1,4 @@
 <%= if assigns[:garden] do %>
-  <.live_component
-    module={VisualGardenWeb.NavBarSeeds}
-    id="navbar"
-    garden={@garden}
-    current="Library"
-  />
 <% else %>
   <.live_component module={VisualGardenWeb.NavBarLibrary} id="navbar" current="Plantables" />
 <% end %>
