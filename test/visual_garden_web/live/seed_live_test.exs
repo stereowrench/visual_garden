@@ -32,7 +32,7 @@ defmodule VisualGardenWeb.SeedLiveTest do
       conn = log_in_user(conn, user)
       {:ok, _index_live, html} = live(conn, ~p"/gardens/#{garden.id}/seeds")
 
-      assert html =~ "Listing Seeds"
+      assert html =~ "Listing Plantables"
       assert html =~ seed.name
     end
 
@@ -41,8 +41,8 @@ defmodule VisualGardenWeb.SeedLiveTest do
       species = LibraryFixtures.species_fixture(%{name: "seed live"})
       {:ok, index_live, _html} = live(conn, ~p"/gardens/#{garden.id}/seeds")
 
-      assert index_live |> element("a", "New Seed") |> render_click() =~
-               "New Seed"
+      assert index_live |> element("a", "New Plantable") |> render_click() =~
+               "New Plantable"
 
       assert_patch(index_live, ~p"/gardens/#{garden.id}/seeds/new")
 

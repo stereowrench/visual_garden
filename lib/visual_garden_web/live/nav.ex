@@ -1,4 +1,5 @@
 defmodule VisualGardenWeb.Nav do
+  alias VisualGardenWeb.LibrarySeedLive
   alias VisualGardenWeb.GenusLive
   alias VisualGardenWeb.PlannerLive
   alias VisualGardenWeb.RegionLive
@@ -19,6 +20,58 @@ defmodule VisualGardenWeb.Nav do
   defp set_active_tab(_params, _url, socket) do
     active_tab =
       case {socket.view, socket.assigns.live_action} do
+        {GardenLive.Index, _} ->
+          :gardens
+
+        {GardenLive.Show, _} ->
+          :garden_overview
+
+        {ProductLive.Index, action} when action in [:beds, :new_bed] ->
+          :beds
+
+        {ProductLive.Show, action}
+        when action in [
+               :bulk_weed,
+               :bulk_trim,
+               :bulk_harvest,
+               :show_bed,
+               :new_water_bed,
+               :till_bed,
+               :transfer_bed,
+               :edit_bed
+             ] ->
+          :beds
+
+        {ProductLive.Index, _} ->
+          :media
+
+        {ProductLive.Show, _} ->
+          :media
+
+        {PlannerLive.Show, _} ->
+          :planner
+
+        {SeedLive.Index, _} ->
+          :plantables
+
+        {SeedLive.Show, _} ->
+          :plantables
+
+        {PlantLive.Index, _} ->
+          :plants
+
+        {PlantLive.Show, _} ->
+          :plants
+
+        {RegionLive.Show, :garden_show} ->
+          :planner
+
+        {LibrarySeedLive.Index, :garden_library} ->
+          :plantables
+
+        {LibrarySeedLive.Show, :garden_library} ->
+          :plantables
+
         {sv, _}
         when sv in [
                SpeciesLive.Index,
@@ -31,22 +84,6 @@ defmodule VisualGardenWeb.Nav do
                ScheduleLive.Show
              ] ->
           :library
-
-        {sv, _}
-        when sv in [
-               GardenLive.Index,
-               GardenLive.Show,
-               ProductLive.Show,
-               ProductLive.Index,
-               SeedLive.Index,
-               SeedLive.Show,
-               PlantLive.Index,
-               PlantLive.Show
-             ] ->
-          :gardens
-
-        {sv, _} when sv in [PlannerLive.Show, PlannerLive.Index] ->
-          :planner
 
         {sv, _} when sv in [HomeLive.Show] ->
           :home

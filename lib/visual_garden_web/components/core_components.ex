@@ -568,7 +568,7 @@ defmodule VisualGardenWeb.CoreComponents do
 
   def back(assigns) do
     ~H"""
-    <div class="mt-16">
+    <div class="sticky top-0 bg-white z-30">
       <.link
         navigate={@navigate}
         class="text-sm font-semibold leading-6 text-zinc-900 hover:text-zinc-700"
@@ -576,6 +576,58 @@ defmodule VisualGardenWeb.CoreComponents do
         <.icon name="hero-arrow-left-solid" class="h-3 w-3" />
         <%= render_slot(@inner_block) %>
       </.link>
+    </div>
+    """
+  end
+
+  @doc """
+  Renders a forward navigation link.
+
+  ## Examples
+
+      <.forward navigate={~p"/posts"}>forward to posts</.forward>
+  """
+  attr :navigate, :any, required: true
+  slot :inner_block, required: true
+
+  def forward(assigns) do
+    ~H"""
+    <div class="sticky top-0 bg-white z-30">
+      <.link
+        navigate={@navigate}
+        class="float-right text-sm font-semibold leading-6 text-zinc-900 hover:text-zinc-700"
+      >
+        <.icon name="hero-arrow-right-solid" class="h-3 w-3" />
+        <%= render_slot(@inner_block) %>
+      </.link>
+      <div class="clear-both"></div>
+    </div>
+    """
+  end
+
+  attr :navigate_forward, :any, required: true
+  attr :navigate_backward, :any, required: true
+  slot :forward, required: true
+  slot :backward, required: true
+
+  def forward_back(assigns) do
+    ~H"""
+    <div class="sticky top-0 bg-white z-30">
+      <.link
+        navigate={@navigate_backward}
+        class="text-sm font-semibold leading-6 text-zinc-900 hover:text-zinc-700"
+      >
+        <.icon name="hero-arrow-left-solid" class="h-3 w-3" />
+        <%= render_slot(@backward) %>
+      </.link>
+      <.link
+        navigate={@navigate_forward}
+        class="float-right text-sm font-semibold leading-6 text-zinc-900 hover:text-zinc-700"
+      >
+        <.icon name="hero-arrow-right-solid" class="h-3 w-3" />
+        <%= render_slot(@forward) %>
+      </.link>
+      <div class="clear-both"></div>
     </div>
     """
   end
@@ -601,7 +653,7 @@ defmodule VisualGardenWeb.CoreComponents do
   attr :name, :string, required: true
   attr :class, :string, default: nil
 
-  def icon(%{name: "hero-" <> _} = assigns) do
+  def icon(%{name: _} = assigns) do
     ~H"""
     <span class={[@name, @class]} />
     """

@@ -1,21 +1,33 @@
 <.live_component
-  module={VisualGardenWeb.NavBar}
+  module={VisualGardenWeb.NavBarSeeds}
   id="navbar"
   garden={@garden}
-  current="Seeds, etc"
+  current="Plantables"
 />
-
+<div class="mb-14">
+  <.forward_back
+    navigate_forward={~p"/planners/#{@garden.id}/"}
+    navigate_backward={~p"/gardens/#{@garden.id}/beds"}
+  >
+    <:forward>
+      Go to planner
+    </:forward>
+    <:backward>
+      Return to beds
+    </:backward>
+  </.forward_back>
+</div>
 <.header>
-  Listing Seeds
+  Listing Plantables
   <:actions :if={@can_modify?}>
     <.link patch={~p"/gardens/#{@garden.id}/seeds/new"}>
-      <.button>New Seed</.button>
+      <.button>New Plantable</.button>
     </.link>
   </:actions>
 </.header>
 
 <div class="prose">
-  You can <.link navigate={~p"/library_seeds"}>import seeds</.link>
+  You can <.link navigate={~p"/gardens/#{@garden.id}/library_seeds"}>import seeds</.link>
   from the Library to get started.
 </div>
 

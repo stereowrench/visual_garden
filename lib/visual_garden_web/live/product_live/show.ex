@@ -128,6 +128,7 @@ defmodule VisualGardenWeb.ProductLive.Show do
   end
 
   defp page_title(:show), do: "Show product"
+  defp page_title(:show_bed), do: "Show bed"
   defp page_title(:edit), do: "Edit product"
   defp page_title(:show_square), do: "Show square"
   defp page_title(:new_water), do: "Watering"
@@ -136,6 +137,10 @@ defmodule VisualGardenWeb.ProductLive.Show do
   defp page_title(:bulk_weed), do: "Weed"
   defp page_title(:bulk_trim), do: "Trim"
   defp page_title(:bulk_harvest), do: "Harvest"
+  defp page_title(:edit_bed), do: "Edit bed"
+  defp page_title(:new_water_bed), do: "Water bed"
+  defp page_title(:till_bed), do: "Till bed"
+  defp page_title(:transfer_bed), do: "Amend bed"
 
   defp last_watered(events) do
     events

@@ -1,4 +1,5 @@
 defmodule VisualGardenWeb.RegionLive.Show do
+  alias VisualGarden.Gardens
   alias VisualGardenWeb.DisplayHelpers
   use VisualGardenWeb, :live_view
 
@@ -10,7 +11,7 @@ defmodule VisualGardenWeb.RegionLive.Show do
   end
 
   @impl true
-  def handle_params(%{"id" => id}, _, socket) do
+  def handle_params(%{"id" => id} = params, _, socket) do
     schedules = schedules(id)
 
     {:noreply,
@@ -18,7 +19,16 @@ defmodule VisualGardenWeb.RegionLive.Show do
      |> assign(:can_modify?, Authorization.can_modify_library?(socket.assigns.current_user))
      |> assign(:page_title, page_title(socket.assigns.live_action))
      |> assign(:region, Library.get_region!(id))
+     |> add_garden(params)
      |> assign(:schedules, schedules)}
+  end
+
+  defp add_garden(socket, params) do
+    if params["garden_id"] do
+      assign(socket, :garden, Gardens.get_garden!(params["garden_id"]))
+    else
+      socket
+    end
   end
 
   defp schedules(id) do
@@ -93,5 +103,6 @@ defmodule VisualGardenWeb.RegionLive.Show do
   end
 
   defp page_title(:show), do: "Show Region"
+  defp page_title(:garden_show), do: "Show Region"
   defp page_title(:edit), do: "Edit Region"
 end

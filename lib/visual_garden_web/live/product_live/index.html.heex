@@ -1,15 +1,34 @@
-<.live_component
-  module={VisualGardenWeb.NavBar}
-  id="navbar"
-  garden={@garden}
-  current={if @live_action in [:beds, :new_bed, :edit_bed], do: "Beds", else: "Media, etc."}
-/>
+<%= if @live_action in [:beds, :new_bed, :edit_bed] do %>
+  <.forward_back
+    navigate_forward={~p"/gardens/#{@garden.id}/seeds"}
+    navigate_backward={~p"/gardens/#{@garden.id}/products"}
+  >
+    <:forward>
+      Go to plantables
+    </:forward>
+    <:backward>
+      Return to media
+    </:backward>
+  </.forward_back>
+<% else %>
+  <.forward_back
+    navigate_forward={~p"/gardens/#{@garden.id}/beds"}
+    navigate_backward={~p"/gardens/#{@garden.id}"}
+  >
+    <:forward>
+      Go to beds
+    </:forward>
+    <:backward>
+      Return to overview
+    </:backward>
+  </.forward_back>
+<% end %>
 
 <.header>
   <%= if @live_action in [:beds, :new_bed, :edit_bed] do %>
     Listing beds
   <% else %>
-    Listing products
+    Listing media
   <% end %>
   <:subtitle>
     <%= if @live_action in [:beds, :new_bed, :edit_bed] do %>

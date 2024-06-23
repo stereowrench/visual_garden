@@ -1,9 +1,8 @@
-<.live_component
-  module={VisualGardenWeb.NavBar}
-  id="navbar"
-  garden={@garden}
-  current={if @product.type == :bed, do: "Beds", else: "Media, etc."}
-/>
+<%= if @product.type == :bed do %>
+  <.back navigate={~p"/gardens/#{@garden.id}/beds"}>Back to beds</.back>
+<% else %>
+  <.back navigate={~p"/gardens/#{@garden.id}/products"}>Back to media</.back>
+<% end %>
 
 <.header>
   <%= @product.name %>
@@ -77,7 +76,11 @@
         }
         phx-click={JS.push_focus()}
       >
-        <.button>Edit product</.button>
+        <%= if @live_action in [:show_bed, :edit_bed, :transfer_bed] do %>
+          <.button>Edit bed</.button>
+        <% else %>
+          <.button>Edit product</.button>
+        <% end %>
       </.link>
     </div>
     <%!-- <div class="relative inline-block text-left">
@@ -189,14 +192,8 @@
   />
 </div>
 
-<%= if @product.type == :bed do %>
-  <.back navigate={~p"/gardens/#{@garden.id}/beds"}>Back to beds</.back>
-<% else %>
-  <.back navigate={~p"/gardens/#{@garden.id}/products"}>Back to products</.back>
-<% end %>
-
 <.modal
-  :if={@live_action == :edit && @can_modify?}
+  :if={@live_action in [:edit, :edit_bed] && @can_modify?}
   id="product-modal"
   show
   on_cancel={modal_cancel(@product)}
@@ -214,7 +211,7 @@
 </.modal>
 
 <.modal
-  :if={@live_action in [:new_water, :till]}
+  :if={@live_action in [:new_water, :till, :new_water_bed, :till_bed]}
   id="event-log-modal"
   show
   on_cancel={modal_cancel(@product)}
@@ -233,7 +230,7 @@
 </.modal>
 
 <.modal
-  :if={@live_action in [:bulk_weed, :bulk_trim, :bulk_harvest, :transfer]}
+  :if={@live_action in [:bulk_weed, :bulk_trim, :bulk_harvest, :transfer, :transfer_bed]}
   id="bed-bulk-modal"
   show
   on_cancel={modal_cancel(@product)}
