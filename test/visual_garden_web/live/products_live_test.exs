@@ -25,7 +25,7 @@ defmodule VisualGardenWeb.ProductsLiveTest do
       conn = log_in_user(conn, user)
       {:ok, _index_live, html} = live(conn, ~p"/gardens/#{garden.id}/products")
 
-      assert html =~ "Listing products"
+      assert html =~ "Listing media"
       assert html =~ products.name
     end
 

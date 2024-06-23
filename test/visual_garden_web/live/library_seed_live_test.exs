@@ -25,7 +25,7 @@ defmodule VisualGardenWeb.LibrarySeedLiveTest do
     test "lists all library_seeds", %{conn: conn, library_seed: library_seed} do
       {:ok, _index_live, html} = live(conn, ~p"/library_seeds")
 
-      assert html =~ "Listing Library seeds"
+      assert html =~ "Listing Library Plantables"
       assert html =~ library_seed.manufacturer
     end
 
@@ -61,7 +61,7 @@ defmodule VisualGardenWeb.LibrarySeedLiveTest do
       assert index_live
              |> element("#library_seeds-#{library_seed.id} a", "Edit")
              |> render_click() =~
-               "Edit Library seed"
+               "Edit Library Plantable"
 
       assert_patch(index_live, ~p"/library_seeds/#{library_seed}/edit")
 

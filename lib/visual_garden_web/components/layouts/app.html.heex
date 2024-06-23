@@ -146,7 +146,7 @@
                 </ul>
               </li>
               <li>
-                <%= if assigns[:garden] do %>
+                <%= if assigns[:garden] && @garden.id do %>
                   <ul class="-mx-2 space-y-1">
                     <div class="text-xs font-semibold leading-6 text-gray-400">
                       <%= @garden.name %>
@@ -261,7 +261,7 @@
             </ul>
           </li>
           <li>
-            <%= if assigns[:garden] do %>
+            <%= if assigns[:garden] && @garden.id do %>
               <div class="text-xs font-semibold leading-6 text-eagle-600">
                 <%= @garden.name %>
               </div>
