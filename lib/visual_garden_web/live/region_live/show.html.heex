@@ -1,4 +1,27 @@
-<.live_component module={VisualGardenWeb.NavBarLibrary} id="navbar" current="Regions" />
+<%= if assigns[:garden] do %>
+  <.live_component
+    module={VisualGardenWeb.NavBarPlanner}
+    id="navbar"
+    garden={@garden}
+    current="Schedule"
+  />
+
+  <div class="mb-14">
+    <.forward_back
+      navigate_forward={~p"/gardens/#{@garden.id}/plants"}
+      navigate_backward={~p"/gardens/#{@garden.id}/seeds"}
+    >
+      <:forward>
+        Go to plants
+      </:forward>
+      <:backward>
+        Return to plantables
+      </:backward>
+    </.forward_back>
+  </div>
+<% else %>
+  <.live_component module={VisualGardenWeb.NavBarLibrary} id="navbar" current="Regions" />
+<% end %>
 <.header>
   Region <%= @region.name %>
   <:actions :if={@can_modify?}>

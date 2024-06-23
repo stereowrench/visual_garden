@@ -118,6 +118,8 @@ defmodule VisualGardenWeb.Router do
       live "/gardens/:garden_id/seeds/:id/show/edit", SeedLive.Show, :edit
       live "/gardens/:garden_id/seeds/:id/show/archive", SeedLive.Show, :archive
 
+      live "/gardens/:garden_id/regions/:id", RegionLive.Show, :garden_show
+
       live "/schedules", ScheduleLive.Index, :index
       live "/schedules/new", ScheduleLive.Index, :new
       live "/schedules/:id/edit", ScheduleLive.Index, :edit

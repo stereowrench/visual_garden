@@ -1,3 +1,24 @@
+<.live_component
+  module={VisualGardenWeb.NavBarPlanner}
+  id="navbar"
+  garden={@garden}
+  current="Planner"
+/>
+
+<div class="mb-14">
+  <.forward_back
+    navigate_forward={~p"/gardens/#{@garden.id}/plants"}
+    navigate_backward={~p"/gardens/#{@garden.id}/seeds"}
+  >
+    <:forward>
+      Go to plants
+    </:forward>
+    <:backward>
+      Return to plantables
+    </:backward>
+  </.forward_back>
+</div>
+
 <div class="prose prose-eagle">
   <h1>Planner for <%= @garden.name %></h1>
 
