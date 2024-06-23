@@ -76,17 +76,17 @@
   <:col :let={{_id, library_seed}} label="Manufacturer"><%= library_seed.manufacturer %></:col>
   <:action :let={{_id, library_seed}} :if={@current_user}>
     <%= if assigns[:garden] do %>
-      <.link navigate={~p"/gardens/#{@garden.id}/library_seeds/#{library_seed.id}/copy"}>
+      <.link navigate={~p"/gardens/#{@garden.id}/library_seeds/#{library_seed.id}/copy?#{if @species, do: [species: @species], else: []}"}>
         <.icon name="hero-plus" />
       </.link>
     <% else %>
       <PC.dropdown>
-        <:trigger_element></:trigger_element>
+        <:trigger_element><.icon name="hero-plus" /></:trigger_element>
         <%= for garden <- @gardens do %>
           <PetalComponents.Dropdown.dropdown_menu_item
             label={garden.name}
             link_type="a"
-            to={~p"/library_seeds/#{library_seed.id}/copy/#{garden.id}"}
+            to={~p"/library_seeds/#{library_seed.id}/copy/#{garden.id}?#{if @species, do: [species: @species], else: []}"}
           />
         <% end %>
       </PC.dropdown>

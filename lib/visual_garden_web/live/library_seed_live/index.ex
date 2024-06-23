@@ -70,9 +70,9 @@ defmodule VisualGardenWeb.LibrarySeedLive.Index do
         |> push_navigate(
           to:
             if action == :copy_garden do
-              ~p"/gardens/#{socket.assigns.garden.id}/library_seeds"
+              ~p"/gardens/#{socket.assigns.garden.id}/library_seeds?#{if params["species"], do: [species: params["species"]], else: []}"
             else
-              ~p"/library_seeds"
+              ~p"/library_seeds?#{if params["species"], do: [species: params["species"]], else: []}"
             end
         )
       end
