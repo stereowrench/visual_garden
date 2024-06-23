@@ -105,7 +105,7 @@ defmodule VisualGardenWeb.EventLogLive.FormComponent do
 
     product_opts =
       Enum.map(assigns.products, fn p ->
-        %{label: p.name, value: to_string(p.id), matches: []}
+        %{label: "#{p.name} - #{p.type}", value: to_string(p.id), matches: []}
       end)
 
     {:ok,
@@ -216,7 +216,7 @@ defmodule VisualGardenWeb.EventLogLive.FormComponent do
         {:noreply,
          socket
          |> put_notification(Normal.new(:info, "Event log created successfully"))
-         |> push_patch(to: socket.assigns.patch)}
+         |> push_navigate(to: socket.assigns.patch)}
 
       {:error, %Ecto.Changeset{} = changeset} ->
         {:noreply, assign_form(socket, changeset)}

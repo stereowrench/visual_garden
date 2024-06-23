@@ -180,7 +180,9 @@ defmodule VisualGarden.Gardens do
   def get_last_media_for_bed(bed_id) do
     Repo.one(
       from event in EventLog,
-        where: event.event_type == :transfer and event.product_id == ^bed_id,
+        where:
+          event.event_type == :transfer and event.product_id == ^bed_id and
+            event.transferred_to_id == ^bed_id,
         order_by: [desc: :event_time],
         limit: 1
     )
@@ -704,7 +706,6 @@ defmodule VisualGarden.Gardens do
     |> EventLog.changeset_humidity(attrs)
     |> Repo.insert()
   end
-
 
   def create_event_log(type = "till", attrs) do
     attrs = Map.merge(%{"event_type" => type}, attrs)

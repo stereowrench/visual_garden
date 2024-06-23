@@ -1,4 +1,5 @@
 defmodule VisualGardenWeb.ProductLive.Index do
+  alias VisualGarden.Planner
   alias VisualGarden.Authorization.UnauthorizedError
   use VisualGardenWeb, :live_view
 
@@ -20,7 +21,23 @@ defmodule VisualGardenWeb.ProductLive.Index do
          socket.assigns.current_user
        )
      )
+     |> assign_actions()
      |> assign_products()}
+  end
+
+  defp assign_actions(socket) do
+    if socket.assigns.live_action in [:beds] do
+      todos =
+        Planner.get_todo_items(socket.assigns.current_user)
+        |> Enum.filter(
+          &(&1.type == "media" && to_string(&1.garden_id) == socket.assigns.garden_id)
+        )
+        |> Enum.group_by(& &1.bed.id)
+
+      assign(socket, :todos, todos)
+    else
+      assign(socket, :todos, %{})
+    end
   end
 
   defp assign_products(socket) do
@@ -28,7 +45,7 @@ defmodule VisualGardenWeb.ProductLive.Index do
       Gardens.list_products(socket.assigns.garden_id)
 
     products =
-      if socket.assigns.live_action in [:beds, :new_bed, :edit_bed] do
+      if socket.assigns.live_action in [:beds, :new_bed, :edit_bed, :transfer] do
         Enum.filter(products, &(&1.type == :bed))
       else
         Enum.reject(products, &(&1.type == :bed))
@@ -78,16 +95,31 @@ defmodule VisualGardenWeb.ProductLive.Index do
     |> assign(:product, nil)
   end
 
+  defp apply_action(socket, :transfer, %{"garden_id" => garden_id, "id" => id}) do
+    garden = Gardens.get_garden!(garden_id)
+
+    avail_products =
+      Gardens.list_products(socket.assigns.garden_id)
+      |> Enum.filter(& &1.type in [:growing_media, :compost])
+
+    product = Gardens.get_product!(id)
+
+    if product.garden_id != garden.id do
+      raise UnauthorizedError
+    end
+
+    socket
+    |> assign(:garden, garden)
+    |> assign(:avail_products, avail_products)
+    |> assign(:page_title, "Transferring")
+    |> assign(:product, product)
+  end
+
   defp apply_action(socket, :index, %{"garden_id" => garden_id}) do
     socket
     |> assign(:garden, Gardens.get_garden!(garden_id))
     |> assign(:page_title, "Listing product")
     |> assign(:product, nil)
-  end
-
-  @impl true
-  def handle_info({VisualGardenWeb.ProductLive.FormComponent, {:saved, _product}}, socket) do
-    {:noreply, assign_products(socket)}
   end
 
   @impl true
@@ -113,5 +145,15 @@ defmodule VisualGardenWeb.ProductLive.Index do
       :bed -> "#{product.name} (#{product.length}x#{product.width})"
       _ -> product.name
     end
+  end
+
+  @impl true
+  def handle_info({VisualGardenWeb.EventLogLive.FormComponent, {:saved, _event_log}}, socket) do
+    {:noreply, socket |> assign_actions() |> assign_products()}
+  end
+
+  @impl true
+  def handle_info({VisualGardenWeb.ProductLive.FormComponent, {:saved, _product}}, socket) do
+    {:noreply, socket |> assign_actions() |> assign_products()}
   end
 end

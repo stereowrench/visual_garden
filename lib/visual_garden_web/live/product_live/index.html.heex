@@ -25,20 +25,20 @@
 <% end %>
 
 <.header>
-  <%= if @live_action in [:beds, :new_bed, :edit_bed] do %>
+  <%= if @live_action in [:beds, :new_bed, :edit_bed, :transfer] do %>
     Listing beds
   <% else %>
     Listing media
   <% end %>
   <:subtitle>
-    <%= if @live_action in [:beds, :new_bed, :edit_bed] do %>
+    <%= if @live_action in [:beds, :new_bed, :edit_bed, :transfer] do %>
       Beds are where your plants grow
     <% else %>
       Add growing media, fertilizer, and compost here.
     <% end %>
   </:subtitle>
   <:actions :if={@can_modify?}>
-    <%= if @live_action in [:beds, :new_bed, :edit_bed] do %>
+    <%= if @live_action in [:beds, :new_bed, :edit_bed, :transfer] do %>
       <.link patch={~p"/gardens/#{@garden.id}/products/new_bed"}>
         <.button>New bed</.button>
       </.link>
@@ -50,7 +50,7 @@
   </:actions>
 </.header>
 
-<%= if @live_action in [:beds, :new_bed, :edit_bed] do %>
+<%= if @live_action in [:beds, :new_bed, :edit_bed, :transfer] do %>
   <div class="prose">
     Visit the <.link navigate={~p"/home"}>home page</.link> to view actionable todo items.
   </div>
@@ -76,6 +76,15 @@
       }
     >
       <:col :let={product} label="Name"><%= name_str(product) %></:col>
+      <:col :let={product} label="Action">
+        <%= if @live_action in [:beds, :transfer] do %>
+          <%= if @todos[product.id] do %>
+            <.link navigate={~p"/gardens/#{@garden.id}/beds/#{product.id}/transfer"}>
+              <PC.badge color="warning">Add media</PC.badge>
+            </.link>
+          <% end %>
+        <% end %>
+      </:col>
       <:action :let={product}>
         <div class="sr-only">
           <%= if @live_action in [:beds, :new_bed, :edit_bed] do %>
@@ -135,5 +144,24 @@
       end
     }
     garden={@garden}
+  />
+</.modal>
+
+<.modal
+  :if={@live_action in [:transfer]}
+  id="event-log-modal"
+  show
+  on_cancel={JS.navigate(~p"/gardens/#{@garden.id}/beds")}
+>
+  <.live_component
+    module={VisualGardenWeb.EventLogLive.FormComponent}
+    patch={~p"/gardens/#{@garden.id}/beds"}
+    action={@live_action}
+    id="event-modal"
+    product={@product}
+    products={@avail_products}
+    garden={@garden}
+    current_user={@current_user}
+    title={@page_title}
   />
 </.modal>
