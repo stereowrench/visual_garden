@@ -580,6 +580,32 @@ defmodule VisualGardenWeb.CoreComponents do
     """
   end
 
+
+  @doc """
+  Renders a forward navigation link.
+
+  ## Examples
+
+      <.forward navigate={~p"/posts"}>forward to posts</.forward>
+  """
+  attr :navigate, :any, required: true
+  slot :inner_block, required: true
+
+  def forward(assigns) do
+    ~H"""
+    <div>
+      <.link
+        navigate={@navigate}
+        class="float-right text-sm font-semibold leading-6 text-zinc-900 hover:text-zinc-700"
+      >
+        <.icon name="hero-arrow-right-solid" class="h-3 w-3" />
+        <%= render_slot(@inner_block) %>
+      </.link>
+      <div class="clear-both"></div>
+    </div>
+    """
+  end
+
   @doc """
   Renders a [Heroicon](https://heroicons.com).
 

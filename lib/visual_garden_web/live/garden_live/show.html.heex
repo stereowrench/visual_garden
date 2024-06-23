@@ -1,4 +1,4 @@
-<.live_component module={VisualGardenWeb.NavBar} id="navbar" garden={@garden} current="Home" />
+<.forward navigate={~p"/gardens/#{@garden.id}/products"}>Go to media</.forward>
 
 <.header>
   <%= @garden.name %>
@@ -50,7 +50,7 @@
   </div>
 </dl>
 
-<.back navigate={~p"/gardens"}>Back to gardens</.back>
+<.forward navigate={~p"/gardens/#{@garden.id}/products"}>Go to media</.forward>
 
 <.modal
   :if={@live_action == :edit}
