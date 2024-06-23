@@ -51,11 +51,11 @@ defmodule VisualGardenWeb.Nav do
         {RegionLive.Show, :garden_show} ->
           :planner
 
-        {LibrarySeedLive.Index, :garden_index} ->
+        {LibrarySeedLive.Index, :garden_library} ->
           :plantables
 
 
-        {LibrarySeedLive.Show, :garden_show} ->
+        {LibrarySeedLive.Show, :garden_library} ->
           :plantables
 
         {sv, _}

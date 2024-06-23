@@ -1,4 +1,26 @@
-<.live_component module={VisualGardenWeb.NavBarLibrary} id="navbar" current="Plantables" />
+<%= if assigns[:garden] do %>
+  <.live_component
+    module={VisualGardenWeb.NavBarSeeds}
+    id="navbar"
+    garden={@garden}
+    current="Library"
+  />
+  <div class="mb-14">
+    <.forward_back
+      navigate_forward={~p"/planners/#{@garden.id}/"}
+      navigate_backward={~p"/gardens/#{@garden.id}/beds"}
+    >
+      <:forward>
+        Go to planner
+      </:forward>
+      <:backward>
+        Return to beds
+      </:backward>
+    </.forward_back>
+  </div>
+<% else %>
+  <.live_component module={VisualGardenWeb.NavBarLibrary} id="navbar" current="Plantables" />
+<% end %>
 <.header>
   Listing Library Plantables
   <:actions :if={@can_edit?}>
@@ -37,7 +59,11 @@
   row_click={
     fn {_id, library_seed} ->
       JS.navigate(
-        ~p"/library_seeds/#{library_seed}?#{if @species, do: [species: @species], else: []}"
+        if assigns[:garden] do
+          ~p"/gardens/#{@garden.id}/library_seeds/#{library_seed}?#{if @species, do: [species: @species], else: []}"
+        else
+          ~p"/library_seeds/#{library_seed}?#{if @species, do: [species: @species], else: []}"
+        end
       )
     end
   }
@@ -69,7 +95,11 @@
   <:action :let={{_id, library_seed}}>
     <div class="sr-only">
       <.link navigate={
-        ~p"/library_seeds/#{library_seed}?#{if @species, do: [species: @species], else: []}"
+        if assigns[:garden] do
+          ~p"/gardens/#{@garden.id}/library_seeds/#{library_seed}?#{if @species, do: [species: @species], else: []}"
+        else
+          ~p"/library_seeds/#{library_seed}?#{if @species, do: [species: @species], else: []}"
+        end
       }>
         Show
       </.link>

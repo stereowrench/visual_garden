@@ -1,4 +1,24 @@
-<.live_component module={VisualGardenWeb.NavBarLibrary} id="navbar" current="Plantables" />
+<%= if assigns[:garden] do %>
+  <.live_component
+    module={VisualGardenWeb.NavBarSeeds}
+    id="navbar"
+    garden={@garden}
+    current="Library"
+  />
+<% else %>
+  <.live_component module={VisualGardenWeb.NavBarLibrary} id="navbar" current="Plantables" />
+<% end %>
+
+<.back navigate={
+  if assigns[:garden] do
+    ~p"/gardens/#{@garden.id}/library_seeds?#{if @species, do: [species: @species], else: []}"
+  else
+    ~p"/library_seeds?#{if @species, do: [species: @species], else: []}"
+  end
+}>
+  Back to plantables
+</.back>
+
 <.header>
   Library seed <%= @library_seed.name %>
   <:subtitle>This is a plantable you can add to your library.</:subtitle>
@@ -9,20 +29,28 @@
   </:actions>
 </.header>
 
-<PC.dropdown>
-  <:trigger_element>
-    Add plantable to garden <.icon name="hero-plus" />
-  </:trigger_element>
-  <%= for garden <- @gardens do %>
-    <PetalComponents.Dropdown.dropdown_menu_item
-      label={garden.name}
-      link_type="a"
-      to={
-        ~p"/library_seeds/#{@library_seed.id}/copy/#{garden.id}?#{[ret: "seed"] ++ if @species, do: [species: @species], else: []}"
-      }
-    />
-  <% end %>
-</PC.dropdown>
+<%= if assigns[:garden] do %>
+  <.link navigate={
+    ~p"/gardens/#{@garden.id}/library_seeds/#{@library_seed.id}/copy?#{[ret: "seed"] ++ if @species, do: [species: @species], else: []}"
+  }>
+    Add to garden <.icon name="hero-plus" />
+  </.link>
+<% else %>
+  <PC.dropdown>
+    <:trigger_element>
+      Add plantable to garden <.icon name="hero-plus" />
+    </:trigger_element>
+    <%= for garden <- @gardens do %>
+      <PetalComponents.Dropdown.dropdown_menu_item
+        label={garden.name}
+        link_type="a"
+        to={
+          ~p"/library_seeds/#{@library_seed.id}/copy/#{garden.id}?#{[ret: "seed"] ++ if @species, do: [species: @species], else: []}"
+        }
+      />
+    <% end %>
+  </PC.dropdown>
+<% end %>
 
 <.list>
   <:item title="Type"><%= @library_seed.type %></:item>
@@ -34,10 +62,6 @@
     </.link>
   </:item>
 </.list>
-
-<.back navigate={~p"/library_seeds?#{if @species, do: [species: @species], else: []}"}>
-  Back to library_seeds
-</.back>
 
 <.modal
   :if={@live_action == :edit}

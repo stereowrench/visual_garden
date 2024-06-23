@@ -56,7 +56,7 @@ defmodule VisualGardenWeb.LibrarySeedLive.Index do
       if params["ret"] == "seed" do
         socket
         |> put_notification(Normal.new(:warning, "Seed already in garden"))
-        |> push_patch(
+        |> push_navigate(
           to:
             if action == :copy_garden do
               ~p"/gardens/#{socket.assigns.garden.id}/library_seeds/#{lseed.id}?#{if params["species"], do: [species: params["species"]], else: []}"
@@ -67,7 +67,7 @@ defmodule VisualGardenWeb.LibrarySeedLive.Index do
       else
         socket
         |> put_notification(Normal.new(:warning, "Seed already in garden"))
-        |> push_patch(
+        |> push_navigate(
           to:
             if action == :copy_garden do
               ~p"/gardens/#{socket.assigns.garden.id}/library_seeds"
@@ -91,7 +91,7 @@ defmodule VisualGardenWeb.LibrarySeedLive.Index do
       if params["ret"] == "seed" do
         socket
         |> put_notification(Normal.new(:success, "Added seed to garden!"))
-        |> push_patch(
+        |> push_navigate(
           to:
             if action == :copy_garden do
               ~p"/gardens/#{socket.assigns.garden.id}/library_seeds/#{lseed.id}?#{if socket.assigns.species, do: [species: socket.assigns.species], else: []}"
@@ -102,7 +102,7 @@ defmodule VisualGardenWeb.LibrarySeedLive.Index do
       else
         socket
         |> put_notification(Normal.new(:success, "Added seed to garden!"))
-        |> push_patch(
+        |> push_navigate(
           to:
             if action == :copy_garden do
               ~p"/gardens/#{socket.assigns.garden.id}/library_seeds?#{if socket.assigns.species, do: [species: socket.assigns.species], else: []}"

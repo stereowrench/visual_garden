@@ -22,7 +22,19 @@ defmodule VisualGardenWeb.LibrarySeedLive.Show do
      |> assign(:page_title, page_title(socket.assigns.live_action))
      |> assign(:gardens, gardens)
      |> assign(:common_name, common_names[lseed.species])
+     |> add_garden(socket.assigns.live_action, params)
      |> assign(:library_seed, lseed)}
+  end
+
+  def add_garden(socket, :garden_library, params) do
+    garden = Gardens.get_garden!(params["garden_id"])
+
+    socket
+    |> assign(:garden, garden)
+  end
+
+  def add_garden(socket, _, _) do
+    socket
   end
 
   defp render_species(species, common_name) do
@@ -31,4 +43,5 @@ defmodule VisualGardenWeb.LibrarySeedLive.Show do
 
   defp page_title(:show), do: "Show Library seed"
   defp page_title(:edit), do: "Edit Library seed"
+  defp page_title(:garden_library), do: "Edit Library seed"
 end
