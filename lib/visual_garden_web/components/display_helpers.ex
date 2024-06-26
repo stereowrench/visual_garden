@@ -109,7 +109,7 @@ defmodule VisualGardenWeb.DisplayHelpers do
           class="no-underline"
           navigate={~p"/gardens/#{@garden.id}/library_seeds?#{[species: @name]}"}
         ><%= @name %></.link>
-        <PetalComponents.Badge.badge color="success" label="In Garden" />
+        <PetalComponents.Badge.badge color="success" label="In Inventory" />
       <% else %>
         <.link phx-no-format navigate={~p"/gardens/#{@garden.id}/library_seeds?#{[species: @name]}"}><%= @name %></.link>
       <% end %>
@@ -120,7 +120,7 @@ defmodule VisualGardenWeb.DisplayHelpers do
           class="no-underline"
           navigate={~p"/library_seeds?#{[species: @name]}"}
         ><%= @name %></.link>
-        <PetalComponents.Badge.badge color="success" label="In Garden" />
+        <PetalComponents.Badge.badge color="success" label="In Inventory" />
       <% else %>
         <.link phx-no-format navigate={~p"/library_seeds?#{[species: @name]}"}><%= @name %></.link>
       <% end %>
