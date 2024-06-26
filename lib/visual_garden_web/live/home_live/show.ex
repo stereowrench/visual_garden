@@ -13,7 +13,7 @@ defmodule VisualGardenWeb.HomeLive.Show do
   @impl true
   def mount(_params, _session, socket) do
     if socket.assigns.current_user do
-      {:ok, socket}
+      {:ok, socket |> assign(:disable_home_badge, true)}
     else
       {:ok, socket |> redirect(to: ~p"/")}
     end
@@ -72,16 +72,8 @@ defmodule VisualGardenWeb.HomeLive.Show do
       |> Enum.map(fn {a, [b]} -> {a, b} end)
       |> Enum.into(%{})
 
-    species_in_order =
-      for garden <- Gardens.list_gardens(socket.assigns.current_user) |> Repo.preload([:region]),
-          into: %{} do
-        soon_list = Library.list_species_in_order(garden.region_id)
-        {garden, soon_list}
-      end
-
     socket
     |> assign(:todo_items, todo_items)
-    |> assign(:species_in_order, species_in_order)
     |> assign(:gardens, Gardens.list_gardens(socket.assigns.current_user))
     |> assign(:planner_entries, planner_entries)
   end
@@ -417,7 +409,6 @@ defmodule VisualGardenWeb.HomeLive.Show do
 
     {:noreply, assign_assigns(socket)}
   end
-
 
   @impl true
   def handle_event("refuse", %{"pe_id" => peid}, socket) do

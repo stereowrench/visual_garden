@@ -2,40 +2,32 @@
   <h1 class="text-eagle-900">Home</h1>
 </div>
 
-<.live_component
+<%!-- <.live_component
   module={VisualGardenWeb.HomeLive.TemplatePlantComponent}
   id="template-plant"
   action={@live_action}
   gardens={@gardens}
   title={@page_title}
   current_user={@current_user}
-/>
+/> --%>
 
-<%!-- Soon to be planted --%>
 <div class="prose prose-eagle mt-10">
-  <h2>What's coming up to grow?</h2>
+  <h2>Gardens</h2>
+  <ul>
+    <%= for garden <- @gardens do %>
+      <li>
+        <.link navigate={~p"/gardens/#{garden.id}"}>
+          <%= garden.name %>
+          <%= if bm = Enum.map(@badge_map[garden.id], fn {_, y} -> y end) |> Enum.sum() do %>
+            <%= if bm > 0 do %>
+              <PC.badge color="warning" label={"Todo #{bm}"} />
+            <% end %>
+          <% end %>
+        </.link>
+      </li>
+    <% end %>
+  </ul>
 </div>
-<PC.accordion
-  js_lib="live_view_js"
-  class="w-full"
-  entries={
-    Enum.map(@species_in_order, fn {garden, soon_list} ->
-      %{heading: garden.name, content: soon_list}
-    end)
-  }
->
-  <:item :let={entry}>
-    <div class="prose prose-eagle">
-      <ol>
-        <%= for {date_str, strs} <- entry.content do %>
-          <li>
-            (<%= date_str %>) <.render_species strs={strs} />
-          </li>
-        <% end %>
-      </ol>
-    </div>
-  </:item>
-</PC.accordion>
 
 <div class="prose prose-eagle mt-10">
   <h2>Task list</h2>

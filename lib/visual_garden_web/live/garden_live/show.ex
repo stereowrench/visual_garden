@@ -35,6 +35,7 @@ defmodule VisualGardenWeb.GardenLive.Show do
 
   defp archived_plants(garden) do
     beds = Gardens.list_beds(garden.id)
+
     for bed <- beds do
       Gardens.list_plants(garden.id, bed.id)
       |> Enum.filter(& &1.archived)
@@ -50,7 +51,7 @@ defmodule VisualGardenWeb.GardenLive.Show do
 
   defp total_sqft(products) do
     products
-    |> Enum.filter(& &1.type == :bed)
+    |> Enum.filter(&(&1.type == :bed))
     |> Enum.map(fn b -> b.width * b.length end)
     |> Enum.sum()
   end
