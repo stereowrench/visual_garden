@@ -4,6 +4,7 @@ defmodule VisualGarden.Gardens do
   """
 
   import Ecto.Query, warn: false
+  alias VisualGarden.Gardens.PlannerEntry
   alias VisualGarden.MyDateTime
   alias VisualGarden.Gardens.EventLog
   alias VisualGarden.Gardens.GardenUser
@@ -888,6 +889,15 @@ defmodule VisualGarden.Gardens do
 
   """
   def get_nursery_entry!(id), do: Repo.get!(NurseryEntry, id) |> Repo.preload([:seed])
+
+  def get_nursery_entries_not_planted(garden_id) do
+    Repo.all(
+      from ne in NurseryEntry,
+        join: pe in PlannerEntry,
+        on: ne.planner_entry_id == pe.id,
+        where: not is_nil(pe.plant_id) and ne.garden_id == ^garden_id
+    )
+  end
 
   @doc """
   Creates a nursery_entry.

@@ -18,6 +18,18 @@
   <.link navigate={~p"/planners/#{@garden.id}"}>planner.</.link>
 </div>
 
+<div class="prose">
+  <h3>Nursery Entries</h3>
+</div>
+
+<.table id="nursery" rows={@streams.nursery}>
+  <:col :let={{_id, plant}} label="Name"><%= plant.name %></:col>
+</.table>
+
+<div class="prose">
+  <h3>Plants</h3>
+</div>
+
 <.table
   id="plants"
   rows={@streams.plants}

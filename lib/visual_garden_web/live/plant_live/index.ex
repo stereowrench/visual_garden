@@ -23,6 +23,7 @@ defmodule VisualGardenWeb.PlantLive.Index do
      |> assign(:seeds, Gardens.list_seeds(garden_id))
      |> assign(:beds, Gardens.list_beds(garden_id))
      |> assign(:garden, garden)
+     |> stream(:nursery, Gardens.get_nursery_entries_not_planted(garden.id))
      |> stream(:plants, unarchived_plants)
      |> stream(:archived_plants, archived_plants)}
   end
@@ -46,6 +47,7 @@ defmodule VisualGardenWeb.PlantLive.Index do
      |> assign(:garden, garden)
      |> assign(:seeds, Gardens.list_seeds(garden_id))
      |> assign(:beds, Gardens.list_beds(garden_id))
+     |> stream(:nursery, Gardens.get_nursery_entries_not_planted(garden.id))
      |> stream(:plants, unarchived_plants)
      |> stream(:archived_plants, archived_plants)}
   end
