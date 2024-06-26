@@ -108,7 +108,7 @@ defmodule VisualGardenWeb.PlantLive.Index do
     |> assign(:plant, nil)
   end
 
-  defp apply_action(socket, :nursery_entry, %{"nursery_entry" => neid}) do
+  defp apply_action(socket, :orphaned_nursery, %{"nursery_entry" => neid}) do
     ne = Gardens.get_nursery_entry!(neid)
 
     if ne.garden_id != socket.assigns.garden.id do
@@ -147,7 +147,7 @@ defmodule VisualGardenWeb.PlantLive.Index do
         </h3>
       </div>
       <.link
-        patch={~p"/gardens/#{@garden.id}/plants/orphaned_nursery/#{@item.nursery_entry_id}"}
+        navigate={~p"/gardens/#{@garden.id}/plants/orphaned_nursery/#{@item.nursery_entry_id}"}
         class="orphan-link"
       >
         <.button>

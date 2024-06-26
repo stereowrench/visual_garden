@@ -199,7 +199,7 @@ defmodule VisualGardenWeb.PlantLiveTest do
         )
 
       conn = log_in_user(conn, user)
-      {:ok, index_live, _html} = live(conn, ~p"/home")
+      {:ok, index_live, _html} = live(conn, ~p"/gardens/#{garden.id}/plants")
       index_live |> element("button", "Nurse") |> render_click()
 
       assert length(Gardens.list_nursery_entries(garden.id)) == 1
@@ -226,7 +226,8 @@ defmodule VisualGardenWeb.PlantLiveTest do
         )
 
       conn = log_in_user(conn, user)
-      {:ok, index_live, _html} = live(conn, ~p"/home")
+      {:ok, index_live, _html} = live(conn, ~p"/gardens/#{garden.id}/plants")
+
       index_live |> element("button", "Plant") |> render_click()
 
       assert length(Gardens.list_plants(garden.id)) == 1
@@ -252,10 +253,16 @@ defmodule VisualGardenWeb.PlantLiveTest do
         )
 
       conn = log_in_user(conn, user)
-      {:ok, index_live, _html} = live(conn, ~p"/home")
+      {:ok, index_live, _html} = live(conn, ~p"/gardens/#{garden.id}/plants")
       index_live |> element(".orphan-link") |> render_click()
 
-      assert_patch(index_live, ~p"/home/orphaned_nursery/#{nursery_entry.id}")
+      {path, flash} = assert_redirect(index_live)
+
+      {:ok, index_live, _html} = live(conn, path)
+      # assert_patch(
+      #   index_live,
+      #   ~p"/gardens/#{garden.id}/plants/orphaned_nursery/#{nursery_entry.id}"
+      # )
 
       assert index_live
              |> form("#orphan-form",
