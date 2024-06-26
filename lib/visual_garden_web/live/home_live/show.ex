@@ -56,8 +56,6 @@ defmodule VisualGardenWeb.HomeLive.Show do
     {:noreply,
      socket
      |> assign_assigns()
-     |> assign(:page_tip, Tooltips.home_content())
-     |> assign(:page_tip_title, Tooltips.home_title())
      |> assign(:page_title, page_title(socket.assigns.live_action))}
   end
 

@@ -13,20 +13,27 @@
 
 <div class="prose prose-eagle mt-10">
   <h2>Gardens</h2>
-  <ul>
-    <%= for garden <- @gardens do %>
-      <li>
+  <%= for garden <- @gardens do %>
+    <PC.card>
+      <PC.card_content
+        category={if garden.visibility == "private", do: "private", else: "public"}
+        heading={garden.name}
+      >
+        <% bm = Enum.map(@badge_map[garden.id] || [], fn {_, y} -> y end) |> Enum.sum() %>
+
+        <%= if bm > 0 do %>
+          <PC.badge color="warning" label={"Todo #{bm}"} />
+        <% end %>
+      </PC.card_content>
+      <PC.card_footer>
         <.link navigate={~p"/gardens/#{garden.id}"}>
-          <%= garden.name %>
-          <%= if bm = Enum.map(@badge_map[garden.id] || [], fn {_, y} -> y end) |> Enum.sum() do %>
-            <%= if bm > 0 do %>
-              <PC.badge color="warning" label={"Todo #{bm}"} />
-            <% end %>
-          <% end %>
+          <.button>
+            View Garden
+          </.button>
         </.link>
-      </li>
-    <% end %>
-  </ul>
+      </PC.card_footer>
+    </PC.card>
+  <% end %>
 </div>
 
 <div class="prose prose-eagle mt-10">
