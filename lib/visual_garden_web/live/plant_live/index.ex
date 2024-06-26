@@ -27,9 +27,7 @@ defmodule VisualGardenWeb.PlantLive.Index do
      |> assign(:seeds, Gardens.list_seeds(garden_id))
      |> assign(:beds, Gardens.list_beds(garden_id))
      |> assign(:garden, garden)
-     |> stream(:nursery, Gardens.get_nursery_entries_not_planted(garden.id))
-     |> stream(:plants, unarchived_plants)
-     |> stream(:archived_plants, archived_plants)
+     |> assign_plants()
      |> assign_todos()}
   end
 
@@ -37,10 +35,6 @@ defmodule VisualGardenWeb.PlantLive.Index do
     garden = Gardens.get_garden!(garden_id)
 
     Authorization.authorize_garden_view(garden.id, socket.assigns.current_user)
-
-    plants = Gardens.list_plants(garden_id)
-    unarchived_plants = plants |> Enum.filter(&(!&1.archived))
-    archived_plants = plants |> Enum.filter(& &1.archived)
 
     {:ok,
      socket
@@ -52,10 +46,21 @@ defmodule VisualGardenWeb.PlantLive.Index do
      |> assign(:garden, garden)
      |> assign(:seeds, Gardens.list_seeds(garden_id))
      |> assign(:beds, Gardens.list_beds(garden_id))
-     |> stream(:nursery, Gardens.get_nursery_entries_not_planted(garden.id))
-     |> stream(:plants, unarchived_plants)
-     |> stream(:archived_plants, archived_plants)
+     |> assign_plants()
      |> assign_todos()}
+  end
+
+  defp assign_plants(socket) do
+    garden = socket.assigns.garden
+    garden_id = socket.assigns.garden.id
+    plants = Gardens.list_plants(garden_id)
+    unarchived_plants = plants |> Enum.filter(&(!&1.archived))
+    archived_plants = plants |> Enum.filter(& &1.archived)
+
+    socket
+    |> stream(:nursery, Gardens.get_nursery_entries_not_planted(garden.id))
+    |> stream(:plants, unarchived_plants)
+    |> stream(:archived_plants, archived_plants)
   end
 
   def assign_todos(socket) do
