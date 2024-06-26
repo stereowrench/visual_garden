@@ -568,7 +568,7 @@ defmodule VisualGardenWeb.CoreComponents do
 
   def back(assigns) do
     ~H"""
-    <div class="sticky top-0 bg-white z-30">
+    <div class="sticky top-16 lg:top-0 bg-white z-30">
       <.link
         navigate={@navigate}
         class="text-sm font-semibold leading-6 text-zinc-900 hover:text-zinc-700"
@@ -592,7 +592,7 @@ defmodule VisualGardenWeb.CoreComponents do
 
   def forward(assigns) do
     ~H"""
-    <div class="sticky top-0 bg-white z-30">
+    <div class="sticky top-16 lg:top-0 bg-white z-30">
       <.link
         navigate={@navigate}
         class="float-right text-sm font-semibold leading-6 text-zinc-900 hover:text-zinc-700"
@@ -612,7 +612,7 @@ defmodule VisualGardenWeb.CoreComponents do
 
   def forward_back(assigns) do
     ~H"""
-    <div class="sticky top-0 bg-white z-30">
+    <div class="sticky top-16 lg:top-0 bg-white z-30">
       <.link
         navigate={@navigate_backward}
         class="text-sm font-semibold leading-6 text-zinc-900 hover:text-zinc-700"
