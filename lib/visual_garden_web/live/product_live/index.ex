@@ -1,4 +1,5 @@
 defmodule VisualGardenWeb.ProductLive.Index do
+  alias VisualGarden.MyDateTime
   alias VisualGarden.Planner
   alias VisualGarden.Authorization.UnauthorizedError
   use VisualGardenWeb, :live_view
@@ -26,11 +27,12 @@ defmodule VisualGardenWeb.ProductLive.Index do
   end
 
   defp assign_actions(socket) do
-    if socket.assigns.live_action in [:beds] do
+    if socket.assigns.live_action in [:beds, :transfer, :water] do
       todos =
         Planner.get_todo_items(socket.assigns.current_user)
+        |> Enum.filter(&(Timex.compare(MyDateTime.utc_today(), &1.date) <= 0))
         |> Enum.filter(
-          &(&1.type == "media" && to_string(&1.garden_id) == socket.assigns.garden_id)
+          &(&1.type in ["media", "water"] && to_string(&1.garden_id) == socket.assigns.garden_id)
         )
         |> Enum.group_by(& &1.bed.id)
 
@@ -45,7 +47,7 @@ defmodule VisualGardenWeb.ProductLive.Index do
       Gardens.list_products(socket.assigns.garden_id)
 
     products =
-      if socket.assigns.live_action in [:beds, :new_bed, :edit_bed, :transfer] do
+      if socket.assigns.live_action in [:beds, :new_bed, :edit_bed, :transfer, :water] do
         Enum.filter(products, &(&1.type == :bed))
       else
         Enum.reject(products, &(&1.type == :bed))
@@ -61,17 +63,31 @@ defmodule VisualGardenWeb.ProductLive.Index do
   end
 
   defp apply_action(socket, :edit, %{"garden_id" => garden_id, "id" => id}) do
+    bed = Gardens.get_product!(id)
+    garden = Gardens.get_garden!(garden_id)
+
+    unless garden.id == bed.garden_id do
+      raise UnauthorizedError
+    end
+
     socket
-    |> assign(:garden, Gardens.get_garden!(garden_id))
+    |> assign(:garden, garden)
     |> assign(:page_title, "Edit product")
-    |> assign(:product, Gardens.get_product!(id))
+    |> assign(:product, bed)
   end
 
   defp apply_action(socket, :edit_bed, %{"garden_id" => garden_id, "id" => id}) do
+    bed = Gardens.get_product!(id)
+    garden = Gardens.get_garden!(garden_id)
+
+    unless garden.id == bed.garden_id do
+      raise UnauthorizedError
+    end
+
     socket
-    |> assign(:garden, Gardens.get_garden!(garden_id))
+    |> assign(:garden, garden)
     |> assign(:page_title, "Edit bed")
-    |> assign(:product, Gardens.get_product!(id))
+    |> assign(:product, bed)
   end
 
   defp apply_action(socket, :new, %{"garden_id" => garden_id}) do
@@ -95,12 +111,26 @@ defmodule VisualGardenWeb.ProductLive.Index do
     |> assign(:product, nil)
   end
 
+  defp apply_action(socket, :water, %{"garden_id" => garden_id, "id" => bed_id}) do
+    bed = Gardens.get_product!(bed_id)
+    garden = Gardens.get_garden!(garden_id)
+
+    unless bed.garden_id == garden.id do
+      raise UnauthorizedError
+    end
+
+    socket
+    |> assign(:garden, garden)
+    |> assign(:page_title, "watering bed")
+    |> assign(:product, bed)
+  end
+
   defp apply_action(socket, :transfer, %{"garden_id" => garden_id, "id" => id}) do
     garden = Gardens.get_garden!(garden_id)
 
     avail_products =
       Gardens.list_products(socket.assigns.garden_id)
-      |> Enum.filter(& &1.type in [:growing_media, :compost])
+      |> Enum.filter(&(&1.type in [:growing_media, :compost]))
 
     product = Gardens.get_product!(id)
 

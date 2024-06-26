@@ -9,6 +9,11 @@ defmodule VisualGardenWeb.HomeBadge do
   end
 
   defp set_home_badge(_params, _url, socket) do
+    socket = badge_socket(socket)
+    {:cont, socket}
+  end
+
+  def badge_socket(socket) do
     todo_items =
       if socket.assigns.current_user do
         Planner.get_todo_items(socket.assigns.current_user)
@@ -16,6 +21,32 @@ defmodule VisualGardenWeb.HomeBadge do
         []
       end
 
-    {:cont, assign(socket, home_badge: length(todo_items))}
+    badge_map =
+      todo_items
+      |> Enum.group_by(& &1.garden_id)
+      |> Enum.map(fn {group, items} ->
+        item =
+          %{
+            beds: Enum.filter(items, &(&1.type in ["media", "water"])) |> length(),
+            plants:
+              Enum.filter(
+                items,
+                &(&1.type in [
+                    "plant",
+                    "plant_overdue",
+                    "nursery_plant",
+                    "nursery_overdue",
+                    "orphaned_nursery",
+                    "refuse"
+                  ])
+              )
+              |> length()
+          }
+
+        {group, item}
+      end)
+      |> Enum.into(%{})
+
+    socket |> assign(home_badge: length(todo_items)) |> assign(:badge_map, badge_map)
   end
 end

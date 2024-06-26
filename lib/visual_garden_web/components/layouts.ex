@@ -8,6 +8,7 @@ defmodule VisualGardenWeb.Layouts do
   attr :path, :string, required: true
   attr :text, :string, required: true
   attr :icon, :string, default: nil
+  attr :todo, :string, default: nil
 
   def nav_link(%{} = assigns) do
     ~H"""
@@ -19,6 +20,9 @@ defmodule VisualGardenWeb.Layouts do
         <.icon name={@icon} />
       <% end %>
       <%= @text %>
+      <%= if @todo do %>
+        <PC.badge color="warning" label={"Todo #{@todo}"} />
+      <% end %>
     </.link>
     """
   end
