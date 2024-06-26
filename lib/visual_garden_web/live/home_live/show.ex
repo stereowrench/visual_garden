@@ -418,39 +418,6 @@ defmodule VisualGardenWeb.HomeLive.Show do
     {:noreply, assign_assigns(socket)}
   end
 
-  @impl true
-  def handle_event("water", %{"bed_id" => bid}, socket) do
-    Repo.transaction(fn ->
-      bed = Gardens.get_product!(bid)
-      garden = Gardens.get_garden!(bed.garden_id)
-      Authorization.authorize_garden_modify(garden.id, socket.assigns.current_user)
-
-      {:ok, _} =
-        Gardens.create_event_log("water", %{
-          "event_time" => MyDateTime.utc_now(),
-          "product_id" => bid
-        })
-    end)
-
-    {:noreply, assign_assigns(socket)}
-  end
-
-  @impl true
-  def handle_event("humidity", %{"bed_id" => bid}, socket) do
-    Repo.transaction(fn ->
-      bed = Gardens.get_product!(bid)
-      garden = Gardens.get_garden!(bed.garden_id)
-      Authorization.authorize_garden_modify(garden.id, socket.assigns.current_user)
-
-      {:ok, _} =
-        Gardens.create_event_log("humidity", %{
-          "event_time" => MyDateTime.utc_now(),
-          "product_id" => bid
-        })
-    end)
-
-    {:noreply, assign_assigns(socket)}
-  end
 
   @impl true
   def handle_event("refuse", %{"pe_id" => peid}, socket) do
