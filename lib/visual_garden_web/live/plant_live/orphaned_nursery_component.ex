@@ -1,4 +1,4 @@
-defmodule VisualGardenWeb.HomeLive.OrphanedNurseryComponent do
+defmodule VisualGardenWeb.PlantLive.OrphanedNurseryComponent do
   alias VisualGardenWeb.PlannerLive.GraphComponent
   alias VisualGarden.MyDateTime
   alias VisualGarden.Authorization.UnauthorizedError

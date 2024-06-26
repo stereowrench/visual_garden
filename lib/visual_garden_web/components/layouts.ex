@@ -20,7 +20,7 @@ defmodule VisualGardenWeb.Layouts do
         <.icon name={@icon} />
       <% end %>
       <%= @text %>
-      <%= if @todo do %>
+      <%= if @todo && @todo > 0 do %>
         <PC.badge color="warning" label={"Todo #{@todo}"} />
       <% end %>
     </.link>

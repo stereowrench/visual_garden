@@ -13,6 +13,22 @@
   </:actions>
 </.header>
 
+<%= if @can_modify? do %>
+  <div class="prose">
+    <h2>Actions</h2>
+  </div>
+
+  <ul :for={item <- @todo_items} role="list" class="divide-y divide-gray-100">
+    <li class="flex justify-between gap-x-6 py-5">
+      <.render_todo_item
+        item={item}
+        garden={@garden}
+        planner_entries={@planner_entries}
+      />
+    </li>
+  </ul>
+<% end %>
+
 <div class="prose">
   To add plants you need to add entries to the
   <.link navigate={~p"/planners/#{@garden.id}"}>planner.</.link>
@@ -132,5 +148,21 @@
         ~p"/gardens/#{@garden.id}/beds/#{@product.id}/plants"
       end
     }
+  />
+</.modal>
+
+<.modal
+  :if={@live_action == :orphaned_nursery}
+  id="orphan-modal"
+  show
+  on_cancel={JS.patch(~p"/home")}
+>
+  <.live_component
+    module={VisualGardenWeb.PlantLive.OrphanedNurseryComponent}
+    id={@entry.id}
+    nursery_entry={@entry}
+    title={@page_title}
+    current_user={@current_user}
+    patch={~p"/home"}
   />
 </.modal>

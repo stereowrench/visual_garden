@@ -1,4 +1,5 @@
 defmodule VisualGardenWeb.HomeBadge do
+  alias VisualGarden.MyDateTime
   alias VisualGarden.Planner
   use VisualGardenWeb, :live_view
 
@@ -25,6 +26,9 @@ defmodule VisualGardenWeb.HomeBadge do
       todo_items
       |> Enum.group_by(& &1.garden_id)
       |> Enum.map(fn {group, items} ->
+        items =
+          Enum.filter(items, &(Timex.compare(MyDateTime.utc_today(), &1.date) <= 0))
+
         item =
           %{
             beds: Enum.filter(items, &(&1.type in ["media", "water"])) |> length(),
