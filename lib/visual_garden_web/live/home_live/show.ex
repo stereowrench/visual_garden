@@ -1,4 +1,5 @@
 defmodule VisualGardenWeb.HomeLive.Show do
+  alias VisualGarden.Gardens
   use VisualGardenWeb, :live_view
 
   @impl true
@@ -14,6 +15,7 @@ defmodule VisualGardenWeb.HomeLive.Show do
   def handle_params(_params, _, socket) do
     {:noreply,
      socket
-     |> assign(:page_title, "Home")}
+     |> assign(:page_title, "Home")
+     |> assign(:gardens, Gardens.list_gardens(socket.assigns.current_user))}
   end
 end
