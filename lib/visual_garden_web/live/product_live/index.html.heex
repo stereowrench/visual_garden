@@ -1,4 +1,4 @@
-<%= if @live_action in [:beds, :new_bed, :edit_bed] do %>
+<%= if @live_action in [:beds, :new_bed, :edit_bed, :water] do %>
   <.forward_back
     navigate_forward={~p"/gardens/#{@garden.id}/seeds"}
     navigate_backward={~p"/gardens/#{@garden.id}/products"}
@@ -25,20 +25,20 @@
 <% end %>
 
 <.header>
-  <%= if @live_action in [:beds, :new_bed, :edit_bed, :transfer] do %>
+  <%= if @live_action in [:beds, :new_bed, :edit_bed, :transfer, :water] do %>
     Listing beds
   <% else %>
     Listing media
   <% end %>
   <:subtitle>
-    <%= if @live_action in [:beds, :new_bed, :edit_bed, :transfer] do %>
+    <%= if @live_action in [:beds, :new_bed, :edit_bed, :transfer, :water] do %>
       Beds are where your plants grow
     <% else %>
       Add growing media, fertilizer, and compost here.
     <% end %>
   </:subtitle>
   <:actions :if={@can_modify?}>
-    <%= if @live_action in [:beds, :new_bed, :edit_bed, :transfer] do %>
+    <%= if @live_action in [:beds, :new_bed, :edit_bed, :transfer, :water] do %>
       <.link patch={~p"/gardens/#{@garden.id}/products/new_bed"}>
         <.button>New bed</.button>
       </.link>
@@ -50,7 +50,7 @@
   </:actions>
 </.header>
 
-<%= if @live_action in [:beds, :new_bed, :edit_bed, :transfer] do %>
+<%= if @live_action in [:beds, :new_bed, :edit_bed, :transfer, :water] do %>
   <div class="prose">
     Visit the <.link navigate={~p"/home"}>home page</.link> to view actionable todo items.
   </div>
@@ -77,24 +77,32 @@
     >
       <:col :let={product} label="Name"><%= name_str(product) %></:col>
       <:col :let={product} label="Action">
-        <%= if @live_action in [:beds, :transfer] do %>
-          <%= if @todos[product.id] do %>
-            <.link navigate={~p"/gardens/#{@garden.id}/beds/#{product.id}/transfer"}>
-              <PC.badge color="warning">Add media</PC.badge>
-            </.link>
+        <%= if @live_action in [:beds, :transfer, :water] do %>
+          <%= for todo <- @todos[product.id] || [] do %>
+            <%= if todo.type == "media" do %>
+              <.link navigate={~p"/gardens/#{@garden.id}/beds/#{product.id}/transfer"}>
+                <PC.button color="warning">Add media</PC.button>
+              </.link>
+            <% end %>
+
+            <%= if todo.type == "water" do %>
+              <.link navigate={~p"/gardens/#{@garden.id}/beds/#{product.id}/water"}>
+                <PC.button color="info">Water</PC.button>
+              </.link>
+            <% end %>
           <% end %>
         <% end %>
       </:col>
       <:action :let={product}>
         <div class="sr-only">
-          <%= if @live_action in [:beds, :new_bed, :edit_bed] do %>
+          <%= if @live_action in [:beds, :new_bed, :edit_bed, :water] do %>
             <.link navigate={~p"/gardens/#{@garden.id}/beds/#{product}"}>Show</.link>
           <% else %>
             <.link navigate={~p"/gardens/#{@garden.id}/products/#{product}"}>Show</.link>
           <% end %>
         </div>
         <%= if @can_modify? do %>
-          <%= if @live_action in [:beds, :new_bed, :edit_bed] do %>
+          <%= if @live_action in [:beds, :new_bed, :edit_bed, :water] do %>
             <.link patch={~p"/gardens/#{@garden.id}/beds/#{product}/edit"}>Edit</.link>
           <% else %>
             <.link patch={~p"/gardens/#{@garden.id}/products/#{product}/edit"}>Edit</.link>
@@ -164,4 +172,27 @@
     current_user={@current_user}
     title={@page_title}
   />
+</.modal>
+
+<.modal
+  :if={@live_action in [:water]}
+  id="event-log-modal"
+  show
+  on_cancel={JS.navigate(~p"/gardens/#{@garden.id}/beds")}
+>
+  <.header>
+    Water bed <%= @product.name %>
+  </.header>
+  <.button
+    phx-click={JS.push("water", value: %{bed_id: @product.id})}
+    data-confirm="Are you sure?"
+  >
+    Water
+  </.button>
+  <.button
+    phx-click={JS.push("humidity", value: %{bed_id: @product.id})}
+    data-confirm="Are you sure?"
+  >
+    Already moist
+  </.button>
 </.modal>

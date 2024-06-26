@@ -108,6 +108,8 @@ defmodule VisualGardenWeb do
         defdelegate button(assigns), to: PetalComponents.Button
         defdelegate icon_button(assigns), to: PetalComponents.Button
         defdelegate card(assigns), to: PetalComponents.Card
+        defdelegate card_content(assigns), to: PetalComponents.Card
+        defdelegate card_footer(assigns), to: PetalComponents.Card
         defdelegate container(assigns), to: PetalComponents.Container
         defdelegate dropdown(assigns), to: PetalComponents.Dropdown
         defdelegate form_label(assigns), to: PetalComponents.Form

@@ -58,10 +58,9 @@ defmodule VisualGardenWeb.GardenLiveTest do
              |> form("#garden-form", garden: @create_attrs)
              |> render_submit(%{garden: %{tz: "America/Chicago", region_id: region.id}})
 
-      assert_patch(index_live, ~p"/gardens")
-
-      html = render(index_live)
-      assert html =~ "Garden created successfully"
+      {path, flash} = assert_redirect(index_live)
+      assert path =~ ~r/\/gardens\/\d+/
+      assert unwrap_flash(flash) =~ "Garden created successfully"
     end
 
     test "updates garden in listing", %{conn: conn, garden: garden, user: user} do

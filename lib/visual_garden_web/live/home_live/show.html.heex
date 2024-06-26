@@ -2,86 +2,36 @@
   <h1 class="text-eagle-900">Home</h1>
 </div>
 
-<.live_component
+<%!-- <.live_component
   module={VisualGardenWeb.HomeLive.TemplatePlantComponent}
   id="template-plant"
   action={@live_action}
   gardens={@gardens}
   title={@page_title}
   current_user={@current_user}
-/>
+/> --%>
 
-<%!-- Soon to be planted --%>
 <div class="prose prose-eagle mt-10">
-  <h2>What's coming up to grow?</h2>
-</div>
-<PC.accordion
-  js_lib="live_view_js"
-  class="w-full"
-  entries={
-    Enum.map(@species_in_order, fn {garden, soon_list} ->
-      %{heading: garden.name, content: soon_list}
-    end)
-  }
->
-  <:item :let={entry}>
-    <div class="prose prose-eagle">
-      <ol>
-        <%= for {date_str, strs} <- entry.content do %>
-          <li>
-            (<%= date_str %>) <.render_species strs={strs} />
-          </li>
+  <h2>Gardens</h2>
+  <%= for garden <- @gardens do %>
+    <PC.card>
+      <PC.card_content
+        category={if garden.visibility == "private", do: "private", else: "public"}
+        heading={garden.name}
+      >
+        <% bm = Enum.map(@badge_map[garden.id] || [], fn {_, y} -> y end) |> Enum.sum() %>
+
+        <%= if bm > 0 do %>
+          <PC.badge color="warning" label={"Todo #{bm}"} />
         <% end %>
-      </ol>
-    </div>
-  </:item>
-</PC.accordion>
-
-<div class="prose prose-eagle mt-10">
-  <h2>Task list</h2>
+      </PC.card_content>
+      <PC.card_footer>
+        <.link navigate={~p"/gardens/#{garden.id}"}>
+          <.button>
+            View Garden
+          </.button>
+        </.link>
+      </PC.card_footer>
+    </PC.card>
+  <% end %>
 </div>
-
-<ul :for={item <- @todo_items} role="list" class="divide-y divide-gray-100">
-  <li class="flex justify-between gap-x-6 py-5">
-    <.render_todo_item
-      item={item}
-      garden={Enum.find(@gardens, &(&1.id == item.garden_id))}
-      planner_entries={@planner_entries}
-    />
-  </li>
-</ul>
-
-<.modal
-  :if={@live_action == :orphaned_nursery}
-  id="orphan-modal"
-  show
-  on_cancel={JS.patch(~p"/home")}
->
-  <.live_component
-    module={VisualGardenWeb.HomeLive.OrphanedNurseryComponent}
-    id={@entry.id}
-    nursery_entry={@entry}
-    title={@page_title}
-    current_user={@current_user}
-    patch={~p"/home"}
-  />
-</.modal>
-
-<.modal
-  :if={@live_action in [:transfer]}
-  id="event-log-modal"
-  show
-  on_cancel={JS.navigate(~p"/home")}
->
-  <.live_component
-    module={VisualGardenWeb.EventLogLive.FormComponent}
-    patch={~p"/home"}
-    action={@live_action}
-    id="event-modal"
-    product={@bed}
-    products={@products}
-    garden={@garden}
-    current_user={@current_user}
-    title={@page_title}
-  />
-</.modal>
