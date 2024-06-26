@@ -182,7 +182,7 @@ defmodule VisualGardenWeb.GardenLive.FormComponent do
         {:noreply,
          socket
          |> put_notification(Normal.new(:info, "Garden created successfully"))
-         |> push_patch(to: socket.assigns.patch)}
+         |> push_navigate(to: ~p"/gardens/#{garden.id}")}
 
       {:error, %Ecto.Changeset{} = changeset} ->
         {:noreply, assign_form(socket, changeset)}
