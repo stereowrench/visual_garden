@@ -19,9 +19,12 @@
   </.forward_back>
 </div>
 
-<div class="prose prose-eagle">
-  <h1>Planner for <%= @garden.name %></h1>
+<.header>
+  <%= @garden.name %>
+  <:subtitle>Planner</:subtitle>
+</.header>
 
+<div class="prose prose-eagle">
   <%= if @can_modify? do %>
     <br />
     Create a <.link phx-no-format navigate={~p"/planners/#{@garden.id}/new_bed"}>
@@ -36,7 +39,8 @@
   <ol>
     <%= for {date_str, strs} <- @soon_list do %>
       <li>
-        (<%= date_str %>) <.render_species strs={strs} garden={@garden} species_in_garden={@species_in_garden} />
+        (<%= date_str %>)
+        <.render_species strs={strs} garden={@garden} species_in_garden={@species_in_garden} />
       </li>
     <% end %>
   </ol>
