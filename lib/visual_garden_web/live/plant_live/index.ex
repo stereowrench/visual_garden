@@ -61,7 +61,7 @@ defmodule VisualGardenWeb.PlantLive.Index do
   def assign_todos(socket) do
     todos =
       Planner.get_todo_items(socket.assigns.current_user)
-      |> Enum.filter(&(Timex.compare(MyDateTime.utc_today(), &1.date) <= 0))
+      |> Enum.filter(&(Timex.compare(MyDateTime.utc_today(), &1.date) >= 0))
       |> Enum.filter(
         &(&1.type in [
             "plant",

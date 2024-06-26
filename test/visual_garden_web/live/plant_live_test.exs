@@ -205,6 +205,39 @@ defmodule VisualGardenWeb.PlantLiveTest do
       assert length(Gardens.list_nursery_entries(garden.id)) == 1
     end
 
+    test "nursery todo overdue", %{garden: garden, bed: bed, seed: seed, user: user, conn: conn} do
+      ns = ~D[2023-04-05]
+      ne = ~D[2023-04-15]
+      min_lead = 2
+      max_lead = 4
+
+      {:ok, pe} =
+        Planner.create_planner_entry(
+          %{
+            nursery_start: ns,
+            nursery_end: ne,
+            start_plant_date: Timex.shift(ns, weeks: min_lead),
+            end_plant_date: Timex.shift(ne, weeks: max_lead),
+            days_to_maturity: 30,
+            days_to_refuse: 15,
+            common_name: "Mine",
+            bed_id: bed.id,
+            seed_id: seed.id,
+            row: 1,
+            column: 1,
+            min_lead: min_lead,
+            max_lead: max_lead
+          },
+          garden
+        )
+
+      conn = log_in_user(conn, user)
+      {:ok, index_live, _html} = live(conn, ~p"/gardens/#{garden.id}/plants")
+      index_live |> element("button", "Delete Planner Entry") |> render_click()
+
+      assert length(Gardens.list_nursery_entries(garden.id)) == 0
+    end
+
     test "plant todo current", %{garden: garden, bed: bed, seed: seed, user: user, conn: conn} do
       plants = ~D[2023-06-05]
       plante = ~D[2023-06-15]
@@ -231,6 +264,34 @@ defmodule VisualGardenWeb.PlantLiveTest do
       index_live |> element("button", "Plant") |> render_click()
 
       assert length(Gardens.list_plants(garden.id)) == 1
+    end
+
+    test "plant todo overdue", %{garden: garden, bed: bed, seed: seed, user: user, conn: conn} do
+      plants = ~D[2023-04-05]
+      plante = ~D[2023-04-15]
+
+      {:ok, pe} =
+        Planner.create_planner_entry(
+          %{
+            start_plant_date: plants,
+            end_plant_date: plante,
+            days_to_maturity: 30,
+            days_to_refuse: 15,
+            common_name: "Mine",
+            bed_id: bed.id,
+            seed_id: seed.id,
+            row: 1,
+            column: 1
+          },
+          garden
+        )
+
+      conn = log_in_user(conn, user)
+      {:ok, index_live, _html} = live(conn, ~p"/gardens/#{garden.id}/plants")
+
+      index_live |> element("button", "Delete Planner Entry") |> render_click()
+
+      assert length(Gardens.list_plants(garden.id)) == 0
     end
 
     test "planting an orphaned nursery", %{
