@@ -18,7 +18,7 @@
       <li>
         <.link navigate={~p"/gardens/#{garden.id}"}>
           <%= garden.name %>
-          <%= if bm = Enum.map(@badge_map[garden.id], fn {_, y} -> y end) |> Enum.sum() do %>
+          <%= if bm = Enum.map(@badge_map[garden.id] || [], fn {_, y} -> y end) |> Enum.sum() do %>
             <%= if bm > 0 do %>
               <PC.badge color="warning" label={"Todo #{bm}"} />
             <% end %>
