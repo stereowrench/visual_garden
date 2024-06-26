@@ -238,16 +238,37 @@ defmodule VisualGardenWeb.PlantLive.Index do
 
     ~H"""
     <div>
-      (<%= Timex.format(@item.date, "{relative}", :relative) |> elem(1) %>)
-      Overdue Nursery <%= @entry.seed.name %> in <%= @entry.bed.name %> (<%= @entry.row %>, <%= @entry.column %>)
-      <%= unless Timex.after?(@item.date, MyDateTime.utc_today) do %>
-        <.button
-          phx-click={JS.push("delete_planner", value: %{planner_entry_id: @entry.id})}
-          data-confirm="Are you sure?"
-        >
-          Delete Planner Entry
-        </.button>
-      <% end %>
+      <div class="mt-6 border-t border-gray-100">
+        <div class="divide-y divide-gray-200 overflow-hidden rounded-lg bg-white shadow">
+          <div class="border-b border-gray-200 bg-white px-4 py-5 sm:px-6">
+            <h3 class="text-base font-semibold leading-6 text-gray-900">
+              Overdue Nursery <%= @entry.seed.name %> in <%= @entry.bed.name %> (<%= @entry.row %>, <%= @entry.column %>)
+            </h3>
+            <dl>
+              <div class="dldiv">
+                <dt>What?</dt>
+                <dd>
+                  This plant was not planted in time for the schedule it is assigned to. Delete the planner entry and create a new one to proceed.
+                </dd>
+              </div>
+              <div class="dldiv">
+                <dt>When?</dt>
+                <dd>
+                  <%= Timex.format(@item.date, "{relative}", :relative) |> elem(1) %>
+                </dd>
+              </div>
+            </dl>
+            <%= unless Timex.after?(@item.date, MyDateTime.utc_today) do %>
+              <.button
+                phx-click={JS.push("delete_planner", value: %{planner_entry_id: @entry.id})}
+                data-confirm="Are you sure?"
+              >
+                Delete Planner Entry
+              </.button>
+            <% end %>
+          </div>
+        </div>
+      </div>
     </div>
     """
   end
