@@ -36,104 +36,95 @@
       Register
     </.link>
   </div>
-  <div class="mx-auto max-w-7xl px-6 pb-24 pt-10 sm:pb-32 lg:flex lg:px-8 lg:pt-12">
-    <div class="mx-auto max-w-2xl lg:mx-0 lg:max-w-xl lg:flex-shrink-0 lg:pt-8">
-      <div class="flex items-center gap-4">
-        <img class="h-16 w-auto" src={~p"/images/logo.jpeg"} alt="StereoWrench VisualGarden" />
-        <span class="text-3xl font-bold tracking-tight text-eagle-900 md:text-6xl">
-          VisualGarden
-        </span>
-      </div>
-      <h1 class="mt-4 text-xl font-bold tracking-tight text-eagle-800 sm:text-3xl">
+  <div class="mx-auto max-w-7xl px-6 lg:px-8">
+    <div class="mx-auto max-w-2xl text-center flex flex-col justify-center items-center gap-x-4">
+      <img class="h-16 w-auto" src={~p"/images/logo.jpeg"} alt="StereoWrench VisualGarden" />
+      <span class="mt-4 text-6xl font-bold tracking-tight text-eagle-900">
+        VisualGarden
+      </span>
+      <h1 class="font-bold tracking-tight text-eagle-800 text-3xl">
         A gardening app for the masses
       </h1>
-      <div class="mx-auto mt-8 max-w-2xl sm:mt-20 lg:mt-16 lg:max-w-4xl">
-        <dl class="grid max-w-xl grid-cols-1 gap-x-8 gap-y-10 lg:max-w-none lg:grid-cols-2 lg:gap-y-16">
-          <div class="relative pl-16">
-            <dt class="text-base font-semibold leading-7 text-gray-900">
-              <div class="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-mojo-600">
-                <.icon name="hero-calendar-days" class=" text-white h-6 w-6" />
-              </div>
-              Schedule
-            </dt>
-            <dd class="mt-2 text-base leading-7 text-gray-600">
-              See when you can plant your crops with a convenient chart
-            </dd>
+    </div>
+  </div>
+  <div class="mx-auto mt-8 max-w-2xl sm:mt-20 lg:mt-16 lg:max-w-4xl">
+    <dl class="grid max-w-xl grid-cols-1 gap-x-8 gap-y-10 lg:max-w-none lg:grid-cols-2 lg:gap-y-16">
+      <div class="relative pl-16">
+        <dt class="text-base font-semibold leading-7 text-gray-900">
+          <div class="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-mojo-600">
+            <.icon name="hero-calendar-days" class=" text-white h-6 w-6" />
           </div>
-          <div class="relative pl-16">
-            <dt class="text-base font-semibold leading-7 text-gray-900">
-              <div class="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-mojo-600">
-                <.icon name="hero-book-open" class=" text-white h-6 w-6" />
-              </div>
-              Planning
-            </dt>
-            <dd class="mt-2 text-base leading-7 text-gray-600">
-              Decide when to plant ahead of time so you're ready for the next season.
-            </dd>
-          </div>
-          <div class="relative pl-16">
-            <dt class="text-base font-semibold leading-7 text-gray-900">
-              <div class="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-mojo-600">
-                <.icon name="hero-chart-bar" class=" text-white h-6 w-6" />
-              </div>
-              Tracking
-            </dt>
-            <dd class="mt-2 text-base leading-7 text-gray-600">
-              Log watering, fertilizing, tilling, and more!
-            </dd>
-          </div>
-          <div class="relative pl-16">
-            <dt class="text-base font-semibold leading-7 text-gray-900">
-              <div class="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-mojo-600">
-                <.icon name="hero-bell-alert" class=" text-white h-6 w-6" />
-              </div>
-              Tasks
-            </dt>
-            <dd class="mt-2 text-base leading-7 text-gray-600">
-              Know what to do and when to do it.
-            </dd>
-          </div>
-        </dl>
+          Schedule
+        </dt>
+        <dd class="mt-2 text-base leading-7 text-gray-600">
+          See when you can plant your crops with a convenient chart
+        </dd>
       </div>
-      <div class="mt-10 flex items-center gap-x-6">
-        <.link
-          class="rounded-md bg-mojo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-mojo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mojo-600"
-          navigate={~p"/regions"}
-        >
-          View Schedules
-        </.link>
-        <%!-- <a href="#" class="text-sm font-semibold leading-6 text-gray-900">
-          Learn more <span aria-hidden="true">→</span>
-        </a> --%>
+      <div class="relative pl-16">
+        <dt class="text-base font-semibold leading-7 text-gray-900">
+          <div class="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-mojo-600">
+            <.icon name="hero-book-open" class=" text-white h-6 w-6" />
+          </div>
+          Planning
+        </dt>
+        <dd class="mt-2 text-base leading-7 text-gray-600">
+          Decide when to plant ahead of time so you're ready for the next season.
+        </dd>
+      </div>
+      <div class="relative pl-16">
+        <dt class="text-base font-semibold leading-7 text-gray-900">
+          <div class="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-mojo-600">
+            <.icon name="hero-chart-bar" class=" text-white h-6 w-6" />
+          </div>
+          Tracking
+        </dt>
+        <dd class="mt-2 text-base leading-7 text-gray-600">
+          Log watering, fertilizing, tilling, and more!
+        </dd>
+      </div>
+      <div class="relative pl-16">
+        <dt class="text-base font-semibold leading-7 text-gray-900">
+          <div class="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-mojo-600">
+            <.icon name="hero-bell-alert" class=" text-white h-6 w-6" />
+          </div>
+          Tasks
+        </dt>
+        <dd class="mt-2 text-base leading-7 text-gray-600">
+          Know what to do and when to do it.
+        </dd>
+      </div>
+    </dl>
+  </div>
+  <div class="mt-16 flex justify-center items-center gap-x-6">
+    <.link
+      class="rounded-md bg-mojo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-mojo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mojo-600"
+      navigate={~p"/regions"}
+    >
+      View Schedules
+    </.link>
+  </div>
+  <div class="relative overflow-hidden pt-16">
+    <div class="mx-auto max-w-7xl px-6 lg:px-8">
+      <img
+        src={~p"/images/schedule_img.png"}
+        alt="App screenshot"
+        class="rounded-xl shadow-2xl ring-1 ring-gray-900/10"
+        width="2432"
+        height="1442"
+      />
+      <img
+        src={~p"/images/in_season_img.png"}
+        alt="App screenshot"
+        class="rounded-xl shadow-2xl ring-1 ring-gray-900/10"
+        width="2432"
+        height="1442"
+      />
+      <div class="relative" aria-hidden="true">
+        <div class="absolute -inset-x-20 bottom-0 bg-gradient-to-t from-white pt-[7%]"></div>
       </div>
     </div>
-    <%!-- <div class="mx-auto mt-16 flex max-w-2xl sm:mt-24 lg:ml-10 lg:mr-0 lg:mt-0 lg:max-w-none lg:flex-none xl:ml-32"> --%>
-      <%!-- <div class="max-w-3xl flex-none sm:max-w-5xl lg:max-w-none"> --%>
-        <%!-- <div class="-m-2 rounded-xl bg-eagle-900/5 p-2 ring-1 ring-inset ring-eagle-900/10 lg:-m-4 lg:rounded-2xl lg:p-4"> --%>
-          <%!-- <img
-            src={~p"/images/hero.jpeg"}
-            alt="App screenshot"
-            width="2432"
-            height="1442"
-            class="w-[76rem] rounded-md shadow-2xl ring-1 ring-eagle-900/10"
-          /> --%>
-        <%!-- </div> --%>
-      <%!-- </div> --%>
-    <%!-- </div> --%>
   </div>
 </div>
-
-<img
-  src={~p"/images/schedule_img.png"}
-  alt="App screenshot"
-  class="w-[76rem] rounded-md shadow-2xl ring-1 ring-eagle-900/10"
-/>
-
-<img
-  src={~p"/images/in_season_img.png"}
-  alt="App screenshot"
-  class="w-[76rem] rounded-md shadow-2xl ring-1 ring-eagle-900/10"
-/>
 
 <div class="m-0 border-t border-eagle-200">
   <footer class="bg-eagle-100">
