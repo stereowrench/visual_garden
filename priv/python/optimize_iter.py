@@ -136,8 +136,15 @@ def is_valid_placement(plants, solution, plant_name, i, j, time_slot, slot_durat
         if staggered and all_cells_valid:
             for x in range(orientation[0]):
                 for y in range(orientation[1]):
-                    if time_slot in placed_time_slots:
-                        continue  # Try the other orientation
+                    # Make sure we're checking the correct plant_type_index within placed_time_slots
+                    if (time_slot, planting_type) in placed_time_slots:
+                        all_cells_valid = False  # Set flag to False
+                        break  # Exit the inner 'y' loop
+                if not all_cells_valid:
+                    break  # Exit the outer 'x' loop
+
+            if not all_cells_valid:
+                continue
 
         # spacing = plants[plant_name].get('spacing', 0)
         # if spacing > 0:
@@ -500,6 +507,54 @@ class TestIsValidPlacement(unittest.TestCase):
         self.assertIsNone(is_valid_placement(self.plants, grid, 'tomato', 0, 0, 0, self.slot_duration, self.planting_windows, self.time_slots, 'seed'))
 
     # ... Add more test cases for different spacing requirements and plant types if needed
+    def test_valid_staggered_planting(self):
+        """Test valid staggered planting scenarios."""
+
+        # Setup a grid with some existing staggered tomato plants
+        grid = [
+            [('tomato', (1, 1), 0), ('tomato', (1, 1), 0), None, None],
+            [('tomato', (1, 1), 0), ('tomato', (1, 1), 0), None, None],
+            [None, None, None, None],
+            [None, None, None, None]
+        ]
+
+        # Set up time_slots to reflect staggered planting
+        time_slots = set()
+
+        planting_windows_staggered = {
+            'tomato': [[
+                [[(1, 90)], [(1, 90)], [(91, 180)], [(91, 180)]],
+                [[(1, 90)], [(1, 90)], [(91, 180)], [(91, 180)]],
+                [[(1, 90)], [(1, 90)], [(91, 180)], [(91, 180)]],
+                [[(1, 90)], [(1, 90)], [(91, 180)], [(91, 180)]]
+            ]],
+            'pepper': [[
+                [[(31, 120)], [(31, 120)], [(31, 120)], [(31, 120)]],
+                [[(31, 120)], [(31, 120)], [(31, 120)], [(31, 120)]] ,
+                [[(31, 120)], [(31, 120)], [(31, 120)], [(31, 120)]],
+                [[(31, 120)], [(31, 120)], [(31, 120)], [(31, 120)]]
+            ]],
+            'basil': [[
+                [[(91, 273)], [(91, 273)], [(91, 273)], [(91, 273)]],
+                [[(91, 273)], [(91, 273)], [(91, 273)], [(91, 273)]],
+                [[(91, 273)], [(91, 273)], [(91, 273)], [(91, 273)]],
+                [[(91, 273)], [(91, 273)], [(91, 273)], [(91, 273)]]
+            ]],
+        }
+        slot_duration = 7
+
+        # Test valid staggered planting scenarios for "tomato"
+        test_cases = [
+            ('tomato', 2, 2, 95 // 7, 'seed'),  # Valid planting in a different time slot (1)
+            # ('basil', 2, 2, 35 // 7, 'seed'),  # Valid planting in a later time slot (4)
+            # ('pepper', 0, 2, 95 // 7, 'transplant')  # Valid planting as a transplant in a later time slot (4)
+        ]
+
+        for plant_name, i, j, t, planting_type in test_cases:
+            self.assertTrue(
+                is_valid_placement(self.plants, grid, plant_name, i, j, t, slot_duration, planting_windows_staggered, time_slots, planting_type),
+                f"Failed for tomato at ({i}, {j}) in time slot {t} with planting type {planting_type}"
+            )
 
 if __name__ == '__main__':
     unittest.main()
