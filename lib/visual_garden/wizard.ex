@@ -1,7 +1,7 @@
 defmodule VisualGarden.Wizard do
   alias VisualGarden.MyDateTime
 
-  def convert_from_planner_to_optimizer(planner, rows, cols) do
+  def convert_from_planner_to_optimizer(planner, rows, cols, filter_after_days \\ nil) do
     mapped =
       planner
       |> Enum.map(fn x ->
@@ -24,6 +24,22 @@ defmodule VisualGarden.Wizard do
 
         %{seed: m.seed.id, s: start_days, e: end_days, type: m.type, place: m.place}
       end)
+      |> Enum.map(fn entry ->
+        if filter_after_days do
+          if entry.s > filter_after_days do
+            nil
+          else
+            if entry.e > filter_after_days do
+              %{ entry | e: filter_after_days }
+            else
+              entry
+            end
+          end
+        else
+          entry
+        end
+      end)
+      |> Enum.reject(& is_nil(&1))
       |> Enum.group_by(& &1.seed)
       |> Enum.map(fn {seed_id, list} ->
         per_seed =
