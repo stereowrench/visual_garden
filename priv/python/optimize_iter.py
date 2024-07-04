@@ -1,8 +1,8 @@
 import random
 from copy import deepcopy
 import sys
-import erlport.erlang
-from erlport.erlterms import Atom
+# import erlport.erlang
+# from erlport.erlterms import Atom
 import json
 
 elixir_pid = None
@@ -138,6 +138,21 @@ def is_valid_placement(plants, solution, plant_name, i, j, time_slot, slot_durat
                 for y in range(orientation[1]):
                     if time_slot in placed_time_slots:
                         continue  # Try the other orientation
+
+        # spacing = plants[plant_name].get('spacing', 0)
+        # if spacing > 0:
+        #     for other_i in range(max(0, i - spacing), i + footprint_length + spacing):
+        #         for other_j in range(max(0, j - spacing), j + footprint_width + spacing):
+        #             # If a plant of the same type is found within the spacing range...
+        #             if (
+        #                 0 <= other_i < len(solution) and
+        #                 0 <= other_j < len(solution[0]) and
+        #                 solution[other_i][other_j] is not None and
+        #                 plants[solution[other_i][other_j][0]].get('spacing', 0) > 0
+        #             ):
+        #                 # ...check if it's too close in BOTH dimensions
+        #                 if abs(i - other_i) < spacing and abs(j - other_j) < spacing:
+        #                     all_cells_valid = False  # Spacing requirement violated (too close in both directions)
 
         # If all checks pass for this orientation, return it
         if all_cells_valid:
@@ -410,3 +425,84 @@ def register_handler(elixir_pid2, from_pid2):
 
 # Print the best solution (grid layout)
 # print_planting_layout(best_solution)
+
+import unittest
+
+# ... (Your existing code for is_valid_placement, plants, planting_windows, etc.)
+# Define a sample `time_slots` structure similar to the one in your `generate_random_solution` function.
+
+class TestIsValidPlacement(unittest.TestCase):
+    def setUp(self):
+        self.plants = {
+            'tomato': {'footprint': (1, 1), 'staggered': True, 'spacing': 1, 'planting_types': ['seed']},
+            'pepper': {'footprint': (1, 2), 'staggered': False, 'spacing': 0, 'planting_types': ['transplant']},
+            'basil': {'footprint': (1, 1), 'staggered': False, 'spacing': 0, 'planting_types': ['seed']},
+        }
+
+        self.time_slots = set()
+
+        self.planting_windows = {
+            'tomato': [[
+                [[(1, 90)], [(1, 90)], [(1, 90)], [(1, 90)]],
+                [[(1, 90)], [(1, 90)], [(1, 90)], [(1, 90)]]
+            ]],
+            'pepper': [[
+                [[(31, 120)], [(31, 120)], [(31, 120)], [(31, 120)]],
+                [[(31, 120)], [(31, 120)], [(31, 120)], [(31, 120)]]
+            ]],
+            'basil': [[
+                [[(91, 273)], [(91, 273)], [(91, 273)], [(91, 273)]],
+                [[(91, 273)], [(91, 273)], [(91, 273)], [(91, 273)]]
+            ]],
+        }
+        self.slot_duration = 7
+
+    def test_valid_placement(self):
+        """Test various valid placement scenarios."""
+        # Empty grid
+        grid = [[None for _ in range(4)] for _ in range(2)]
+
+        # Valid placements for different plants, orientations, and time slots
+        test_cases = [
+            ('pepper', 0, 0, 35 // 7, 'transplant'),   # Different footprint and staggered requirement
+            ('tomato', 0, 0, 2, 'seed'),
+            ('basil', 1, 3, 95 // 7, 'seed'),
+            ('basil', 1, 3, 95 // 7, 'seed')           # Earlier time slot
+        ]
+
+        for plant_name, i, j, t, planting_type in test_cases:
+            self.assertIsNotNone(is_valid_placement(self.plants, grid, plant_name, i, j, t, self.slot_duration, self.planting_windows, self.time_slots, planting_type), f"Failed for {plant_name} at ({i}, {j}) in time slot {t} with planting type {planting_type}")
+
+    def test_invalid_out_of_bounds(self):
+        """Test placements that would go out of bounds."""
+        grid = [[None for _ in range(4)] for _ in range(2)]
+        test_cases = [
+            ('tomato', 1, 2, 0, 'seed'),    # Exceeds row boundary
+            ('pepper', 0, 3, 1, 'transplant'),  # Exceeds column boundary
+        ]
+        for plant_name, i, j, t, planting_type in test_cases:
+            self.assertIsNone(is_valid_placement(self.plants, grid, plant_name, i, j, t, self.slot_duration, self.planting_windows, self.time_slots, planting_type), f"Failed for {plant_name} at ({i}, {j}) in time slot {t} with planting type {planting_type}")
+
+    def test_invalid_overlap(self):
+        """Test placements that overlap with existing plants."""
+        grid = [[('pepper', (1, 2), 1, 'transplant'), None, None, None], [None, None, None, None]]
+        self.assertIsNone(is_valid_placement(self.plants, grid, 'tomato', 0, 1, 0, self.slot_duration, self.planting_windows, self.time_slots, 'seed'), "Failed for tomato overlapping with pepper")
+
+    def test_invalid_planting_window(self):
+        """Test placements outside the valid planting window."""
+        grid = [[None for _ in range(4)] for _ in range(2)]
+        self.assertIsNone(is_valid_placement(self.plants, grid, 'tomato', 0, 0, 0, self.slot_duration, self.planting_windows, self.time_slots, 'seed'))  # Time slot 5 is outside the window
+
+    def test_invalid_staggered_planting(self):
+        """Test staggered planting violation."""
+        grid = [[None for _ in range(4)] for _ in range(2)]
+        self.time_slots.add((0, "seed"))
+        self.assertIsNone(is_valid_placement(self.plants, grid, 'tomato', 0, 0, 0, self.slot_duration, self.planting_windows, self.time_slots, 'seed'))
+
+    # ... Add more test cases for different spacing requirements and plant types if needed
+
+if __name__ == '__main__':
+    unittest.main()
+
+
+# ... (Your existing code for is_valid_placement, plants, planting_windows, etc.)

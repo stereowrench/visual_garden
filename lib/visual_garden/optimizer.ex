@@ -13,10 +13,11 @@ defmodule VisualGarden.Optimizer do
 
     plants = %{
       tomato: %{
-        footprint: [2, 2],
+        footprint: [1, 1],
         quantity: 4,
         staggered: false,
-        planting_types: ["seed", "transplant"]
+        planting_types: ["seed", "transplant"],
+        spacing: 1
       }
     }
     |> Jason.encode!()
