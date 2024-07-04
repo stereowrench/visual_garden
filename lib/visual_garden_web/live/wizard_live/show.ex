@@ -8,58 +8,46 @@ defmodule VisualGardenWeb.WizardLive.Show do
 
   @impl true
   def mount(_params, _session, socket) do
-    {:ok, socket |> assign(:current_step, :region_selection)}
+    {:ok,
+     socket
+     |> assign(:step, 1)
+     |> assign(
+       :grid,
+       for(_ <- 1..3, do: for(_ <- 1..4, do: false))
+     )}
   end
 
   @impl true
-  def handle_params(_params, _, socket) do
+  def handle_params(params, _, socket) do
     {:noreply,
      socket
+     |> assign(step: String.to_integer(params["step"] || "1"))
      |> assign(:page_title, page_title(socket.assigns.live_action))}
   end
 
   @impl true
-  def handle_event("next", _, socket) do
-    current_step = socket.assigns.current_step
-
-    case current_step do
-      :region_selection ->
-        {:noreply, socket |> assign(:current_step, :bed_creation)}
-
-      :bed_creation ->
-        {:noreply, socket |> assign(:current_step, :cultivar_selection)}
-
-      :cultivar_selection ->
-        {:noreply, socket |> assign(:current_step, :scheduling)}
-
-      :scheduling ->
-        {:noreply, socket |> assign(:current_step, :complete)}
-
-      :complete ->
-        {:noreply, socket}
-    end
+  def handle_event("prev", _, socket) do
+    new_step = max(1, socket.assigns.step - 1)
+    {:noreply, push_patch(socket, to: ~p"/wizard?#{[step: new_step]}")}
   end
 
   @impl true
-  def handle_event("prev", _, socket) do
-    current_step = socket.assigns.current_step
+  def handle_event("next", _, socket) do
+    # Assuming 4 steps in total
+    new_step = min(4, socket.assigns.step + 1)
+    {:noreply, push_patch(socket, to: ~p"/wizard?#{[step: new_step]}")}
+  end
 
-    case current_step do
-      :region_selection ->
-        {:noreply, socket}
+  def handle_event("toggle_cell", %{"row" => row, "col" => col}, socket) do
+    grid = socket.assigns.grid
 
-      :bed_creation ->
-        {:noreply, socket |> assign(:current_step, :region_selection)}
+    new_grid =
+      List.update_at(grid, String.to_integer(row), fn cells ->
+        List.update_at(cells, String.to_integer(col), &(!&1))
+      end)
 
-      :cultivar_selection ->
-        {:noreply, socket |> assign(:current_step, :bed_creation)}
-
-      :scheduling ->
-        {:noreply, socket |> assign(:current_step, :cultivar_selection)}
-
-      :complete ->
-        {:noreply, socket |> assign(:current_step, :scheduling)}
-    end
+    IO.inspect(new_grid)
+    {:noreply, assign(socket, grid: new_grid)}
   end
 
   defp page_title(:show), do: "Show Wizard"
@@ -68,7 +56,7 @@ defmodule VisualGardenWeb.WizardLive.Show do
     # Stub page with a button going forward
     ~H"""
     <div class="div">
-      <h3><%= @current_step %></h3>
+      <h3>Setup</h3>
       <.button phx-click="next">
         Next
       </.button>
@@ -76,10 +64,16 @@ defmodule VisualGardenWeb.WizardLive.Show do
     """
   end
 
+  defp convert_grid(grid) do
+    grid
+    |> List.flatten()
+    |> Enum.with_index()
+  end
+
   defp render_bed_creation(assigns) do
     ~H"""
     <div class="div">
-      <h3><%= @current_step %></h3>
+      <h3>Beds</h3>
       <.button phx-click="prev">
         Prev
       </.button>
@@ -87,6 +81,23 @@ defmodule VisualGardenWeb.WizardLive.Show do
       <.button phx-click="next">
         Next
       </.button>
+
+      <div class="square-grid" style={["--length: #{4};", "--width: #{3}"]}>
+        <%= for {val, idx} <- convert_grid(@grid) do %>
+          <label class="square-label" style={["--content: '#{if val, do: "Scaffold", else: ""}"]}>
+            <input
+              class="square-check"
+              type="checkbox"
+              phx-click="toggle_cell"
+              phx-value-col={rem(idx, 4)}
+              phx-value-row={trunc(idx / 4)}
+              id={"square_picker_#{idx}"}
+              value={val}
+            />
+            <span></span>
+          </label>
+        <% end %>
+      </div>
     </div>
     """
   end
@@ -94,7 +105,7 @@ defmodule VisualGardenWeb.WizardLive.Show do
   defp render_cultivar_selection(assigns) do
     ~H"""
     <div class="div">
-      <h3><%= @current_step %></h3>
+      <h3>Cultivars</h3>
       <.button phx-click="prev">
         Prev
       </.button>
@@ -109,7 +120,7 @@ defmodule VisualGardenWeb.WizardLive.Show do
   defp render_scheduling(assigns) do
     ~H"""
     <div class="div">
-      <h3><%= @current_step %></h3>
+      <h3>Scheduling</h3>
       <.button phx-click="prev">
         Prev
       </.button>
@@ -124,7 +135,7 @@ defmodule VisualGardenWeb.WizardLive.Show do
   defp render_complete(assigns) do
     ~H"""
     <div class="div">
-      <h3><%= @current_step %></h3>
+      <h3>Review</h3>
       <.button phx-click="prev">
         Prev
       </.button>
@@ -133,22 +144,22 @@ defmodule VisualGardenWeb.WizardLive.Show do
   end
 
   def render(assigns) do
-    current_step = assigns.current_step
+    current_step = assigns.step
 
     case current_step do
-      :region_selection ->
+      1 ->
         render_region_selection(assigns)
 
-      :bed_creation ->
+      2 ->
         render_bed_creation(assigns)
 
-      :cultivar_selection ->
+      3 ->
         render_cultivar_selection(assigns)
 
-      :scheduling ->
+      4 ->
         render_scheduling(assigns)
 
-      :complete ->
+      5 ->
         render_complete(assigns)
     end
   end

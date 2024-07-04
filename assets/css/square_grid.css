@@ -29,8 +29,7 @@
   line-height: 22px;
 }
 
-.square-label span:before,
-.square-label span:after {
+.square-label span:before {
   content: var(--content, "");
 }
 
@@ -42,7 +41,9 @@
   width: 100%;
   height: 100%;
   /* margin-right: 10px; */
-  display: inline-block;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   vertical-align: top;
 }
 
@@ -52,7 +53,8 @@
 }
 
 .square-label span:after {
-  background: #222021;
+  content: "";
+  background: #22202170;
   /* width: 30px;
   height: 30px; */
   width: 100%;
