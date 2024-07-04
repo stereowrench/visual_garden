@@ -31,7 +31,10 @@ defmodule VisualGardenWeb.Router do
       live "/gardens/:id/show/edit", GardenLive.Show, :edit
       live "/gardens/:id/show/collab", GardenLive.Show, :collab
 
-      live "/gardens/:garden_id/plants/orphaned_nursery/:nursery_entry", PlantLive.Index, :orphaned_nursery
+      live "/gardens/:garden_id/plants/orphaned_nursery/:nursery_entry",
+           PlantLive.Index,
+           :orphaned_nursery
+
       # live "/home/new_garden", HomeLive.Show, :new_garden
       live "/home/:garden_id/:bed_id/transfer", HomeLive.Show, :transfer
     end
@@ -42,6 +45,19 @@ defmodule VisualGardenWeb.Router do
 
     get "/", PageController, :home
     get "/privacy", PageController, :privacy
+
+    get "/assign_temp_user", TempUserController, :assign
+
+    live_session :wizard,
+      on_mount: [
+        {VisualGardenWeb.UserAuth, :mount_current_user},
+        {VisualGardenWeb.TempUser, :mount_temp_user},
+        VisualGardenWeb.HomeBadge,
+        VisualGardenWeb.Nav,
+        Flashy.Hook
+      ] do
+      live "/wizard", WizardLive.Show, :show
+    end
 
     live_session :routed,
       on_mount: [

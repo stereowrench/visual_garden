@@ -1,5 +1,18 @@
 defmodule VisualGarden.Wizard do
+  alias VisualGarden.Wizard.TempUser
   alias VisualGarden.MyDateTime
+  import Ecto.Query, warn: false
+  alias VisualGarden.Repo
+
+  def get_temp_user(id) do
+    Repo.get(TempUser, id)
+  end
+
+  def create_temp_user!() do
+    %TempUser{}
+    |> TempUser.changeset(%{})
+    |> Repo.insert!()
+  end
 
   def convert_from_planner_to_optimizer(planner, rows, cols, filter_after_days \\ nil) do
     mapped =
