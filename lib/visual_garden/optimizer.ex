@@ -42,7 +42,7 @@ defmodule VisualGarden.Optimizer do
     num_columns = 2
 
     slot_duration = 7
-    max_iterations = 3
+    max_iterations = 100
 
     :python.cast(
       pid,

@@ -1,8 +1,9 @@
 import random
 from copy import deepcopy
 import sys
-# import erlport.erlang
-# from erlport.erlterms import Atom
+if __name__ != '__main__':
+    import erlport.erlang
+    from erlport.erlterms import Atom
 import json
 
 elixir_pid = None
