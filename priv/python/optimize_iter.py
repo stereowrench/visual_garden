@@ -132,20 +132,24 @@ def is_valid_placement(plants, solution, plant_name, i, j, time_slot, slot_durat
             if not all_cells_valid:
                 break  # Try the other orientation
 
-        # spacing = plants[plant_name].get('spacing', 0)
-        # if spacing > 0:
-        #     for other_i in range(max(0, i - spacing), i + footprint_length + spacing):
-        #         for other_j in range(max(0, j - spacing), j + footprint_width + spacing):
-        #             # If a plant of the same type is found within the spacing range...
-        #             if (
-        #                 0 <= other_i < len(solution) and
-        #                 0 <= other_j < len(solution[0]) and
-        #                 solution[other_i][other_j] is not None and
-        #                 plants[solution[other_i][other_j][0]].get('spacing', 0) > 0
-        #             ):
-        #                 # ...check if it's too close in BOTH dimensions
-        #                 if abs(i - other_i) < spacing and abs(j - other_j) < spacing:
-        #                     all_cells_valid = False  # Spacing requirement violated (too close in both directions)
+        requires_separation = plants[plant_name].get('separation', False)
+        if requires_separation:
+            for other_i in range(len(solution)):
+                for other_j in range(len(solution[0])):
+                    # If a plant of the same type is found...
+                    if (
+                        solution[other_i][other_j] is not None and
+                        plants[solution[other_i][other_j][0]].get('separation', False) == True
+                    ):
+                        # ...check if it's too close in BOTH dimensions
+                        if abs(i - other_i) <= 1 and abs(j - other_j) <= 1:
+                            all_cells_valid = False
+                            break
+                if not all_cells_valid:
+                    break
+            if not all_cells_valid:
+                continue
+
 
         # If all checks pass for this orientation, return it
         if all_cells_valid:
@@ -427,9 +431,9 @@ import unittest
 class TestIsValidPlacement(unittest.TestCase):
     def setUp(self):
         self.plants = {
-            'tomato': {'footprint': (1, 1), 'staggered': True, 'spacing': 1, 'planting_types': ['seed']},
-            'pepper': {'footprint': (1, 2), 'staggered': False, 'spacing': 0, 'planting_types': ['transplant']},
-            'basil': {'footprint': (1, 1), 'staggered': False, 'spacing': 0, 'planting_types': ['seed']},
+            'tomato': {'footprint': (1, 1), 'staggered': True, 'planting_types': ['seed']},
+            'pepper': {'footprint': (1, 2), 'staggered': False, 'planting_types': ['transplant']},
+            'basil': {'footprint': (1, 1), 'staggered': False, 'planting_types': ['seed']},
         }
 
         self.time_slots = set()
@@ -492,7 +496,6 @@ class TestIsValidPlacement(unittest.TestCase):
         self.time_slots.add((0, "seed"))
         self.assertIsNone(is_valid_placement(self.plants, grid, 'tomato', 0, 0, 0, self.slot_duration, self.planting_windows, self.time_slots, 'seed'))
 
-    # ... Add more test cases for different spacing requirements and plant types if needed
     def test_valid_staggered_planting(self):
         """Test valid staggered planting scenarios."""
 
@@ -541,6 +544,47 @@ class TestIsValidPlacement(unittest.TestCase):
                 is_valid_placement(self.plants, grid, plant_name, i, j, t, slot_duration, planting_windows_staggered, time_slots, planting_type),
                 f"Failed for tomato at ({i}, {j}) in time slot {t} with planting type {planting_type}"
             )
+
+    def test_separation_planting(self):
+        plants = {
+            'tomato': {'footprint': (1, 1), 'quantity': 2, 'staggered': True, 'planting_types': ['seed']},
+            'corn1': {'footprint': (1, 1), 'quantity': 5, 'staggered': False, 'separation': True, 'planting_types': ['seed']},
+            'corn2': {'footprint': (1, 1), 'quantity': 5, 'staggered': False, 'separation': True, 'planting_types': ['seed']},
+        }
+
+        slot_duration = 7  # Days per time slot (approximately a month)
+
+        planting_windows = {
+            'tomato': [[  # Seed planting windows for tomatoes (multiple to allow staggering)
+                [[(1, 60), (244, 334)], [(1, 60), (244, 334)], [(1, 60), (244, 334)]],  # Row 0
+                [[(1, 60), (244, 334)], [(1, 60), (244, 334)], [(1, 60), (244, 334)]],  # Row 1
+                [[(1, 60), (244, 334)], [(1, 60), (244, 334)], [(1, 60), (244, 334)]],  # Row 2
+            ]],
+
+            'corn1': [[  # Seed planting windows for corn1 (single, but staggered planting will be enforced by the algorithm)
+                [[(61, 120)], [(61, 120)], [(61, 120)]],  # Row 0
+                [[(61, 120)], [(61, 120)], [(61, 120)]],  # Row 1
+                [[(61, 120)], [(61, 120)], [(61, 120)]],  # Row 2
+            ]],
+
+            'corn2': [[  # Seed planting windows for corn2 (single, but staggered planting will be enforced by the algorithm)
+                [[(61, 120)], [(61, 120)], [(61, 120)]],  # Row 0
+                [[(61, 120)], [(61, 120)], [(61, 120)]],  # Row 1
+                [[(61, 120)], [(61, 120)], [(61, 120)]],  # Row 2
+            ]],
+        }
+
+        grid = [[None for _ in range(3)] for _ in range(3)]
+
+        time_slots = set()
+        # Test valid placements (corn types separated)
+
+        grid[0][0] = ('corn1', (1,1), 72 // slot_duration, 'seed')
+        self.assertIsNone(is_valid_placement(plants, grid, 'corn1', 0, 1,  72 // slot_duration, slot_duration, planting_windows, time_slots, 'seed'), f"Failed valid placement for corn1 at ({0}, {1})")
+        self.assertIsNone(is_valid_placement(plants, grid, 'corn2', 0, 1,  72 // slot_duration, slot_duration, planting_windows, time_slots, 'seed'), f"Failed valid placement for corn2 at ({0}, {1})")
+        self.assertIsNone(is_valid_placement(plants, grid, 'corn1', 1, 0,  72 // slot_duration, slot_duration, planting_windows, time_slots, 'seed'), f"Failed valid placement for corn1 at ({1}, {0})")
+        self.assertIsNone(is_valid_placement(plants, grid, 'corn1', 1, 1,  72 // slot_duration, slot_duration, planting_windows, time_slots, 'seed'), f"Failed valid placement for corn1 at ({1}, {1})")
+        self.assertIsNotNone(is_valid_placement(plants, grid, 'corn1', 1, 2,  72 // slot_duration, slot_duration, planting_windows, time_slots, 'seed'), f"Failed valid placement for corn1 at ({1}, {2})")
 
 if __name__ == '__main__':
     unittest.main()
