@@ -132,20 +132,6 @@ def is_valid_placement(plants, solution, plant_name, i, j, time_slot, slot_durat
             if not all_cells_valid:
                 break  # Try the other orientation
 
-        # Check if staggered planting is violated
-        if staggered and all_cells_valid:
-            for x in range(orientation[0]):
-                for y in range(orientation[1]):
-                    # Make sure we're checking the correct plant_type_index within placed_time_slots
-                    if (time_slot, planting_type) in placed_time_slots:
-                        all_cells_valid = False  # Set flag to False
-                        break  # Exit the inner 'y' loop
-                if not all_cells_valid:
-                    break  # Exit the outer 'x' loop
-
-            if not all_cells_valid:
-                continue
-
         # spacing = plants[plant_name].get('spacing', 0)
         # if spacing > 0:
         #     for other_i in range(max(0, i - spacing), i + footprint_length + spacing):
