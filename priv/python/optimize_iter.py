@@ -636,6 +636,7 @@ class TestIsValidPlacement(unittest.TestCase):
         self.assertIsNone(is_valid_placement(plants, grid, 'corn1', 1, 0,  72 // slot_duration, slot_duration, planting_windows, time_slots, 'seed'), f"Failed valid placement for corn1 at ({1}, {0})")
         self.assertIsNone(is_valid_placement(plants, grid, 'corn1', 1, 1,  72 // slot_duration, slot_duration, planting_windows, time_slots, 'seed'), f"Failed valid placement for corn1 at ({1}, {1})")
         self.assertIsNotNone(is_valid_placement(plants, grid, 'corn1', 1, 2,  72 // slot_duration, slot_duration, planting_windows, time_slots, 'seed'), f"Failed valid placement for corn1 at ({1}, {2})")
+        self.assertIsNotNone(is_valid_placement(plants, grid, 'corn1', 0, 2,  72 // slot_duration, slot_duration, planting_windows, time_slots, 'seed'), f"Failed valid placement for corn1 at ({1}, {2})")
 if __name__ == '__main__':
     unittest.main()
 
