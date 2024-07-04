@@ -98,6 +98,63 @@ def unplaced_plants_fn(grid, plants):
 
     return filled_grid, unplaced_plants
 
+def adjacent_cells_occupied_in_one_dimension(plants, grid, i, j):
+    """Checks if adjacent cells are occupied only along one dimension (horizontal, vertical, or diagonal)."""
+
+    rows = len(grid)
+    cols = len(grid[0])
+
+    def grid_occupied(cell):
+        if cell is None:
+            return False
+
+        name, _, _, _ = cell
+        return plants[name].get('separation', False)
+
+    # Helper function to check if a cell is valid and occupied
+    def is_valid_and_occupied(x, y):
+        return 0 <= x < rows and 0 <= y < cols and grid_occupied(grid[x][y])
+
+    # Check horizontal adjacency
+    has_horizontal_left = is_valid_and_occupied(i, j - 1)
+    has_horizontal_right = is_valid_and_occupied(i, j + 1)
+    if has_horizontal_left or has_horizontal_right:
+        # Check for non-horizontal neighbors
+        has_non_horizontal = (
+            is_valid_and_occupied(i - 1, j)
+            or is_valid_and_occupied(i + 1, j)
+            or is_valid_and_occupied(i - 1, j - 1)
+            or is_valid_and_occupied(i - 1, j + 1)
+            or is_valid_and_occupied(i + 1, j - 1)
+            or is_valid_and_occupied(i + 1, j + 1)
+        )
+        return has_non_horizontal
+
+    # Check vertical adjacency
+    has_vertical_up = is_valid_and_occupied(i - 1, j)
+    has_vertical_down = is_valid_and_occupied(i + 1, j)
+    if has_vertical_up or has_vertical_down:
+        # Check for non-vertical neighbors
+        has_non_vertical = (
+            is_valid_and_occupied(i, j - 1)
+            or is_valid_and_occupied(i, j + 1)
+            or is_valid_and_occupied(i - 1, j - 1)
+            or is_valid_and_occupied(i - 1, j + 1)
+            or is_valid_and_occupied(i + 1, j - 1)
+            or is_valid_and_occupied(i + 1, j + 1)
+        )
+        return has_non_vertical
+
+    # Check diagonal adjacency (both directions)
+    has_diagonal1 = is_valid_and_occupied(i - 1, j - 1) or is_valid_and_occupied(i + 1, j + 1)
+    has_diagonal2 = is_valid_and_occupied(i - 1, j + 1) or is_valid_and_occupied(i + 1, j - 1)
+    if has_diagonal1:
+        return (has_vertical_up or has_vertical_down or has_horizontal_left or has_horizontal_right or has_diagonal2)
+    if has_diagonal2:
+        return (has_vertical_up or has_vertical_down or has_horizontal_left or has_horizontal_right or has_diagonal1)
+
+    return False  # No adjacent occupied cells
+
 def is_valid_placement(plants, solution, plant_name, i, j, time_slot, slot_duration, planting_windows, placed_time_slots, planting_type):
     """
     Checks if a plant can be placed at the given coordinates, respecting footprints and planting windows.
@@ -135,22 +192,8 @@ def is_valid_placement(plants, solution, plant_name, i, j, time_slot, slot_durat
 
         requires_separation = plants[plant_name].get('separation', False)
         if requires_separation:
-            for other_i in range(len(solution)):
-                for other_j in range(len(solution[0])):
-                    # If a plant of the same type is found...
-                    if (
-                        solution[other_i][other_j] is not None and
-                        plants[solution[other_i][other_j][0]].get('separation', False) == True
-                    ):
-                        # ...check if it's too close in BOTH dimensions
-                        if abs(i - other_i) <= 1 and abs(j - other_j) <= 1:
-                            all_cells_valid = False
-                            break
-                if not all_cells_valid:
-                    break
-            if not all_cells_valid:
-                continue
-
+            if adjacent_cells_occupied_in_one_dimension(plants, solution, i, j):
+                continue  # Try the other orientation
 
         # If all checks pass for this orientation, return it
         if all_cells_valid:
@@ -581,12 +624,18 @@ class TestIsValidPlacement(unittest.TestCase):
         # Test valid placements (corn types separated)
 
         grid[0][0] = ('corn1', (1,1), 72 // slot_duration, 'seed')
+        self.assertIsNotNone(is_valid_placement(plants, grid, 'corn1', 0, 1,  72 // slot_duration, slot_duration, planting_windows, time_slots, 'seed'), f"Failed valid placement for corn1 at ({0}, {1})")
+        self.assertIsNotNone(is_valid_placement(plants, grid, 'corn2', 0, 1,  72 // slot_duration, slot_duration, planting_windows, time_slots, 'seed'), f"Failed valid placement for corn2 at ({0}, {1})")
+        self.assertIsNotNone(is_valid_placement(plants, grid, 'corn1', 1, 0,  72 // slot_duration, slot_duration, planting_windows, time_slots, 'seed'), f"Failed valid placement for corn1 at ({1}, {0})")
+        self.assertIsNotNone(is_valid_placement(plants, grid, 'corn1', 1, 1,  72 // slot_duration, slot_duration, planting_windows, time_slots, 'seed'), f"Failed valid placement for corn1 at ({1}, {1})")
+        self.assertIsNotNone(is_valid_placement(plants, grid, 'corn1', 1, 2,  72 // slot_duration, slot_duration, planting_windows, time_slots, 'seed'), f"Failed valid placement for corn1 at ({1}, {2})")
+        grid[0][1] = ('corn2', (1,1), 72 // slot_duration, 'seed')
+
         self.assertIsNone(is_valid_placement(plants, grid, 'corn1', 0, 1,  72 // slot_duration, slot_duration, planting_windows, time_slots, 'seed'), f"Failed valid placement for corn1 at ({0}, {1})")
         self.assertIsNone(is_valid_placement(plants, grid, 'corn2', 0, 1,  72 // slot_duration, slot_duration, planting_windows, time_slots, 'seed'), f"Failed valid placement for corn2 at ({0}, {1})")
         self.assertIsNone(is_valid_placement(plants, grid, 'corn1', 1, 0,  72 // slot_duration, slot_duration, planting_windows, time_slots, 'seed'), f"Failed valid placement for corn1 at ({1}, {0})")
         self.assertIsNone(is_valid_placement(plants, grid, 'corn1', 1, 1,  72 // slot_duration, slot_duration, planting_windows, time_slots, 'seed'), f"Failed valid placement for corn1 at ({1}, {1})")
         self.assertIsNotNone(is_valid_placement(plants, grid, 'corn1', 1, 2,  72 // slot_duration, slot_duration, planting_windows, time_slots, 'seed'), f"Failed valid placement for corn1 at ({1}, {2})")
-
 if __name__ == '__main__':
     unittest.main()
 
