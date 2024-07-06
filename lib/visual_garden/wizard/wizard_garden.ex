@@ -1,4 +1,5 @@
 defmodule VisualGarden.Wizard.WizardGarden do
+  alias VisualGarden.Gardens.Garden
   alias VisualGarden.Wizard.WizardBed
   alias VisualGarden.Wizard.TempUser
   alias VisualGarden.Accounts.User
@@ -9,13 +10,19 @@ defmodule VisualGarden.Wizard.WizardGarden do
     belongs_to :user, User
     belongs_to :temp_user, TempUser
     has_many :wizard_beds, WizardBed
+
+    field :tz, :string
+    belongs_to :region, VisualGarden.Library.Region
+
+    belongs_to :garden, Garden
+
     timestamps(type: :utc_datetime)
   end
 
   @doc false
   def changeset(garden, attrs) do
     garden
-    |> cast(attrs, [:user_id, :temp_user_id])
+    |> cast(attrs, [:user_id, :temp_user_id, :tz, :region_id, :garden_id])
     |> validate_required([])
     |> validate_user_info()
   end

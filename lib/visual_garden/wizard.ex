@@ -1,4 +1,6 @@
 defmodule VisualGarden.Wizard do
+  alias VisualGarden.Authorization.UnauthorizedError
+  alias VisualGarden.Wizard.WizardGarden
   alias VisualGarden.Wizard.TempUser
   alias VisualGarden.MyDateTime
   import Ecto.Query, warn: false
@@ -12,6 +14,50 @@ defmodule VisualGarden.Wizard do
     %TempUser{}
     |> TempUser.changeset(%{})
     |> Repo.insert!()
+  end
+
+  def delete_wizard_garden!(wg) do
+    Repo.delete!(wg)
+  end
+
+  def get_wizard_garden!(id, {user, temp_user}) do
+    g = Repo.get!(WizardGarden, id)
+
+    if (user && user.id == g.user_id) || (temp_user && temp_user.id == g.temp_user_id) do
+      g |> Repo.preload([:garden])
+    else
+      raise UnauthorizedError
+    end
+  end
+
+  def create_wizard_garden_from_garden!(garden, {user, temp_user}) do
+    attrs =
+      if user do
+        %{user_id: user.id}
+      else
+        %{temp_user_id: temp_user.id}
+      end
+
+    attrs = Map.merge(attrs, %{garden_id: garden.id, tz: garden.tz, region_id: garden.region_id})
+
+    %WizardGarden{}
+    |> WizardGarden.changeset(attrs)
+    |> Repo.insert!()
+    |> Repo.preload([:garden])
+  end
+
+  def list_wizard_gardens({nil, temp_user}) do
+    Repo.all(from g in WizardGarden, where: g.temp_user_id == ^temp_user.id)
+  end
+
+  def list_wizard_gardens({user, nil}) do
+    Repo.all(from g in WizardGarden, where: g.user_id == ^user.id)
+  end
+
+  def list_wizard_gardens({user, temp_user}) do
+    Repo.all(
+      from g in WizardGarden, where: g.user_id == ^user.id or g.temp_user_id == ^temp_user.id
+    )
   end
 
   def convert_from_planner_to_optimizer(planner, rows, cols, filter_after_days \\ nil) do
@@ -43,7 +89,7 @@ defmodule VisualGarden.Wizard do
             nil
           else
             if entry.e > filter_after_days do
-              %{ entry | e: filter_after_days }
+              %{entry | e: filter_after_days}
             else
               entry
             end
@@ -52,7 +98,7 @@ defmodule VisualGarden.Wizard do
           entry
         end
       end)
-      |> Enum.reject(& is_nil(&1))
+      |> Enum.reject(&is_nil(&1))
       |> Enum.group_by(& &1.seed)
       |> Enum.map(fn {seed_id, list} ->
         per_seed =

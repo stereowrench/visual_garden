@@ -1,4 +1,6 @@
 defmodule VisualGarden.Wizard.WizardBed do
+  alias VisualGarden.Wizard.WizardPlannerEntry
+  alias VisualGarden.Gardens.Product
   alias VisualGarden.Wizard.WizardGarden
   alias VisualGarden.Wizard.Scaffold
   use Ecto.Schema
@@ -11,6 +13,10 @@ defmodule VisualGarden.Wizard.WizardBed do
 
     has_many :scaffolds, WizardScaffold
     belongs_to :wizard_garden, WizardGarden
+
+    has_many :planner_entries, WizardPlannerEntry
+
+    belongs_to :bed, Product
     timestamps(type: :utc_datetime)
   end
 
