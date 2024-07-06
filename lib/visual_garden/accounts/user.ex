@@ -1,4 +1,10 @@
 defmodule VisualGarden.Accounts.User do
+  @moduledoc """
+    VisualGarden User
+  """
+  alias VisualGarden.Gardens.GardenUser
+  alias VisualGarden.Gardens.Garden
+  alias VisualGarden.Wizard.WizardGarden
   use Ecto.Schema
   import Ecto.Changeset
 
@@ -8,6 +14,13 @@ defmodule VisualGarden.Accounts.User do
     field :hashed_password, :string, redact: true
     field :confirmed_at, :naive_datetime
     field :role, Ecto.Enum, values: [:admin, :user], default: :user
+
+    has_many :wizard_gardens, WizardGarden
+    has_many :owned_gardens, Garden, foreign_key: :owner_id
+
+    many_to_many :member_gardens, Garden,
+      join_through: GardenUser,
+      join_keys: [user_id: :id, garden_id: :id]
 
     timestamps(type: :utc_datetime)
   end

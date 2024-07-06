@@ -22,22 +22,44 @@ defmodule VisualGardenWeb.WizardLive.Show do
     {:noreply,
      socket
      |> assign(step: String.to_integer(params["step"] || "1"))
+     |> assign(:gardens, gardens_for_socket(socket))
+     |> assign(:garden, nil)
+     |> assign(:params, [])
+     |> assign(:new_garden, false)
      |> assign(:page_title, page_title(socket.assigns.live_action))}
+  end
+
+  def gardens_for_socket(socket) do
+    if user = socket.assigns.current_user do
+      Gardens.list_gardens(user)
+    else
+      []
+    end
+  end
+
+  defp merge_state(socket, new_params) do
+    new = Keyword.merge(socket.assigns.params, new_params)
+    push_patch(socket, to: ~p"/wizard?#{new}")
+  end
+
+  def add_param(socket, new_params) do
+    assign(socket, :params, Keyword.merge(socket.assigns.params, new_params))
   end
 
   @impl true
   def handle_event("prev", _, socket) do
     new_step = max(1, socket.assigns.step - 1)
-    {:noreply, push_patch(socket, to: ~p"/wizard?#{[step: new_step]}")}
+    {:noreply, merge_state(socket, step: new_step)}
   end
 
   @impl true
   def handle_event("next", _, socket) do
     # Assuming 4 steps in total
     new_step = min(4, socket.assigns.step + 1)
-    {:noreply, push_patch(socket, to: ~p"/wizard?#{[step: new_step]}")}
+    {:noreply, merge_state(socket, step: new_step)}
   end
 
+  @impl true
   def handle_event("toggle_cell", %{"row" => row, "col" => col}, socket) do
     grid = socket.assigns.grid
 
@@ -46,8 +68,26 @@ defmodule VisualGardenWeb.WizardLive.Show do
         List.update_at(cells, String.to_integer(col), &(!&1))
       end)
 
-    IO.inspect(new_grid)
-    {:noreply, assign(socket, grid: new_grid)}
+    scaffolds = []
+    {:noreply, assign(socket, grid: new_grid) |> add_param(scaffolds: scaffolds)}
+  end
+
+  def handle_event("select_garden", %{"garden" => garden_id}, socket) do
+    user = socket.assigns.current_user
+    Authorization.authorize_garden_modify(garden_id, user)
+    {:noreply, socket |> assign(:garden, Gardens.get_garden!(garden_id))}
+  end
+
+  def handle_event("new_garden", _, socket) do
+    {:noreply, assign(socket, :new_garden, true)}
+  end
+
+  def handle_event("cancel", _, socket) do
+    {:noreply, assign(socket, :new_garden, false)}
+  end
+
+  def handle_event("clear_garden", _, socket) do
+    {:noreply, assign(socket, :garden, nil)}
   end
 
   defp page_title(:show), do: "Show Wizard"
@@ -55,11 +95,32 @@ defmodule VisualGardenWeb.WizardLive.Show do
   defp render_region_selection(assigns) do
     # Stub page with a button going forward
     ~H"""
-    <div class="div">
-      <h3>Setup</h3>
+    <div class="prose">
+      <h2>Setup</h2>
       <.button phx-click="next">
         Next
       </.button>
+      <%= if @new_garden do %>
+        <h3>Starting a new garden</h3>
+        <.button phx-click="cancel">Cancel</.button>
+      <% else %>
+        <%= if @garden do %>
+          <div class="prose">
+            Wizard for garden: <%= @garden.name %>
+          </div>
+          <.button phx-click="clear_garden">Cancel</.button>
+        <% else %>
+          <h3>Start new</h3>
+          <.button phx-click="new_garden">New Garden</.button>
+          <div class="separator">or</div>
+          <h3>Choose a Garden</h3>
+          <%= for garden <- @gardens do %>
+            <.button phx-click="select_garden" phx-value-garden={garden.id}>
+              <%= garden.name %>
+            </.button>
+          <% end %>
+        <% end %>
+      <% end %>
     </div>
     """
   end
@@ -72,8 +133,8 @@ defmodule VisualGardenWeb.WizardLive.Show do
 
   defp render_bed_creation(assigns) do
     ~H"""
-    <div class="div">
-      <h3>Beds</h3>
+    <div class="prose">
+      <h2>Beds</h2>
       <.button phx-click="prev">
         Prev
       </.button>
@@ -104,8 +165,8 @@ defmodule VisualGardenWeb.WizardLive.Show do
 
   defp render_cultivar_selection(assigns) do
     ~H"""
-    <div class="div">
-      <h3>Cultivars</h3>
+    <div class="prose">
+      <h2>Cultivars</h2>
       <.button phx-click="prev">
         Prev
       </.button>
@@ -119,8 +180,8 @@ defmodule VisualGardenWeb.WizardLive.Show do
 
   defp render_scheduling(assigns) do
     ~H"""
-    <div class="div">
-      <h3>Scheduling</h3>
+    <div class="prose">
+      <h2>Scheduling</h2>
       <.button phx-click="prev">
         Prev
       </.button>
@@ -134,8 +195,8 @@ defmodule VisualGardenWeb.WizardLive.Show do
 
   defp render_complete(assigns) do
     ~H"""
-    <div class="div">
-      <h3>Review</h3>
+    <div class="prose">
+      <h2>Review</h2>
       <.button phx-click="prev">
         Prev
       </.button>

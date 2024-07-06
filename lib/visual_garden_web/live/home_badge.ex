@@ -14,6 +14,11 @@ defmodule VisualGardenWeb.HomeBadge do
     {:cont, socket}
   end
 
+  # TODO delme
+  def badge_socket(socket) do
+    socket |> assign(:home_badge, 0) |> assign(:badge_map, %{})
+  end
+
   def badge_socket(socket) do
     todo_items =
       if socket.assigns.current_user do

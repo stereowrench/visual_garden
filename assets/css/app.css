@@ -10,119 +10,140 @@
 /* This file is for your main application CSS */
 
 @layer base {
-  .border {
-    /* border-width: 1px; */
-    /* border: none; */
-  }
+    .border {
+        /* border-width: 1px; */
+        /* border: none; */
+    }
 
-  .border-input {
-    /* border-color: hsl(var(--input)); */
-    /* border-color: hsl(214.3 31.8% 91.4%); */
-    /* border-color: rgb(229, 231, 235); */
-  }
+    .border-input {
+        /* border-color: hsl(var(--input)); */
+        /* border-color: hsl(214.3 31.8% 91.4%); */
+        /* border-color: rgb(229, 231, 235); */
+    }
 
-  .bg-background {
-    background-color: hsl(var(--background));
-  }
+    .bg-background {
+        background-color: hsl(var(--background));
+    }
 
-  .bg-accent {
-    background-color: hsl(var(--accent));
-  }
+    .bg-accent {
+        background-color: hsl(var(--accent));
+    }
 
-  .text-accent-foreground {
-    color: hsl(var(--accent-foreground));
-  }
+    .text-accent-foreground {
+        color: hsl(var(--accent-foreground));
+    }
 }
 
 @layer components {
-  .split-button {
-    @apply border border-input bg-background;
-    @apply h-10 px-4 py-2;
-    @apply hover:bg-accent hover:text-accent-foreground;
-    @apply ring-inset ring-gray-300 ring-1;
-    @apply font-semibold shadow-sm text-sm;
-    --radius: 0.5rem;
-    /* border-radius: calc(var(--radius) - 2px); */
-    border-radius: 0.375rem;
-  }
+    .split-button {
+        @apply border border-input bg-background;
+        @apply h-10 px-4 py-2;
+        @apply hover:bg-accent hover:text-accent-foreground;
+        @apply ring-inset ring-gray-300 ring-1;
+        @apply font-semibold shadow-sm text-sm;
+        --radius: 0.5rem;
+        /* border-radius: calc(var(--radius) - 2px); */
+        border-radius: 0.375rem;
+    }
 
-  .border-r-none {
-    border-top-right-radius: 0;
-    border-bottom-right-radius: 0;
-  }
+    .border-r-none {
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+    }
 
-  .border-l-none {
-    border-top-left-radius: 0;
-    border-bottom-left-radius: 0;
-  }
+    .border-l-none {
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+    }
 }
 
 .link {
-  @apply text-blue-600 visited:text-purple-600 hover:underline;
+    @apply text-blue-600 visited:text-purple-600 hover:underline;
 }
 
 .minor-button {
-  @apply inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50;
+    @apply inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50;
 }
 
 .major-button {
-  @apply ml-3 inline-flex items-center rounded-md bg-mojo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-mojo-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600;
+    @apply ml-3 inline-flex items-center rounded-md bg-mojo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-mojo-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600;
 }
 
 button[disabled] {
-  @apply disabled:bg-mojo-400;
+    @apply disabled:bg-mojo-400;
 }
 
 .crop-span {
-  fill: rgb(89, 107, 247);
+    fill: rgb(89, 107, 247);
 }
 
 .crop-span-end {
-  fill: rgba(89, 107, 247, 0.549);
+    fill: rgba(89, 107, 247, 0.549);
 }
 
 .crop-span:hover {
-  filter: grayscale(75%);
+    filter: grayscale(75%);
 }
 
 .crop-span text {
-  fill: black;
+    fill: black;
 }
 
 .new-crop-span {
-  fill: white;
+    fill: white;
 }
 
 .new-crop-span:hover {
-  fill: gray;
+    fill: gray;
 }
 
 dl {
-  @apply grid grid-cols-1 sm:grid-cols-2;
+    @apply grid grid-cols-1 sm:grid-cols-2;
 }
 
 dt {
-  @apply text-sm font-medium leading-6 text-gray-900;
+    @apply text-sm font-medium leading-6 text-gray-900;
 }
 
 dd {
-  @apply mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0;
+    @apply mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0;
 }
 
 .dldiv {
-  @apply px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6
+    @apply px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6;
 }
 
 .pc-accordion-item {
-  /* --tw-border-opacity: 1; */
-  /* --tw-bg-opacity: 1; */
-  /* border: solid; */
+    /* --tw-border-opacity: 1; */
+    /* --tw-bg-opacity: 1; */
+    /* border: solid; */
 }
 
 .anchor {
-  scroll-margin-top: 56px;
+    scroll-margin-top: 56px;
 }
 
 .home-badge {
-  @apply lg:ml-72;
+    @apply lg:ml-72;
+}
+
+.separator {
+    display: flex;
+    align-items: center;
+    text-align: center;
+}
+
+.separator::before,
+.separator::after {
+    content: "";
+    flex: 1;
+    border-bottom: 1px solid #000;
+}
+
+.separator:not(:empty)::before {
+    margin-right: 0.25em;
+}
+
+.separator:not(:empty)::after {
+    margin-left: 0.25em;
 }

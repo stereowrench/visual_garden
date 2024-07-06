@@ -1,4 +1,5 @@
 defmodule VisualGarden.Gardens.Seed do
+  alias VisualGarden.Wizard.WizardGarden
   alias VisualGarden.Library
   use Ecto.Schema
   import Ecto.Changeset
@@ -9,6 +10,7 @@ defmodule VisualGarden.Gardens.Seed do
     field :type, Ecto.Enum, values: [:seed, :set, :slip, :transplant, :seed_potato]
     field :any_season, :boolean, default: false
     belongs_to :garden, VisualGarden.Gardens.Garden
+    belongs_to :wizard_garden, WizardGarden
     belongs_to :species, VisualGarden.Library.Species
     belongs_to :harvest_species, VisualGarden.Library.Species
     belongs_to :library_seed, VisualGarden.Library.LibrarySeed
@@ -41,6 +43,27 @@ defmodule VisualGarden.Gardens.Seed do
     ])
     |> validate_number(:days_to_maturation, greater_than: 0)
     |> adjust_species()
+    |> validate_garden()
+  end
+
+  def validate_garden(changeset) do
+    if get_field(changeset, :garden_id) do
+      if get_field(changeset, :wizard_garden_id) do
+        add_error(changeset, :wizard_garden_id, "Cannot be set with :garden_id")
+      else
+        changeset
+      end
+    else
+      if get_field(changeset, :wizard_garden_id) do
+        changeset
+      else
+        add_error(
+          changeset,
+          :wizard_garden_id,
+          "Either :garden_id or :wizard_garden_id must be set"
+        )
+      end
+    end
   end
 
   defp adjust_species(cs) do

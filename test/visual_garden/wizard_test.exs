@@ -1,4 +1,4 @@
-defmodule VisualGarden.AccountsTest do
+defmodule VisualGarden.WizardTest do
   alias VisualGarden.Planner
   alias VisualGarden.GardensFixtures
   alias VisualGarden.LibraryFixtures
@@ -99,7 +99,7 @@ defmodule VisualGarden.AccountsTest do
              # row1
              [
                # col1
-               [{_,_}, {_,_}],
+               [{_, _}, {_, _}],
                # col 2
                []
              ],
@@ -110,15 +110,15 @@ defmodule VisualGarden.AccountsTest do
                # col 2
                []
              ]
-    ] = seeded
+           ] = seeded
 
     assert [
              # row1
              [
                # col1
-               [{_,_}],
+               [{_, _}],
                # col 2
-               [{_,_}]
+               [{_, _}]
              ],
              # row 2
              [
@@ -127,7 +127,7 @@ defmodule VisualGarden.AccountsTest do
                # col 2
                []
              ]
-    ] = nursed
+           ] = nursed
 
     assert %{
              1 => [
@@ -137,14 +137,16 @@ defmodule VisualGarden.AccountsTest do
                  [
                    # col 0
                    [
-                     {_, _}, {_,_}
+                     {_, _},
+                     {_, _}
                    ],
                    # col 1
-                   [
-                   ]
+                   []
                  ],
-                 [# row 1
-                  [],[]
+                 # row 1
+                 [
+                   [],
+                   []
                  ]
                ],
                # nursed
@@ -153,17 +155,17 @@ defmodule VisualGarden.AccountsTest do
                  [
                    # col0
                    [
-                     {_, _},
+                     {_, _}
                    ],
                    # col 1
                    [
                      {_, _}
                    ]
                  ],
-                [
-                  [],
-                  []
-                ]
+                 [
+                   [],
+                   []
+                 ]
                ]
              ]
            } = windows

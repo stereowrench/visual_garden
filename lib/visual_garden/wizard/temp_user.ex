@@ -1,10 +1,10 @@
 defmodule VisualGarden.Wizard.TempUser do
+  alias VisualGarden.Wizard.WizardGarden
   use Ecto.Schema
   import Ecto.Changeset
 
   schema "temp_users" do
-
-
+    has_many :wizard_gardens, WizardGarden
     timestamps(type: :utc_datetime)
   end
 
