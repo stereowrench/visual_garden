@@ -2,7 +2,7 @@ defmodule VisualGarden.Wizard.WizardPlannerEntry do
   use Ecto.Schema
   import Ecto.Changeset
 
-  schema "wizard_planner_entry" do
+  schema "wizard_planner_entries" do
     field :start_plant_date, :date
     field :end_plant_date, :date
     field :nursery_start, :date
