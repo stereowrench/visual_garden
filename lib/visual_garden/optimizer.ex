@@ -7,36 +7,38 @@ defmodule VisualGarden.Optimizer do
     # :python.cast(pid, {:register, self()})
 
     Task.async(fn ->
-      Process.sleep(5_000)
+      Process.sleep(60_000)
       :python.stop(pid)
     end)
 
-    plants = %{
-      tomato: %{
-        footprint: [1, 1],
-        quantity: 4,
-        staggered: false,
-        planting_types: ["seed", "transplant"],
-        spacing: 1
+    plants =
+      %{
+        tomato: %{
+          footprint: [1, 1],
+          quantity: 4,
+          staggered: false,
+          planting_types: ["seed", "transplant"],
+          spacing: 1
+        }
       }
-    }
-    |> Jason.encode!()
+      |> Jason.encode!()
 
-    planting_windows = %{
-      tomato: [
-        # seed
-        [
-          [[[1, 30]], [[1, 30]]],
-          [[[1, 30]], [[1, 30]]]
-        ],
-        # transplant
-        [
-          [[[5, 35]], [[5, 35]]],
-          [[[5, 35]], [[5, 35]]]
+    planting_windows =
+      %{
+        tomato: [
+          # seed
+          [
+            [[[1, 30]], [[1, 30]]],
+            [[[1, 30]], [[1, 30]]]
+          ],
+          # transplant
+          [
+            [[[5, 35]], [[5, 35]]],
+            [[[5, 35]], [[5, 35]]]
+          ]
         ]
-      ]
-    }
-    |> Jason.encode!()
+      }
+      |> Jason.encode!()
 
     num_rows = 2
     num_columns = 2

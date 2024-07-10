@@ -104,20 +104,24 @@ defmodule VisualGarden.Planner do
         %{start_plant_date: spd, end_plant_date: epd, days_to_refuse: dtr} = foo ->
           ed = Timex.shift(epd, days: dtr)
 
-          if Timex.between?(start_date, spd, ed) do
-            []
+          if is_nil(dtr) do
+            Timex.shift(start_date, years: 5)
           else
-            if Timex.before?(ed, start_date) do
+            if Timex.between?(start_date, spd, ed) do
               []
             else
-              if start_date == ed do
-                if Timex.before?(spd, start_date) do
-                  []
+              if Timex.before?(ed, start_date) do
+                []
+              else
+                if start_date == ed do
+                  if Timex.before?(spd, start_date) do
+                    []
+                  else
+                    spd
+                  end
                 else
                   spd
                 end
-              else
-                spd
               end
             end
           end

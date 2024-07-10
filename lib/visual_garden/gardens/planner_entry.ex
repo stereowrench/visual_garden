@@ -46,7 +46,6 @@ defmodule VisualGarden.Gardens.PlannerEntry do
       :start_plant_date,
       :end_plant_date,
       :days_to_maturity,
-      :days_to_refuse,
       :common_name,
       :seed_id,
       :bed_id,
