@@ -263,7 +263,7 @@ defmodule VisualGarden.Planner do
     type in list
   end
 
-  defp map_species_to_schedules(schedules_map, species) do
+  def map_species_to_schedules(schedules_map, species) do
     collected =
       species
       |> Enum.group_by(fn s -> {s.id, {s.genus, s.name, s.variant, s.season, s.cultivar}} end)

@@ -60,9 +60,13 @@ defmodule VisualGarden.GardensFixtures do
   """
   def seed_fixture(attrs \\ %{}, garden \\ nil) do
     species =
-      LibraryFixtures.species_fixture(%{
-        common_name: "cn#{System.unique_integer()}"
-      })
+      if attrs[:species_id] do
+        %{id: nil}
+      else
+        LibraryFixtures.species_fixture(%{
+          common_name: "cn#{System.unique_integer()}"
+        })
+      end
 
     garden =
       if garden == nil do

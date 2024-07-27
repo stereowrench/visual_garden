@@ -1,4 +1,5 @@
 defmodule VisualGarden.PlannerTest do
+  alias VisualGarden.Library
   alias VisualGarden.Gardens
   alias VisualGarden.LibraryFixtures
   alias VisualGarden.GardensFixtures
@@ -51,13 +52,50 @@ defmodule VisualGarden.PlannerTest do
 
       dtm = 25
 
+      assert VisualGarden.Library.specific_species_for_plant(region, species, dtm) == species2
+    end
+
+    test "species schedules bubbling" do
+      region = LibraryFixtures.region_fixture(%{name: "foo"})
+      garden = GardensFixtures.garden_fixture(%{region_id: region.id})
+      bed = GardensFixtures.product_fixture(%{type: "bed", width: 3, length: 4}, garden)
+      species = LibraryFixtures.species_fixture(%{name: "bar"})
+      species2 = LibraryFixtures.species_fixture(%{name: "bar", days_to_maturity: 30})
+      species3 = LibraryFixtures.species_fixture(%{name: "bar", days_to_maturity: 20})
+
+      for sp <- [species, species2, species3] do
+        LibraryFixtures.schedule_fixture(
+          %{
+            name: "a new schedule",
+            region_id: region.id,
+            species_id: sp.id,
+            start_month: 7,
+            start_day: 1,
+            end_month: 1,
+            end_day: 1,
+            plantable_types: ["seed"]
+          },
+          true
+        )
+      end
+
+      dtm = 25
+
       seed =
         GardensFixtures.seed_fixture(
           %{name: "my seed please", species_id: species2.id, days_to_maturation: 25},
           garden
         )
 
-      assert VisualGarden.Library.specific_species_for_plant(region, species, dtm) == species2
+      schedules_map = Planner.schedules_map(region.id)
+      species_list = Library.list_species()
+
+      sid = species.id
+      sid2 = species2.id
+      sid3 = species3.id
+
+      assert %{^sid => [_], ^sid2 => [_], ^sid3 => [_]} =
+               Planner.do_map_to_species(schedules_map, species_list)
     end
 
     test "happy path" do

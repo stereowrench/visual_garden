@@ -33,7 +33,7 @@ defmodule VisualGarden.LibraryFixtures do
   @doc """
   Generate a schedule.
   """
-  def schedule_fixture(attrs \\ %{}) do
+  def schedule_fixture(attrs \\ %{}, no_species \\ false) do
     region =
       if attrs[:region_id] do
         nil
@@ -42,7 +42,7 @@ defmodule VisualGarden.LibraryFixtures do
       end
 
     species =
-      if attrs[:species_id] do
+      if attrs[:species_id] || no_species do
         nil
       else
         species_fixture()
