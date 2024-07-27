@@ -15,7 +15,9 @@ defmodule VisualGarden.Library.Schedule do
     field :plantable_types, {:array, :string}
 
     belongs_to :region, VisualGarden.Library.Region
-    belongs_to :species, VisualGarden.Library.Species
+
+    many_to_many :species, VisualGarden.Library.Species,
+      join_through: VisualGarden.Library.SpeciesSchedule
 
     timestamps(type: :utc_datetime)
   end

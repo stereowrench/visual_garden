@@ -11,7 +11,9 @@ defmodule VisualGarden.Library.Species do
     field :season, :string
     field :uuid, Ecto.UUID
 
-    has_many :schedules, VisualGarden.Library.Schedule
+    many_to_many :schedules, VisualGarden.Library.Schedule,
+      join_through: VisualGarden.Library.SpeciesSchedule
+
     has_many :library_seeds, VisualGarden.Library.LibrarySeed
 
     timestamps(type: :utc_datetime)
