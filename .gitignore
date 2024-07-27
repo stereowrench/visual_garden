@@ -39,3 +39,6 @@ npm-debug.log
 .vscode/settings.json
 
 __pycache__/
+
+
+/data/.venv
