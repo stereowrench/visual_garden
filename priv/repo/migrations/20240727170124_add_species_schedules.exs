@@ -14,8 +14,8 @@ defmodule VisualGarden.Repo.Migrations.AddSpeciesSchedules do
     flush()
 
     execute """
-    INSERT INTO species_schedules (species_id, id)
-    SELECT species_id, id
+    INSERT INTO species_schedules (species_id, schedule_id, inserted_at, updated_at)
+    SELECT species_id, id, NOW() as inserted_at, NOW() as updated_at
     FROM schedules
     """
 
