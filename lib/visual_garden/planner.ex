@@ -326,11 +326,16 @@ defmodule VisualGarden.Planner do
 
   def do_map_to_species(schedules_map, species) do
     schedules_map
-    |> Enum.group_by(fn {_schedule_id, schedule} ->
-      schedule.species_id
+    |> Enum.flat_map(fn {sched_id, schedule} ->
+      for species <- schedule.species do
+        {sched_id, schedule, species.id}
+      end
+    end)
+    |> Enum.group_by(fn {_schedule_id, schedule, species_id} ->
+      species_id
     end)
     |> Enum.map(fn {spid, schedules} ->
-      {spid, Enum.map(schedules, fn {_, sched} -> sched end)}
+      {spid, Enum.map(schedules, fn {_, sched, _species_id} -> sched end)}
     end)
     |> Enum.into(%{})
     |> map_species_to_schedules(species)
