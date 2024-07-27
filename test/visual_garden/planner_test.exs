@@ -28,6 +28,35 @@ defmodule VisualGarden.PlannerTest do
       assert {~D[2024-03-01], ~D[2025-02-01]} = Planner.unwrwap_dates(3, 1, 2, 1, @today)
     end
 
+    test "Days to Maturity" do
+      region = LibraryFixtures.region_fixture(%{name: "foo"})
+      garden = GardensFixtures.garden_fixture(%{region_id: region.id})
+      bed = GardensFixtures.product_fixture(%{type: "bed", width: 3, length: 4}, garden)
+      species = LibraryFixtures.species_fixture(%{name: "bar"})
+      species2 = LibraryFixtures.species_fixture(%{name: "bar", days_to_maturity: 30})
+      species3 = LibraryFixtures.species_fixture(%{name: "bar", days_to_maturity: 20})
+
+      for sp <- [species, species2, species3] do
+        LibraryFixtures.schedule_fixture(%{
+          name: "a new schedule",
+          region_id: region.id,
+          species_id: sp.id,
+          start_month: 7,
+          start_day: 1,
+          end_month: 1,
+          end_day: 1,
+          plantable_types: ["seed"]
+        })
+      end
+
+      dtm = 25
+
+      seed =
+        GardensFixtures.seed_fixture(%{name: "my seed please", species_id: species2.id}, garden)
+
+      assert VisualGarden.Library.specific_species_for_plant(region, species, dtm) == species2
+    end
+
     test "happy path" do
       region = LibraryFixtures.region_fixture(%{name: "foo"})
       garden = GardensFixtures.garden_fixture(%{region_id: region.id})
@@ -72,20 +101,20 @@ defmodule VisualGarden.PlannerTest do
                  sow_start: ~D[2024-07-01],
                  sow_end: ~D[2025-01-01]
                }
-              #  %{
-              #    type: :seed,
-              #    days: 51,
-              #    sow_start: ~D[2025-05-01],
-              #    sow_end: ~D[2025-06-01]
-              #  },
-              #  %{
-              #    type: "nursery",
-              #    days: 51,
-              #    sow_start: ~D[2025-04-17],
-              #    sow_end: ~D[2025-06-01],
-              #    nursery_end: ~D[2025-05-18],
-              #    nursery_start: ~D[2025-04-03]
-              #  }
+               #  %{
+               #    type: :seed,
+               #    days: 51,
+               #    sow_start: ~D[2025-05-01],
+               #    sow_end: ~D[2025-06-01]
+               #  },
+               #  %{
+               #    type: "nursery",
+               #    days: 51,
+               #    sow_start: ~D[2025-04-17],
+               #    sow_end: ~D[2025-06-01],
+               #    nursery_end: ~D[2025-05-18],
+               #    nursery_start: ~D[2025-04-03]
+               #  }
              ] =
                Planner.get_plantables_from_garden(bed, ~D[2024-05-06], nil, today)
     end

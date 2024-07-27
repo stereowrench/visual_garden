@@ -538,4 +538,47 @@ defmodule VisualGarden.Library do
   def change_planner_entry(%PlannerEntry{} = entry, attrs \\ %{}, garden) do
     PlannerEntry.changeset(entry, attrs, garden)
   end
+
+  def specific_species_for_plant(region, species, dtm) do
+    query =
+      from sp in Species,
+        join: ss in SpeciesSchedule,
+        on: sp.id == ss.species_id,
+        join: sc in Schedule,
+        on: sc.id == ss.schedule_id,
+        where: sc.region_id == ^region.id,
+        where: sp.name == ^species.name,
+        where: sp.genus == ^species.genus,
+        where: not is_nil(sp.days_to_maturity)
+
+    query =
+      if species.variant do
+        from sp in query,
+          where: sp.variant == ^species.variant
+      else
+        from sp in query,
+          where: is_nil(sp.variant)
+      end
+
+    query =
+      if species.cultivar do
+        from sp in query,
+          where: sp.variant == ^species.cultivar
+      else
+        from sp in query,
+          where: is_nil(sp.cultivar)
+      end
+
+    query
+    |> Repo.all()
+    |> Enum.map(&{&1, (&1.days_to_maturity - dtm) ** 2})
+    |> Enum.group_by(fn {_, b} -> b end)
+    |> Enum.map(fn {_b, xs} ->
+      Enum.sort_by(xs, fn {a, _} -> a.days_to_maturity end)
+      |> List.last()
+    end)
+    |> Enum.sort_by(fn {_a, b} -> b end)
+    |> List.first()
+    |> elem(0)
+  end
 end
