@@ -63,21 +63,25 @@ defmodule VisualGarden.PlannerTest do
       species2 = LibraryFixtures.species_fixture(%{name: "bar", days_to_maturity: 30})
       species3 = LibraryFixtures.species_fixture(%{name: "bar", days_to_maturity: 20})
 
-      for sp <- [species, species2, species3] do
-        LibraryFixtures.schedule_fixture(
-          %{
-            name: "a new schedule",
-            region_id: region.id,
-            species_id: sp.id,
-            start_month: 7,
-            start_day: 1,
-            end_month: 1,
-            end_day: 1,
-            plantable_types: ["seed"]
-          },
-          true
-        )
-      end
+      [id1, id2, id3] =
+        for sp <- [species, species2, species3] do
+          sched =
+            LibraryFixtures.schedule_fixture(
+              %{
+                name: "a new schedule",
+                region_id: region.id,
+                species_id: sp.id,
+                start_month: 7,
+                start_day: 1,
+                end_month: 1,
+                end_day: 1,
+                plantable_types: ["seed"]
+              },
+              true
+            )
+
+          sched.id
+        end
 
       dtm = 25
 
@@ -94,8 +98,86 @@ defmodule VisualGarden.PlannerTest do
       sid2 = species2.id
       sid3 = species3.id
 
-      assert %{^sid => [_], ^sid2 => [_], ^sid3 => [_]} =
-               Planner.do_map_to_species(schedules_map, species_list)
+      assert %{
+               ^sid => [%{species: [%{id: id1}]}],
+               ^sid2 => [%{species: [%{id: id2}]}],
+               ^sid3 => [%{species: [%{id: id3}]}]
+             } =
+               Planner.do_map_to_species(schedules_map, species_list) |> IO.inspect()
+    end
+
+    test "schedules obey DTM" do
+      region = LibraryFixtures.region_fixture(%{name: "foo"})
+      garden = GardensFixtures.garden_fixture(%{region_id: region.id})
+      bed = GardensFixtures.product_fixture(%{type: "bed", width: 3, length: 4}, garden)
+      species = LibraryFixtures.species_fixture(%{name: "bar"})
+      species2 = LibraryFixtures.species_fixture(%{name: "bar", days_to_maturity: 30})
+      species3 = LibraryFixtures.species_fixture(%{name: "bar", days_to_maturity: 20})
+
+      species4 =
+        LibraryFixtures.species_fixture(%{name: "bar", variant: "baz", days_to_maturity: 20})
+
+      for sp <- [species, species2] do
+        LibraryFixtures.schedule_fixture(
+          %{
+            name: "a new schedule",
+            region_id: region.id,
+            species_id: sp.id,
+            start_month: 7,
+            start_day: 1,
+            end_month: 1,
+            end_day: 1,
+            plantable_types: ["seed"]
+          },
+          true
+        )
+      end
+
+      LibraryFixtures.schedule_fixture(
+        %{
+          name: "a new schedule",
+          region_id: region.id,
+          species_id: species3.id,
+          start_month: 6,
+          start_day: 1,
+          end_month: 1,
+          end_day: 1,
+          plantable_types: ["seed"]
+        },
+        true
+      )
+
+      dtm = 25
+
+      seed =
+        GardensFixtures.seed_fixture(
+          %{name: "my seed please", species_id: species2.id, days_to_maturation: 30},
+          garden
+        )
+
+      seed2 =
+        GardensFixtures.seed_fixture(
+          %{name: "my seed please", species_id: species3.id, days_to_maturation: 20},
+          garden
+        )
+
+      seed3 =
+        GardensFixtures.seed_fixture(
+          %{name: "my seed please", species_id: species4.id, days_to_maturation: 30},
+          garden
+        )
+
+      IO.inspect([species.id, species2.id, species3.id, species4.id])
+
+      schedules_map = Planner.schedules_map(region.id)
+      species_list = Library.list_species()
+
+      today = ~D[2024-06-06]
+
+      s3id = species3.id
+
+      assert [_, _, %{schedule: %{species: [%{id: ^s3id}]}}] =
+               Planner.get_plantables_from_garden(bed, ~D[2024-05-06], nil, today)
     end
 
     test "happy path" do
