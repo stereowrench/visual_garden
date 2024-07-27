@@ -52,7 +52,10 @@ defmodule VisualGarden.PlannerTest do
       dtm = 25
 
       seed =
-        GardensFixtures.seed_fixture(%{name: "my seed please", species_id: species2.id}, garden)
+        GardensFixtures.seed_fixture(
+          %{name: "my seed please", species_id: species2.id, days_to_maturation: 25},
+          garden
+        )
 
       assert VisualGarden.Library.specific_species_for_plant(region, species, dtm) == species2
     end
