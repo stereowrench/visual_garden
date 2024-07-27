@@ -1,4 +1,6 @@
 defmodule VisualGarden.LibraryFixtures do
+  alias VisualGarden.Library
+
   @doc """
   Generate a species.
   """
@@ -50,7 +52,6 @@ defmodule VisualGarden.LibraryFixtures do
       attrs
       |> Enum.into(%{
         region_id: if(region, do: region.id, else: attrs[:region_id]),
-        species_id: if(species, do: species.id, else: attrs[:species_id]),
         end_day: 42,
         end_month: 42,
         end_month_adjusted: 42,
@@ -58,6 +59,14 @@ defmodule VisualGarden.LibraryFixtures do
         start_month: 42
       })
       |> VisualGarden.Library.create_schedule()
+
+    if species do
+      {:ok, _} = Library.link_species_and_schedule(species.id, schedule.id)
+    end
+
+    if spid = attrs[:species_id] do
+      {:ok, _} = Library.link_species_and_schedule(spid, schedule.id)
+    end
 
     schedule
   end

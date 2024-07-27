@@ -2,7 +2,7 @@ defmodule VisualGarden.Library.SpeciesSchedule do
   use Ecto.Schema
   import Ecto.Changeset
 
-  schema "garden_users" do
+  schema "species_schedules" do
     belongs_to :species, VisualGarden.Library.Species
     belongs_to :schedule, VisualGarden.Library.Schedule
     timestamps(type: :utc_datetime)

@@ -4,11 +4,18 @@ defmodule VisualGarden.Library do
   """
 
   import Ecto.Query, warn: false
+  alias VisualGarden.Library.SpeciesSchedule
   alias VisualGarden.MyDateTime
   alias VisualGarden.Planner
   alias VisualGarden.Gardens.PlannerEntry
   alias VisualGarden.Library.Species
   alias VisualGarden.Repo
+
+  def link_species_and_schedule(species_id, schedule_id) do
+    %SpeciesSchedule{}
+    |> SpeciesSchedule.changeset(%{species_id: species_id, schedule_id: schedule_id})
+    |> Repo.insert()
+  end
 
   @doc """
   Returns the list of species.
