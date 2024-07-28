@@ -103,7 +103,7 @@ defmodule VisualGarden.PlannerTest do
                ^sid2 => [%{species: [%{id: id2}]}],
                ^sid3 => [%{species: [%{id: id3}]}]
              } =
-               Planner.do_map_to_species(schedules_map, species_list) |> IO.inspect()
+               Planner.do_map_to_species(schedules_map, species_list)
     end
 
     test "schedules obey DTM" do
@@ -116,6 +116,9 @@ defmodule VisualGarden.PlannerTest do
 
       species4 =
         LibraryFixtures.species_fixture(%{name: "bar", variant: "baz", days_to_maturity: 20})
+
+      species5 =
+        LibraryFixtures.species_fixture(%{name: "bar", variant: "baz", days_to_maturity: 30})
 
       for sp <- [species, species2] do
         LibraryFixtures.schedule_fixture(
@@ -167,7 +170,13 @@ defmodule VisualGarden.PlannerTest do
           garden
         )
 
-      IO.inspect([species.id, species2.id, species3.id, species4.id])
+      seed4 =
+        GardensFixtures.seed_fixture(
+          %{name: "my seed please", species_id: species5.id, days_to_maturation: 20},
+          garden
+        )
+
+      IO.inspect([seed4.id, species2.id])
 
       schedules_map = Planner.schedules_map(region.id)
       species_list = Library.list_species()
@@ -175,8 +184,14 @@ defmodule VisualGarden.PlannerTest do
       today = ~D[2024-06-06]
 
       s3id = species3.id
+      s2id = species2.id
 
-      assert [_, _, %{schedule: %{species: [%{id: ^s3id}]}}] =
+      assert [
+               _,
+               _,
+               %{schedule: %{species: [%{id: ^s3id}]}},
+               %{schedule: %{species: [%{id: ^s2id}]}}
+             ] =
                Planner.get_plantables_from_garden(bed, ~D[2024-05-06], nil, today)
     end
 

@@ -266,8 +266,17 @@ defmodule VisualGarden.Planner do
   def map_species_to_schedules(schedules_map, species) do
     collected =
       species
-      |> Enum.group_by(fn s -> {s.id, {s.genus, s.name, s.variant, s.season, s.cultivar}} end)
-      |> Enum.map(fn {{id, key}, _group} -> {key, schedules_map[id]} end)
+      |> Enum.group_by(fn s ->
+        {s.id, {s.genus, s.name, s.variant, s.season, s.cultivar}}
+      end)
+      |> Enum.map(fn {{id, key}, [species]} ->
+        {key, %{species: species, schedule: schedules_map[id]}}
+      end)
+      |> Enum.group_by(fn {key, _} -> key end)
+      |> Enum.map(fn {key, kseds} ->
+        outs = Enum.map(kseds, fn {_, sched} -> sched end)
+        {key, outs}
+      end)
       |> Enum.into(%{})
 
     for specy <- species do
@@ -304,6 +313,9 @@ defmodule VisualGarden.Planner do
     end)
   end
 
+  defp dtm_map(nil), do: 0
+  defp dtm_map(i), do: i
+
   def species_bubble(
         collected,
         species = %{
@@ -320,7 +332,22 @@ defmodule VisualGarden.Planner do
          nil <- collected[{genus, name, nil, nil, nil}] do
       nil
     else
-      map -> {species.id, map}
+      list ->
+        %{species: specices, schedule: schedule} =
+          list
+          |> Enum.map(
+            &{&1, dtm_map(&1.species.days_to_maturity) - dtm_map(species.days_to_maturity) ** 2}
+          )
+          |> Enum.group_by(fn {_, b} -> b end)
+          |> Enum.map(fn {_b, xs} ->
+            Enum.sort_by(xs, fn {a, _} -> a.species.days_to_maturity end)
+            |> List.last()
+          end)
+          |> Enum.sort_by(fn {_a, b} -> b end)
+          |> List.first()
+          |> elem(0)
+
+        {species.id, schedule}
     end
   end
 
