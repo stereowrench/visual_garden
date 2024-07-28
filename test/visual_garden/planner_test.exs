@@ -104,6 +104,8 @@ defmodule VisualGarden.PlannerTest do
                ^sid3 => [%{species: [%{id: id3}]}]
              } =
                Planner.do_map_to_species(schedules_map, species_list)
+               |> Enum.map(fn {x, y} -> y end)
+               |> Enum.into(%{})
     end
 
     test "schedules obey DTM" do
@@ -191,6 +193,67 @@ defmodule VisualGarden.PlannerTest do
                %{schedule: %{species: [%{id: ^s2id}]}}
              ] =
                Planner.get_plantables_from_garden(bed, ~D[2024-05-06], nil, today)
+    end
+
+    test "nursery uses other DTM" do
+      region = LibraryFixtures.region_fixture(%{name: "foo"})
+      garden = GardensFixtures.garden_fixture(%{region_id: region.id})
+      bed = GardensFixtures.product_fixture(%{type: "bed", width: 3, length: 4}, garden)
+      species = LibraryFixtures.species_fixture(%{name: "bar", days_to_maturity: 20})
+      species2 = LibraryFixtures.species_fixture(%{name: "bar", days_to_maturity: 30})
+
+      LibraryFixtures.schedule_fixture(
+        %{
+          name: "a new schedule",
+          region_id: region.id,
+          species_id: species.id,
+          start_month: 6,
+          start_day: 1,
+          end_month: 1,
+          end_day: 1,
+          plantable_types: ["seed"]
+        },
+        true
+      )
+
+      LibraryFixtures.schedule_fixture(
+        %{
+          name: "a new schedule",
+          region_id: region.id,
+          species_id: species2.id,
+          start_month: 7,
+          start_day: 1,
+          end_month: 1,
+          end_day: 1,
+          plantable_types: ["seed"]
+        },
+        true
+      )
+
+      dtm = 25
+
+      seed =
+        GardensFixtures.seed_fixture(
+          %{name: "my seed please", species_id: species2.id, days_to_maturation: 30},
+          garden
+        )
+
+      schedules_map =
+        Planner.schedules_map(region.id)
+
+      species_list = Library.list_species()
+
+      today = ~D[2024-06-06]
+
+      Planner.do_map_to_species(schedules_map, species_list)
+      |> Enum.map(fn {x, _} -> x end)
+
+      # |> IO.inspect()
+
+      # assert [
+      #          _
+      #        ] =
+      #          Planner.get_plantables_from_garden(bed, ~D[2024-05-06], nil, today)
     end
 
     test "happy path" do

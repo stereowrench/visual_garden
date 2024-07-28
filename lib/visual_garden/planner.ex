@@ -255,6 +255,8 @@ defmodule VisualGarden.Planner do
       region_id
       |> schedules_map()
       |> do_map_to_species(Library.list_species())
+      |> Enum.map(fn {_x, y} -> y end)
+      |> Enum.into(%{})
 
     list =
       (schedules_map[species.id] || [])
@@ -284,16 +286,39 @@ defmodule VisualGarden.Planner do
       |> Enum.into(%{})
 
     for specy <- species do
-      species_bubble(collected, specy)
+      spbb =
+        species_bubble(collected, specy)
+
+      %{species: _species_b, schedule: schedule} =
+        spbb
+        |> Enum.map(fn b -> List.last(b) end)
+        |> Enum.sort_by(fn {_a, b} -> b end)
+        |> List.first()
+        |> elem(0)
+
+      # |> Enum.map(fn x -> elem(x, 0) end)
+      # |> Enum.map(fn -> {species.id, schedule} end)
+
+      spbb_min = {specy.id, schedule}
+
+      spbb_all =
+        spbb
+        |> List.flatten()
+        |> Enum.map(fn x -> elem(x, 0).schedule end)
+
+      {spbb_all, spbb_min}
     end
-    |> Enum.reject(&is_nil/1)
-    |> Enum.into(%{})
+    |> Enum.reject(fn {_, y} -> is_nil(y) end)
   end
 
   def get_available_species(region_id) do
     schedules_map = schedules_map(region_id)
     species = Library.list_species()
-    map = do_map_to_species(schedules_map, species)
+
+    map =
+      do_map_to_species(schedules_map, species)
+      |> Enum.map(fn {_x, y} -> y end)
+      |> Enum.into(%{})
 
     Library.list_species_with_common_names()
     |> Enum.filter(fn {species, _name} -> map[species.id] end)
@@ -337,7 +362,7 @@ defmodule VisualGarden.Planner do
       nil
     else
       list ->
-        %{species: species_b, schedule: schedule} =
+        ls =
           list
           |> Enum.map(
             &{&1, (dtm_map(&1.species.days_to_maturity) - dtm_map(species.days_to_maturity)) ** 2}
@@ -345,13 +370,14 @@ defmodule VisualGarden.Planner do
           |> Enum.group_by(fn {_, b} -> b end)
           |> Enum.map(fn {_b, xs} ->
             Enum.sort_by(xs, fn {a, _} -> a.species.days_to_maturity end)
-            |> List.last()
+            # |> List.last()
           end)
-          |> Enum.sort_by(fn {_a, b} -> b end)
-          |> List.first()
-          |> elem(0)
 
-        {species.id, schedule}
+        # |> List.first()
+        # |> elem(0)
+
+        # {species.id, schedule}
+        ls
     end
   end
 
@@ -397,8 +423,15 @@ defmodule VisualGarden.Planner do
         start_date
       end
 
-    schedules_map =
+    mts =
       do_map_to_species(schedules_map, species)
+
+    schedules_map =
+      mts
+      |> Enum.map(fn {_, y} -> y end)
+      |> Enum.into(%{})
+
+    # TODO here
 
     species_map =
       species
