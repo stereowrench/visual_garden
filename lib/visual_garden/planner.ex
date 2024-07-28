@@ -272,6 +272,10 @@ defmodule VisualGarden.Planner do
       |> Enum.map(fn {{id, key}, [species]} ->
         {key, %{species: species, schedule: schedules_map[id]}}
       end)
+      |> Enum.reject(fn
+        {_key, %{schedule: nil}} -> true
+        _el -> false
+      end)
       |> Enum.group_by(fn {key, _} -> key end)
       |> Enum.map(fn {key, kseds} ->
         outs = Enum.map(kseds, fn {_, sched} -> sched end)
@@ -333,10 +337,10 @@ defmodule VisualGarden.Planner do
       nil
     else
       list ->
-        %{species: specices, schedule: schedule} =
+        %{species: species_b, schedule: schedule} =
           list
           |> Enum.map(
-            &{&1, dtm_map(&1.species.days_to_maturity) - dtm_map(species.days_to_maturity) ** 2}
+            &{&1, (dtm_map(&1.species.days_to_maturity) - dtm_map(species.days_to_maturity)) ** 2}
           )
           |> Enum.group_by(fn {_, b} -> b end)
           |> Enum.map(fn {_b, xs} ->

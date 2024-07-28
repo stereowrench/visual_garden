@@ -176,8 +176,6 @@ defmodule VisualGarden.PlannerTest do
           garden
         )
 
-      IO.inspect([seed4.id, species2.id])
-
       schedules_map = Planner.schedules_map(region.id)
       species_list = Library.list_species()
 
