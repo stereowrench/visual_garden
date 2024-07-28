@@ -296,15 +296,12 @@ defmodule VisualGarden.Planner do
         |> List.first()
         |> elem(0)
 
-      # |> Enum.map(fn x -> elem(x, 0) end)
-      # |> Enum.map(fn -> {species.id, schedule} end)
-
       spbb_min = {specy.id, schedule}
 
       spbb_all =
         spbb
         |> List.flatten()
-        |> Enum.map(fn x -> elem(x, 0).schedule end)
+        |> Enum.map(fn x -> {specy.id, elem(x, 0).schedule} end)
 
       {spbb_all, spbb_min}
     end
@@ -355,28 +352,58 @@ defmodule VisualGarden.Planner do
           season: season
         }
       ) do
-    with nil <- collected[{genus, name, variant, season, cultivar}],
-         nil <- collected[{genus, name, variant, season, nil}],
-         nil <- collected[{genus, name, variant, nil, nil}],
-         nil <- collected[{genus, name, nil, nil, nil}] do
+    with {nil, 1} <- {collected[{genus, name, variant, season, cultivar}], 1},
+         {nil, 2} <- {collected[{genus, name, variant, season, nil}], 2},
+         {nil, 3} <- {collected[{genus, name, variant, nil, nil}], 3},
+         {nil, 4} <- {collected[{genus, name, nil, nil, nil}], 4} do
       nil
     else
-      list ->
+      {list, idx} ->
         ls =
           list
           |> Enum.map(
             &{&1, (dtm_map(&1.species.days_to_maturity) - dtm_map(species.days_to_maturity)) ** 2}
           )
+          |> Enum.map(fn {%{species: species, schedule: schedules}, score} ->
+            new_schedules =
+              for sched <- schedules do
+                species_filtered =
+                  case idx do
+                    1 ->
+                      Enum.reject(sched.species, fn x ->
+                        x.genus != genus || x.name != name || x.variant != variant ||
+                          x.season != season || x.cultivar != cultivar
+                      end)
+
+                    2 ->
+                      Enum.reject(sched.species, fn x ->
+                        x.genus != genus || x.name != name || x.variant != variant ||
+                          x.season != season || not is_nil(x.cultivar)
+                      end)
+
+                    3 ->
+                      Enum.reject(sched.species, fn x ->
+                        x.genus != genus || x.name != name || x.variant != variant ||
+                          not is_nil(x.variant) || not is_nil(x.cultivar)
+                      end)
+
+                    4 ->
+                      Enum.reject(sched.species, fn x ->
+                        x.genus != genus || x.name != name || not is_nil(x.variant) ||
+                          not is_nil(x.variant) || not is_nil(x.cultivar)
+                      end)
+                  end
+
+                %{sched | species: species_filtered}
+              end
+
+            {%{species: species, schedule: new_schedules}, score}
+          end)
           |> Enum.group_by(fn {_, b} -> b end)
           |> Enum.map(fn {_b, xs} ->
             Enum.sort_by(xs, fn {a, _} -> a.species.days_to_maturity end)
-            # |> List.last()
           end)
 
-        # |> List.first()
-        # |> elem(0)
-
-        # {species.id, schedule}
         ls
     end
   end
@@ -431,7 +458,9 @@ defmodule VisualGarden.Planner do
       |> Enum.map(fn {_, y} -> y end)
       |> Enum.into(%{})
 
-    # TODO here
+    alternative_map =
+      mts
+      |> Enum.map(fn {x, _} -> x end)
 
     species_map =
       species

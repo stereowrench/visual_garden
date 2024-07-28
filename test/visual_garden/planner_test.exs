@@ -201,6 +201,7 @@ defmodule VisualGarden.PlannerTest do
       bed = GardensFixtures.product_fixture(%{type: "bed", width: 3, length: 4}, garden)
       species = LibraryFixtures.species_fixture(%{name: "bar", days_to_maturity: 20})
       species2 = LibraryFixtures.species_fixture(%{name: "bar", days_to_maturity: 30})
+      species3 = LibraryFixtures.species_fixture(%{name: "baz", days_to_maturity: 30})
 
       LibraryFixtures.schedule_fixture(
         %{
@@ -216,19 +217,22 @@ defmodule VisualGarden.PlannerTest do
         true
       )
 
-      LibraryFixtures.schedule_fixture(
-        %{
-          name: "a new schedule",
-          region_id: region.id,
-          species_id: species2.id,
-          start_month: 7,
-          start_day: 1,
-          end_month: 1,
-          end_day: 1,
-          plantable_types: ["seed"]
-        },
-        true
-      )
+      sched =
+        LibraryFixtures.schedule_fixture(
+          %{
+            name: "a new schedule",
+            region_id: region.id,
+            species_id: species2.id,
+            start_month: 7,
+            start_day: 1,
+            end_month: 1,
+            end_day: 1,
+            plantable_types: ["seed"]
+          },
+          true
+        )
+
+      Library.link_species_and_schedule(species3.id, sched.id)
 
       dtm = 25
 
@@ -245,8 +249,24 @@ defmodule VisualGarden.PlannerTest do
 
       today = ~D[2024-06-06]
 
-      Planner.do_map_to_species(schedules_map, species_list)
-      |> Enum.map(fn {x, _} -> x end)
+      mapped =
+        Planner.do_map_to_species(schedules_map, species_list)
+        |> Enum.map(fn {x, _} -> x end)
+        |> List.flatten()
+        |> Enum.group_by(fn {sid, sched} -> sid end)
+        |> Enum.map(fn {group, list} ->
+          vals = Enum.map(list, fn {_, val} -> val end)
+          {group, List.flatten(vals)}
+        end)
+        |> Enum.into(%{})
+
+      # |> IO.inspect()
+
+      for sched <- mapped[species3.id] do
+        assert [_] = sched.species
+      end
+
+      # |> IO.inspect()
 
       # |> IO.inspect()
 
